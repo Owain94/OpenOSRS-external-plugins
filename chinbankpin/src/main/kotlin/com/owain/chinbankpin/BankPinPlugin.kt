@@ -23,8 +23,6 @@ import javax.inject.Inject
         type = PluginType.MISCELLANEOUS
 )
 class BankPinPlugin : Plugin() {
-    companion object : Log()
-
     @Inject
     private lateinit var client: Client
 

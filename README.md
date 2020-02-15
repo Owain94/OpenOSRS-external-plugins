@@ -1,1 +1,1 @@
-# OpenOSRS-RL-hub
+# OpenOSRS-external-plugins

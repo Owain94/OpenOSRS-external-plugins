@@ -45,7 +45,6 @@ dependencies {
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)
-    compileOnly(Libraries.slf4j)
     compileOnly(Libraries.pf4j)
 }
 

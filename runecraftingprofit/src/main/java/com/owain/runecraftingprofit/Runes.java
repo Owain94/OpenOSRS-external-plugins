@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Dalton <delps1001@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,21 +23,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.owain.runecraftingprofit;
 
-rootProject.name = "Owain94 external plugins"
+import lombok.Getter;
+import static net.runelite.api.ItemID.*;
 
-include(":chinbankpin")
-include(":chinglassblow")
-include(":ignorecompliance")
-include(":runecraftingprofit")
-include(":warcallingindicators")
+public enum Runes
+{
+	AIR(1, AIR_RUNE),
+	WATER(2, WATER_RUNE),
+	EARTH(3, EARTH_RUNE),
+	FIRE(4, FIRE_RUNE),
+	MIND(5, MIND_RUNE),
+	CHAOS(6, CHAOS_RUNE),
+	DEATH(7, DEATH_RUNE),
+	BLOOD(8, BLOOD_RUNE),
+	COSMIC(9, COSMIC_RUNE),
+	NATURE(10, NATURE_RUNE),
+	LAW(11, LAW_RUNE),
+	BODY(12, BODY_RUNE),
+	SOUL(13, SOUL_RUNE),
+	ASTRAL(14, ASTRAL_RUNE),
+	WRATCH(15, WRATH_RUNE);
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+	@Getter
+	private final int id;
+	@Getter
+	private final int itemId;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	Runes(int id, int itemId)
+	{
+		this.id = id;
+		this.itemId = itemId;
+	}
+
+	public String getName()
+	{
+		String name = this.name();
+		name = name.substring(0, 1) + name.substring(1, name.length()).toLowerCase();
+		return name;
+	}
 }

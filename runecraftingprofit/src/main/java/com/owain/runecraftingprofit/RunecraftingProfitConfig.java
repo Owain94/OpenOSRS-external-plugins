@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Dalton <delps1001@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,20 +23,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.owain.runecraftingprofit;
 
-rootProject.name = "Owain94 external plugins"
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-include(":chinbankpin")
-include(":ignorecompliance")
-include(":runecraftingprofit")
-include(":warcallingindicators")
+@ConfigGroup("runecrafting")
+public interface RunecraftingProfitConfig extends Config
+{
+	@ConfigItem(
+		keyName = "profit per hour",
+		name = "Display profit per hour",
+		description = "Show profit per hour"
+	)
+	default boolean displayProfitPerHour()
+	{
+		return true;
+	}
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+	@ConfigItem(
+		keyName = "overlay timeout",
+		name = "Overlay timeout",
+		description = "How long to wait before hiding the overlay after last runecrafting at an altar"
+	)
+	default int overlayTimeout()
+	{
+		return 3;
+	}
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@ConfigItem(
+		keyName = "individual rune type",
+		name = "Display individual rune",
+		description = "Toggle displaying individual rune count and profit."
+	)
+	default boolean displayIndividualRuneTypes()
+	{
+		return true;
+	}
+
 }

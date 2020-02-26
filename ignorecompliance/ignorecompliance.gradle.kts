@@ -30,7 +30,7 @@ plugins {
     kotlin("kapt") version "1.3.61"
 }
 
-version = "0.0.1"
+version = "0.0.2"
 
 project.extra["PluginName"] = "Ignore compliance"
 project.extra["PluginDescription"] = "Sets the compliance value of OpenOSRS to false"

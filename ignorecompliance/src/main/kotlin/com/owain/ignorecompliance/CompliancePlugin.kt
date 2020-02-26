@@ -1,4 +1,4 @@
-package com.owain.chinglassblow
+package com.owain.ignorecompliance
 
 import net.runelite.api.Client
 import net.runelite.client.plugins.Plugin

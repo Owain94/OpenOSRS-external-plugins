@@ -40,8 +40,8 @@ dependencies {
 
     kapt(Libraries.pf4j)
 
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
+    compileOnly("com.openosrs:runelite-api:$rlVersion+")
+    compileOnly("com.openosrs:runelite-client:$rlVersion+")
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.javax)

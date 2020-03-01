@@ -167,7 +167,7 @@ public interface AutoHopConfig extends Config
 
 	@ConfigItem(
 		keyName = "clanmembers",
-		name = "Australian",
+		name = "Clan members",
 		description = "Don't hop when the player spawned is in your clan chat",
 		titleSection = "ignoresTitle",
 		position = 12

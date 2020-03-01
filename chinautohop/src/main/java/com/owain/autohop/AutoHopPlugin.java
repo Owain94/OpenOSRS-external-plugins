@@ -124,7 +124,12 @@ public class AutoHopPlugin extends Plugin
 		final Player local = client.getLocalPlayer();
 		final Player player = event.getPlayer();
 
-		if (wildernessLevel == -1 || local == null || player == null || player.equals(local))
+		if (wildernessLevel == -1 ||
+			local == null ||
+			player == null ||
+			player.equals(local) ||
+			(config.friends() && player.isFriend()) ||
+			(config.clanmember() && player.isClanMember()))
 		{
 			return;
 		}

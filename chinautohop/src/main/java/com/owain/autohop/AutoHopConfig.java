@@ -28,48 +28,103 @@ package com.owain.autohop;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Title;
 
 @ConfigGroup("chinautohop")
 public interface AutoHopConfig extends Config
 {
+	@ConfigTitleSection(
+		keyName = "worldsTitle",
+		name = "Worlds",
+		description = "",
+		position = 1
+	)
+	default Title worldsTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "american",
-		name = "American worlds",
-		description = "Allow hopping to American worlds"
+		name = "American",
+		description = "Allow hopping to American worlds",
+		titleSection = "worldsTitle",
+		position = 2
 	)
 	default boolean american()
 	{
 		return true;
-	} // 0
+	}
 
 	@ConfigItem(
 		keyName = "unitedkingdom",
-		name = "UK worlds",
-		description = "Allow hopping to UK worlds"
+		name = "UK",
+		description = "Allow hopping to UK worlds",
+		titleSection = "worldsTitle",
+		position = 3
 	)
 	default boolean unitedkingdom()
 	{
 		return true;
-	} // 1
+	}
 
 	@ConfigItem(
 		keyName = "germany",
-		name = "German worlds",
-		description = "Allow hopping to German worlds"
+		name = "German",
+		description = "Allow hopping to German worlds",
+		titleSection = "worldsTitle",
+		position = 4
 	)
 	default boolean germany()
 	{
 		return true;
-	} // 7
+	}
 
 	@ConfigItem(
 		keyName = "australia",
-		name = "Australian worlds",
-		description = "Allow hopping to Australian worlds"
+		name = "Australian",
+		description = "Allow hopping to Australian worlds",
+		titleSection = "worldsTitle",
+		position = 5
 	)
 	default boolean australia()
 	{
 		return true;
-	} // 3
+	}
 
+	@ConfigTitleSection(
+		keyName = "ignoresTitle",
+		name = "Ignore",
+		description = "",
+		position = 6
+	)
+	default Title ignoresTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "friends",
+		name = "Friends",
+		description = "Don't hop when the player spawned is on your friend list",
+		titleSection = "ignoresTitle",
+		position = 7
+	)
+	default boolean friends()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "clanmembers",
+		name = "Australian",
+		description = "Don't hop when the player spawned is in your clan chat",
+		titleSection = "ignoresTitle",
+		position = 8
+	)
+	default boolean clanmember()
+	{
+		return true;
+	}
 }

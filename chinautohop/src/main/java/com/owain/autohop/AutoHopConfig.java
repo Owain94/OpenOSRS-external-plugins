@@ -35,10 +35,46 @@ import net.runelite.client.config.Title;
 public interface AutoHopConfig extends Config
 {
 	@ConfigTitleSection(
+		keyName = "hopTitle",
+		name = "Hop",
+		description = "",
+		position = 1
+	)
+	default Title hopTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "alwaysHop",
+		name = "Always hop",
+		description = "Always hop when a player within your combat brakcet spawns",
+		titleSection = "hopTitle",
+		position = 2
+	)
+	default boolean alwaysHop()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "skulledHop",
+		name = "Skulled",
+		description = "Hop when a player within your combat brakcet spawns that has a skull",
+		titleSection = "hopTitle",
+		position = 3,
+		hide = "alwaysHop"
+	)
+	default boolean skulledHop()
+	{
+		return true;
+	}
+
+	@ConfigTitleSection(
 		keyName = "worldsTitle",
 		name = "Worlds",
 		description = "",
-		position = 1
+		position = 4
 	)
 	default Title worldsTitle()
 	{
@@ -50,7 +86,7 @@ public interface AutoHopConfig extends Config
 		name = "American",
 		description = "Allow hopping to American worlds",
 		titleSection = "worldsTitle",
-		position = 2
+		position = 5
 	)
 	default boolean american()
 	{
@@ -62,7 +98,7 @@ public interface AutoHopConfig extends Config
 		name = "UK",
 		description = "Allow hopping to UK worlds",
 		titleSection = "worldsTitle",
-		position = 3
+		position = 6
 	)
 	default boolean unitedkingdom()
 	{
@@ -74,7 +110,7 @@ public interface AutoHopConfig extends Config
 		name = "German",
 		description = "Allow hopping to German worlds",
 		titleSection = "worldsTitle",
-		position = 4
+		position = 7
 	)
 	default boolean germany()
 	{
@@ -86,7 +122,7 @@ public interface AutoHopConfig extends Config
 		name = "Australian",
 		description = "Allow hopping to Australian worlds",
 		titleSection = "worldsTitle",
-		position = 5
+		position = 8
 	)
 	default boolean australia()
 	{
@@ -97,7 +133,7 @@ public interface AutoHopConfig extends Config
 		keyName = "ignoresTitle",
 		name = "Ignore",
 		description = "",
-		position = 6
+		position = 9
 	)
 	default Title ignoresTitle()
 	{
@@ -109,7 +145,7 @@ public interface AutoHopConfig extends Config
 		name = "Friends",
 		description = "Don't hop when the player spawned is on your friend list",
 		titleSection = "ignoresTitle",
-		position = 7
+		position = 10
 	)
 	default boolean friends()
 	{
@@ -121,7 +157,7 @@ public interface AutoHopConfig extends Config
 		name = "Australian",
 		description = "Don't hop when the player spawned is in your clan chat",
 		titleSection = "ignoresTitle",
-		position = 8
+		position = 11
 	)
 	default boolean clanmember()
 	{

@@ -13,7 +13,6 @@ import net.runelite.api.Client;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
-import net.runelite.api.WorldType;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PlayerSpawned;
@@ -33,6 +32,7 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
 import net.runelite.http.api.worlds.WorldResult;
+import net.runelite.http.api.worlds.WorldType;
 import org.pf4j.Extension;
 
 @Extension
@@ -104,7 +104,7 @@ public class AutoHopPlugin extends Plugin
 		}
 
 		final Matcher m = WILDERNESS_LEVEL_PATTERN.matcher(wildernessLevelText);
-		if (!m.matches() || WorldType.isPvpWorld(client.getWorldType()))
+		if (!m.matches() || net.runelite.api.WorldType.isPvpWorld(client.getWorldType()))
 		{
 			wildernessLevel = -1;
 			return;
@@ -181,13 +181,13 @@ public class AutoHopPlugin extends Plugin
 			return;
 		}
 
-		EnumSet<net.runelite.http.api.worlds.WorldType> currentWorldTypes = currentWorld.getTypes().clone();
+		EnumSet<WorldType> currentWorldTypes = currentWorld.getTypes().clone();
 
-		currentWorldTypes.remove(net.runelite.http.api.worlds.WorldType.PVP);
-		currentWorldTypes.remove(net.runelite.http.api.worlds.WorldType.HIGH_RISK);
-		currentWorldTypes.remove(net.runelite.http.api.worlds.WorldType.BOUNTY);
-		currentWorldTypes.remove(net.runelite.http.api.worlds.WorldType.SKILL_TOTAL);
-		currentWorldTypes.remove(net.runelite.http.api.worlds.WorldType.LAST_MAN_STANDING);
+		currentWorldTypes.remove(WorldType.PVP);
+		currentWorldTypes.remove(WorldType.HIGH_RISK);
+		currentWorldTypes.remove(WorldType.BOUNTY);
+		currentWorldTypes.remove(WorldType.SKILL_TOTAL);
+		currentWorldTypes.remove(WorldType.LAST_MAN_STANDING);
 
 		List<World> worlds = worldResult.getWorlds();
 
@@ -198,12 +198,12 @@ public class AutoHopPlugin extends Plugin
 		{
 			world = worlds.get(new Random().nextInt(worlds.size()));
 
-			EnumSet<net.runelite.http.api.worlds.WorldType> types = world.getTypes().clone();
+			EnumSet<WorldType> types = world.getTypes().clone();
 
-			types.remove(net.runelite.http.api.worlds.WorldType.BOUNTY);
-			types.remove(net.runelite.http.api.worlds.WorldType.LAST_MAN_STANDING);
+			types.remove(WorldType.BOUNTY);
+			types.remove(WorldType.LAST_MAN_STANDING);
 
-			if (types.contains(net.runelite.http.api.worlds.WorldType.SKILL_TOTAL))
+			if (types.contains(WorldType.SKILL_TOTAL))
 			{
 				try
 				{
@@ -211,7 +211,7 @@ public class AutoHopPlugin extends Plugin
 
 					if (totalLevel >= totalRequirement)
 					{
-						types.remove(net.runelite.http.api.worlds.WorldType.SKILL_TOTAL);
+						types.remove(WorldType.SKILL_TOTAL);
 					}
 				}
 				catch (NumberFormatException ex)
@@ -220,42 +220,46 @@ public class AutoHopPlugin extends Plugin
 				}
 			}
 
-			// Break out if we've found a good world to hop to
-			if (world != currentWorld && currentWorldTypes.equals(types))
+			if (currentWorldTypes.equals(types))
 			{
-				if (!config.american() && !config.unitedkingdom() && !config.australia() && !config.germany())
+				int worldLocation = world.getLocation();
+
+				if (config.american() && worldLocation == 0)
 				{
 					break;
 				}
-
-				switch (world.getLocation())
+				else if (config.unitedkingdom() && worldLocation == 1)
 				{
-					case 0:
-						if (config.american())
-						{
-							break;
-						}
-					case 1:
-						if (config.unitedkingdom())
-						{
-							break;
-						}
-					case 3:
-						if (config.australia())
-						{
-							break;
-						}
-					case 7:
-						if (config.germany())
-						{
-							break;
-						}
+					break;
+				}
+				else if (config.australia() && worldLocation == 3)
+				{
+					break;
+				}
+				else if (config.germany() && worldLocation == 7)
+				{
+					break;
 				}
 			}
 		}
 		while (world != currentWorld);
 
-		hop(world.getId());
+		if (world == currentWorld)
+		{
+			String chatMessage = new ChatMessageBuilder()
+				.append(ChatColorType.NORMAL)
+				.append("Couldn't find a world to quick-hop to.")
+				.build();
+
+			chatMessageManager.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(chatMessage)
+				.build());
+		}
+		else
+		{
+			hop(world.getId());
+		}
 	}
 
 	private void hop(int worldId)

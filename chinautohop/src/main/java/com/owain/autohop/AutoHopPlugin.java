@@ -173,6 +173,11 @@ public class AutoHopPlugin extends Plugin
 		{
 			world = worlds.get(new Random().nextInt(worlds.size()));
 
+			if (world.getId() == currentWorld.getId())
+			{
+				continue;
+			}
+
 			EnumSet<net.runelite.http.api.worlds.WorldType> types = world.getTypes().clone();
 
 			types.remove(net.runelite.http.api.worlds.WorldType.BOUNTY);

@@ -124,6 +124,11 @@ public class AutoHopPlugin extends Plugin
 		final Player local = client.getLocalPlayer();
 		final Player player = event.getPlayer();
 
+		if (config.skulledHop() && player.getSkullIcon() == null)
+		{
+			return;
+		}
+
 		if (wildernessLevel == -1 ||
 			local == null ||
 			player == null ||
@@ -178,11 +183,6 @@ public class AutoHopPlugin extends Plugin
 		{
 			world = worlds.get(new Random().nextInt(worlds.size()));
 
-			if (world.getId() == currentWorld.getId())
-			{
-				continue;
-			}
-
 			EnumSet<net.runelite.http.api.worlds.WorldType> types = world.getTypes().clone();
 
 			types.remove(net.runelite.http.api.worlds.WorldType.BOUNTY);
@@ -206,7 +206,7 @@ public class AutoHopPlugin extends Plugin
 			}
 
 			// Break out if we've found a good world to hop to
-			if (currentWorldTypes.equals(types))
+			if (world != currentWorld && currentWorldTypes.equals(types))
 			{
 				if (!config.american() && !config.unitedkingdom() && !config.australia() && !config.germany())
 				{
@@ -285,7 +285,6 @@ public class AutoHopPlugin extends Plugin
 		quickHopTargetWorld = rsWorld;
 		displaySwitcherAttempts = 0;
 	}
-
 
 	@Subscribe
 	private void onGameTick(GameTick event)

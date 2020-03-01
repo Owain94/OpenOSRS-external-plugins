@@ -70,11 +70,24 @@ public interface AutoHopConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "underHop",
+		name = "Log under",
+		description = "Hop when a player within your combat bracket spawns underneath you",
+		titleSection = "hopTitle",
+		position = 4,
+		hide = "alwaysHop"
+	)
+	default boolean underHop()
+	{
+		return true;
+	}
+
 	@ConfigTitleSection(
 		keyName = "worldsTitle",
 		name = "Worlds",
 		description = "",
-		position = 4
+		position = 5
 	)
 	default Title worldsTitle()
 	{
@@ -86,7 +99,7 @@ public interface AutoHopConfig extends Config
 		name = "American",
 		description = "Allow hopping to American worlds",
 		titleSection = "worldsTitle",
-		position = 5
+		position = 6
 	)
 	default boolean american()
 	{
@@ -98,7 +111,7 @@ public interface AutoHopConfig extends Config
 		name = "UK",
 		description = "Allow hopping to UK worlds",
 		titleSection = "worldsTitle",
-		position = 6
+		position = 7
 	)
 	default boolean unitedkingdom()
 	{
@@ -110,7 +123,7 @@ public interface AutoHopConfig extends Config
 		name = "German",
 		description = "Allow hopping to German worlds",
 		titleSection = "worldsTitle",
-		position = 7
+		position = 8
 	)
 	default boolean germany()
 	{
@@ -122,7 +135,7 @@ public interface AutoHopConfig extends Config
 		name = "Australian",
 		description = "Allow hopping to Australian worlds",
 		titleSection = "worldsTitle",
-		position = 8
+		position = 9
 	)
 	default boolean australia()
 	{
@@ -133,7 +146,7 @@ public interface AutoHopConfig extends Config
 		keyName = "ignoresTitle",
 		name = "Ignore",
 		description = "",
-		position = 9
+		position = 10
 	)
 	default Title ignoresTitle()
 	{
@@ -145,7 +158,7 @@ public interface AutoHopConfig extends Config
 		name = "Friends",
 		description = "Don't hop when the player spawned is on your friend list",
 		titleSection = "ignoresTitle",
-		position = 10
+		position = 11
 	)
 	default boolean friends()
 	{
@@ -154,10 +167,10 @@ public interface AutoHopConfig extends Config
 
 	@ConfigItem(
 		keyName = "clanmembers",
-		name = "Australian",
+		name = "Clan members",
 		description = "Don't hop when the player spawned is in your clan chat",
 		titleSection = "ignoresTitle",
-		position = 11
+		position = 12
 	)
 	default boolean clanmember()
 	{

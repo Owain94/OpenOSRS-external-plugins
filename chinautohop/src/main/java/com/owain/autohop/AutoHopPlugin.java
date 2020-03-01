@@ -124,16 +124,31 @@ public class AutoHopPlugin extends Plugin
 		final Player local = client.getLocalPlayer();
 		final Player player = event.getPlayer();
 
-		if (config.skulledHop() && player.getSkullIcon() == null)
+		if (wildernessLevel == -1 ||
+			local == null ||
+			player == null ||
+			player.equals(local))
 		{
 			return;
 		}
 
-		if (wildernessLevel == -1 ||
-			local == null ||
-			player == null ||
-			player.equals(local) ||
-			(config.friends() && player.isFriend()) ||
+		if (config.alwaysHop())
+		{
+			shouldHop(player, local);
+		}
+		else if (config.underHop() && local.getWorldLocation() == player.getWorldLocation())
+		{
+			shouldHop(player, local);
+		}
+		else if (config.skulledHop() && player.getSkullIcon() != null)
+		{
+			shouldHop(player, local);
+		}
+	}
+
+	private void shouldHop(Player player, Player local)
+	{
+		if ((config.friends() && player.isFriend()) ||
 			(config.clanmember() && player.isClanMember()))
 		{
 			return;

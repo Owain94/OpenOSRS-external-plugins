@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Dalton <delps1001@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +23,53 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.owain.autohop;
 
-rootProject.name = "Owain94 external plugins"
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-include(":chinautohop")
-include(":chinbankpin")
-include(":chinglassblow")
-include(":ignorecompliance")
-include(":runecraftingprofit")
-include(":warcallingindicators")
+@ConfigGroup("chinautohop")
+public interface AutoHopConfig extends Config
+{
+	@ConfigItem(
+		keyName = "american",
+		name = "American worlds",
+		description = "Allow hopping to American worlds"
+	)
+	default boolean american()
+	{
+		return true;
+	} // 0
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+	@ConfigItem(
+		keyName = "unitedkingdom",
+		name = "UK worlds",
+		description = "Allow hopping to UK worlds"
+	)
+	default boolean unitedkingdom()
+	{
+		return true;
+	} // 1
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@ConfigItem(
+		keyName = "germany",
+		name = "German worlds",
+		description = "Allow hopping to German worlds"
+	)
+	default boolean germany()
+	{
+		return true;
+	} // 7
+
+	@ConfigItem(
+		keyName = "australia",
+		name = "Australian worlds",
+		description = "Allow hopping to Australian worlds"
+	)
+	default boolean australia()
+	{
+		return true;
+	} // 3
+
 }

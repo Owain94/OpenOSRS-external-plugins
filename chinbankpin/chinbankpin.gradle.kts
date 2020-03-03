@@ -30,7 +30,7 @@ plugins {
     kotlin("kapt") version "1.3.61"
 }
 
-version = "0.0.1"
+version = "0.0.2"
 
 project.extra["PluginName"] = "Chin bank pin"
 project.extra["PluginDescription"] = "Automatically enters your bank pin"

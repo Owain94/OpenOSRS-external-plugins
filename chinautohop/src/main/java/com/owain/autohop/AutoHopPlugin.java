@@ -13,10 +13,12 @@ import net.runelite.api.Client;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.api.events.ScriptCallbackEvent;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatColorType;
@@ -111,6 +113,18 @@ public class AutoHopPlugin extends Plugin
 		}
 
 		wildernessLevel = Integer.parseInt(m.group(1));
+	}
+
+	@Subscribe
+	public void onVarbitChanged(VarbitChanged event)
+	{
+		int inWilderness = client.getVar(Varbits.IN_WILDERNESS);
+
+		if (!net.runelite.api.WorldType.isPvpWorld(client.getWorldType())
+			&& inWilderness == 0)
+		{
+			wildernessLevel = -1;
+		}
 	}
 
 	private static String combatAttackRange(final int combatLevel, final int wildernessLevel)

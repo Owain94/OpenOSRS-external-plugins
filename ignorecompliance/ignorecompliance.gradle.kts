@@ -44,7 +44,6 @@ dependencies {
     compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
 
     compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
     compileOnly(Libraries.pf4j)
 }
 

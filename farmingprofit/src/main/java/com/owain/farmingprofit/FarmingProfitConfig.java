@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2018, Mika Kuijpers <github.com/mkuijpers>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +22,67 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.owain.farmingprofit;
 
-rootProject.name = "Owain94 external plugins"
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-include(":chinautohop")
-include(":chinbankpin")
-include(":chinglassblow")
-include(":farmingprofit")
-include(":ignorecompliance")
-include(":runecraftingprofit")
-include(":warcallingindicators")
+@ConfigGroup("farmingProfit")
+public interface FarmingProfitConfig extends Config
+{
+	@ConfigItem(
+		keyName = "trackAllotments",
+		name = "Track allotment patches",
+		description = "Track profit made of allotment patches",
+		position = 0
+	)
+	default boolean trackAllotments()
+	{
+		return true;
+	}
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+	@ConfigItem(
+		keyName = "trackHerbs",
+		name = "Track herb patches",
+		description = "Track profit made of herb patches",
+		position = 0
+	)
+	default boolean trackHerbs()
+	{
+		return true;
+	}
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@ConfigItem(
+		keyName = "trackHops",
+		name = "Track hops patches",
+		description = "Track profit made of hops patches",
+		position = 0
+	)
+	default boolean trackHops()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "trackBushes",
+		name = "Track bush patches",
+		description = "Track profit made of bush patches",
+		position = 0
+	)
+	default boolean trackBushes()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "trackSpecial",
+		name = "Track special patches",
+		description = "Track profit made of the special patches, cactus and seaweed",
+		position = 0
+	)
+	default boolean trackSpecial()
+	{
+		return true;
+	}
 }

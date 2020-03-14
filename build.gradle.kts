@@ -15,7 +15,7 @@ subprojects {
     group = "com.owain.externals"
 
     project.extra["PluginProvider"] = "Owain94"
-    project.extra["ProjectUrl"] = "https://discord.gg/vVWTdd"
+    project.extra["ProjectUrl"] = "https://discord.gg/HVjnT6R"
     project.extra["PluginLicense"] = "3-Clause BSD License"
 
     repositories {

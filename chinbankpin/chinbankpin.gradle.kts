@@ -26,18 +26,16 @@ import ProjectVersions.openosrsVersion
  */
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.3.61"
-    kotlin("kapt") version "1.3.61"
+    kotlin("jvm") version ProjectVersions.kotlin
+    kotlin("kapt") version ProjectVersions.kotlin
 }
 
-version = "0.0.2"
+version = "0.0.3"
 
 project.extra["PluginName"] = "Chin bank pin"
 project.extra["PluginDescription"] = "Automatically enters your bank pin"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-
     kapt(Libraries.pf4j)
 
     compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
@@ -45,6 +43,9 @@ dependencies {
 
     compileOnly(Libraries.guice)
     compileOnly(Libraries.pf4j)
+
+    // kotlin
+    compileOnly(kotlin("stdlib"))
 }
 
 tasks {

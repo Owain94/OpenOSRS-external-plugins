@@ -8,6 +8,7 @@ buildscript {
 
 plugins {
     checkstyle
+    java
     kotlin("jvm") version ProjectVersions.kotlin
 }
 

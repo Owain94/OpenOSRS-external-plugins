@@ -215,13 +215,13 @@ jobs:
       - name: Bootstrapping plugins
         run: ./gradlew bootstrapPlugins --stacktrace --console=plain
 
-      - name: Copy bootstrap
-        run: cp -af /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins/build/bootstrap/. /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins-hosting/
-
       - uses: actions/checkout@v1
         with:
           repository: Owain94/OpenOSRS-external-plugins-hosting
           ref: master
+
+      - name: Copy bootstrap
+        run: cp -af /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins/build/bootstrap/. /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins-hosting/
 
       - name: Commit bootstrap
         run: |

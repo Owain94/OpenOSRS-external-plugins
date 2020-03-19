@@ -26,8 +26,7 @@ import ProjectVersions.openosrsVersion
  */
 
 plugins {
-    kotlin("jvm") version ProjectVersions.kotlin
-    kotlin("kapt") version ProjectVersions.kotlin
+    kotlin("kapt")
 }
 
 version = "0.0.2"
@@ -37,26 +36,9 @@ project.extra["PluginDescription"] = "Automatically logs you in on the login scr
 
 dependencies {
     kapt(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
-    compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.pf4j)
-
-    // kotlin
-    compileOnly(kotlin("stdlib"))
 }
 
 tasks {
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "11"
-            freeCompilerArgs = listOf("-Xjvm-default=enable")
-        }
-        sourceCompatibility = "11"
-    }
-
     jar {
         manifest {
             attributes(mapOf(

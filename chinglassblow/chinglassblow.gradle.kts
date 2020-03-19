@@ -26,36 +26,19 @@ import ProjectVersions.openosrsVersion
  */
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.3.61"
-    kotlin("kapt") version "1.3.61"
+    kotlin("kapt")
 }
 
-version = "0.0.2"
+version = "0.0.3"
 
 project.extra["PluginName"] = "Chin glass blow"
 project.extra["PluginDescription"] = "Automatically selects the product to glassblow"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-
     kapt(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$openosrsVersion")
-    compileOnly("com.openosrs:runelite-client:$openosrsVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.pf4j)
 }
 
 tasks {
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "11"
-            freeCompilerArgs = listOf("-Xjvm-default=enable")
-        }
-        sourceCompatibility = "11"
-    }
-
     jar {
         manifest {
             attributes(mapOf(

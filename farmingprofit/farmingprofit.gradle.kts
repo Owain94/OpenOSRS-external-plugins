@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.1"
+version = "0.0.2"
 
 project.extra["PluginName"] = "Farming Profit"
-project.extra["PluginDescription"] = "Shows various runecrafting stats"
+project.extra["PluginDescription"] = "Calculates the profit of a farm run"
 
 dependencies {
     annotationProcessor(Libraries.lombok)

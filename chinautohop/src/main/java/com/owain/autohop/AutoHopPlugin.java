@@ -39,7 +39,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Chin auto hop",
 	description = "Hop away from people in the wilderness",
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.MISCELLANEOUS,
+	enabledByDefault = false
 )
 @Slf4j
 public class AutoHopPlugin extends Plugin

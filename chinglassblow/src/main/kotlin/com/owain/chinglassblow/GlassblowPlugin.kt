@@ -17,7 +17,8 @@ import javax.inject.Inject
 @PluginDescriptor(
         name = "Chin glass blow",
         description = "Automatically select the item to make on molten glass related widgets",
-        type = PluginType.MISCELLANEOUS
+        type = PluginType.MISCELLANEOUS,
+    enabledByDefault = false
 )
 class GlassblowPlugin : Plugin() {
 

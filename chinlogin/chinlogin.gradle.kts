@@ -27,7 +27,7 @@ plugins {
     kotlin("kapt")
 }
 
-version = "0.0.2"
+version = "0.0.3"
 
 project.extra["PluginName"] = "Chin login"
 project.extra["PluginDescription"] = "Automatically logs you in on the login screen because a 6 hour log is annoying"

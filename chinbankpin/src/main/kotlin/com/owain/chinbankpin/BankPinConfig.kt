@@ -13,7 +13,7 @@ interface BankPinConfig : Config {
             position = 0
     )
     @JvmDefault
-    fun bankpin(): Int {
-        return 0
+    fun bankpin(): String {
+        return ""
     }
 }

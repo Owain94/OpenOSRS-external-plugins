@@ -56,11 +56,11 @@ class BankPinPlugin : Plugin() {
             return
         }
 
-        if (config.bankpin().toString().length != 4) {
+        if (config.bankpin().length != 4) {
             return
         }
 
-        val number: String = java.lang.String.valueOf(config.bankpin())
+        val number: String = config.bankpin()
 
         val digits = number.toCharArray()
         var charCode = -1

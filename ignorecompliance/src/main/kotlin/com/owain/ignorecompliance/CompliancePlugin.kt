@@ -11,7 +11,8 @@ import javax.inject.Inject
 @PluginDescriptor(
         name = "Ignore compliance",
         description = "Sets the compliance value of OpenOSRS to false",
-        type = PluginType.MISCELLANEOUS
+        type = PluginType.MISCELLANEOUS,
+        enabledByDefault = false
 )
 class CompliancePlugin : Plugin() {
 

@@ -54,7 +54,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Runecrafting Profit",
 	description = "Shows various runecrafting stats",
-	type = PluginType.SKILLING
+	type = PluginType.SKILLING,
+	enabledByDefault = false
 )
 @Slf4j
 public class RunecraftingProfitPlugin extends Plugin

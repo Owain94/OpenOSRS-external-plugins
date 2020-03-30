@@ -20,7 +20,8 @@ import javax.inject.Inject
 @PluginDescriptor(
         name = "Chin bank pin",
         description = "Automatically enters your bank pin",
-        type = PluginType.MISCELLANEOUS
+        type = PluginType.MISCELLANEOUS,
+    enabledByDefault = false
 )
 class BankPinPlugin : Plugin() {
     @Inject

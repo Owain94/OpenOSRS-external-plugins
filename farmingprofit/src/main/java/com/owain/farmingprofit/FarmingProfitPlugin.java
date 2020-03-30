@@ -63,7 +63,8 @@ import org.pf4j.Extension;
 	name = "Farming Profit",
 	description = "Calculates the profit of a farm run",
 	tags = {"farm", "farming", "runs", "run", "profit"},
-	type = PluginType.UTILITY
+	type = PluginType.UTILITY,
+		enabledByDefault = false
 )
 @Slf4j
 public class FarmingProfitPlugin extends Plugin

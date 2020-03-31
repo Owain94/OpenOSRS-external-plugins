@@ -32,7 +32,7 @@ object ProjectVersions {
 object Libraries {
     private object Versions {
         const val apacheCommonsText = "1.8"
-        const val guice = "4.2.2"
+        const val guice = "4.2.3"
         const val lombok = "1.18.12"
         const val pf4j = "3.2.0"
     }

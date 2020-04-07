@@ -33,7 +33,7 @@ project.extra["PluginName"] = "Chin glass blow"
 project.extra["PluginDescription"] = "Automatically selects the product to glassblow"
 
 dependencies {
-    kapt(Libraries.pf4j)
+    kapt(group = "org.pf4j", name = "pf4j", version = "3.2.0")
 }
 
 tasks {

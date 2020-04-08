@@ -26,20 +26,4 @@
 object ProjectVersions {
     const val openosrsVersion = "3.2.1"
     const val apiVersion = "0.0.1"
-    const val kotlin = "1.3.70"
-}
-
-object Libraries {
-    private object Versions {
-        const val apacheCommonsText = "1.8"
-        const val guice = "4.2.2"
-        const val lombok = "1.18.12"
-        const val pf4j = "3.2.0"
-    }
-
-    const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.apacheCommonsText}"
-    const val guice = "com.google.inject:guice:${Versions.guice}:no_aop"
-    const val lombok = "org.projectlombok:lombok:${Versions.lombok}"
-    const val pf4j = "org.pf4j:pf4j:${Versions.pf4j}"
-
 }

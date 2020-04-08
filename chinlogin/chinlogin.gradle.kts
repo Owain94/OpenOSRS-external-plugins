@@ -33,7 +33,7 @@ project.extra["PluginName"] = "Chin login"
 project.extra["PluginDescription"] = "Automatically logs you in on the login screen because a 6 hour log is annoying"
 
 dependencies {
-    kapt(Libraries.pf4j)
+    kapt(group = "org.pf4j", name = "pf4j", version = "3.2.0")
 }
 
 tasks {

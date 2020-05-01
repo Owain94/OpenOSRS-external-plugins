@@ -4,20 +4,15 @@ import com.google.inject.Provides;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
 import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.PlayerSpawned;
-import net.runelite.api.events.ScriptCallbackEvent;
-import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
@@ -29,6 +24,7 @@ import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.util.PvPUtil;
 import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
 import net.runelite.http.api.worlds.WorldResult;
@@ -44,14 +40,10 @@ import org.pf4j.Extension;
 @Slf4j
 public class AutoHopPlugin extends Plugin
 {
-	private static final Pattern WILDERNESS_LEVEL_PATTERN = Pattern.compile("^Level: (\\d+)$");
-	private static final int MIN_COMBAT_LEVEL = 3;
 	private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
 
 	@Inject
 	private Client client;
-
-	private int wildernessLevel = -1;
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
@@ -62,7 +54,6 @@ public class AutoHopPlugin extends Plugin
 	@Inject
 	private AutoHopConfig config;
 
-	private net.runelite.api.World quickHopTargetWorld;
 	private int displaySwitcherAttempts = 0;
 
 	@Provides
@@ -71,52 +62,41 @@ public class AutoHopPlugin extends Plugin
 		return configManager.getConfig(AutoHopConfig.class);
 	}
 
-	@Override
-	protected void startUp()
-	{
-		wildernessLevel();
-	}
-
 	@Subscribe
-	private void onScriptCallbackEvent(ScriptCallbackEvent event)
+	private void onGameStateChanged(GameStateChanged event)
 	{
-		if ("wildernessWidgetTextSet".equals(event.getEventName()))
-		{
-			wildernessLevel();
-		}
-	}
+		final Player local = client.getLocalPlayer();
 
-	private void wildernessLevel()
-	{
-		final Widget wildernessLevelWidget = client.getWidget(WidgetInfo.PVP_WILDERNESS_LEVEL);
-
-		if (wildernessLevelWidget == null)
+		if (event.getGameState() != GameState.LOGGED_IN || local == null)
 		{
-			wildernessLevel = -1;
 			return;
 		}
 
-		String wildernessLevelText = wildernessLevelWidget.getText();
 
-		if (wildernessLevelText.contains("<br>"))
+		for (Player player : client.getPlayers())
 		{
-			wildernessLevelText = wildernessLevelText.split("<br>")[0];
-		}
+			if (player == null ||
+				player.equals(local) ||
+				!PvPUtil.isAttackable(client, player))
+			{
+				continue;
+			}
 
-		final Matcher m = WILDERNESS_LEVEL_PATTERN.matcher(wildernessLevelText);
-		if (!m.matches() || net.runelite.api.WorldType.isPvpWorld(client.getWorldType()))
-		{
-			wildernessLevel = -1;
-			return;
+			if (config.alwaysHop())
+			{
+				shouldHop(player);
+			}
+			else if (config.underHop() && local.getWorldLocation() == player.getWorldLocation())
+			{
+				shouldHop(player);
+			}
+			else if (config.skulledHop() && player.getSkullIcon() != null)
+			{
+				shouldHop(player);
+			}
 		}
-
-		wildernessLevel = Integer.parseInt(m.group(1));
 	}
 
-	private static String combatAttackRange(final int combatLevel, final int wildernessLevel)
-	{
-		return Math.max(MIN_COMBAT_LEVEL, combatLevel - wildernessLevel) + "-" + Math.min(Experience.MAX_COMBAT_LEVEL, combatLevel + wildernessLevel);
-	}
 
 	@Subscribe
 	private void onPlayerSpawned(PlayerSpawned event)
@@ -124,29 +104,29 @@ public class AutoHopPlugin extends Plugin
 		final Player local = client.getLocalPlayer();
 		final Player player = event.getPlayer();
 
-		if (wildernessLevel == -1 ||
-			local == null ||
+		if (local == null ||
 			player == null ||
-			player.equals(local))
+			player.equals(local) ||
+			!PvPUtil.isAttackable(client, player))
 		{
 			return;
 		}
 
 		if (config.alwaysHop())
 		{
-			shouldHop(player, local);
+			shouldHop(player);
 		}
 		else if (config.underHop() && local.getWorldLocation() == player.getWorldLocation())
 		{
-			shouldHop(player, local);
+			shouldHop(player);
 		}
 		else if (config.skulledHop() && player.getSkullIcon() != null)
 		{
-			shouldHop(player, local);
+			shouldHop(player);
 		}
 	}
 
-	private void shouldHop(Player player, Player local)
+	private void shouldHop(Player player)
 	{
 		if ((config.friends() && player.isFriend()) ||
 			(config.clanmember() && player.isClanMember()))
@@ -154,24 +134,7 @@ public class AutoHopPlugin extends Plugin
 			return;
 		}
 
-		final Widget wildernessLevelWidget = client.getWidget(WidgetInfo.PVP_WILDERNESS_LEVEL);
-
-		if (wildernessLevelWidget == null)
-		{
-			wildernessLevel = -1;
-			return;
-		}
-
-		final int playerCombat = player.getCombatLevel();
-		final int combatLevel = local.getCombatLevel();
-
-		final int minimumAttackable = Math.max(MIN_COMBAT_LEVEL, combatLevel - wildernessLevel);
-		final int maximumAttackable = Math.min(Experience.MAX_COMBAT_LEVEL, combatLevel + wildernessLevel);
-
-		if (playerCombat >= minimumAttackable && playerCombat <= maximumAttackable)
-		{
-			hop();
-		}
+		hop();
 	}
 
 	private void hop()
@@ -309,17 +272,7 @@ public class AutoHopPlugin extends Plugin
 				.runeLiteFormattedMessage(chatMessage)
 				.build());
 
-		quickHopTargetWorld = rsWorld;
 		displaySwitcherAttempts = 0;
-	}
-
-	@Subscribe
-	private void onGameTick(GameTick event)
-	{
-		if (quickHopTargetWorld == null)
-		{
-			return;
-		}
 
 		if (client.getWidget(WidgetInfo.WORLD_SWITCHER_LIST) == null)
 		{
@@ -327,7 +280,7 @@ public class AutoHopPlugin extends Plugin
 
 			if (++displaySwitcherAttempts >= DISPLAY_SWITCHER_MAX_ATTEMPTS)
 			{
-				String chatMessage = new ChatMessageBuilder()
+				chatMessage = new ChatMessageBuilder()
 					.append(ChatColorType.NORMAL)
 					.append("Failed to quick-hop after ")
 					.append(ChatColorType.HIGHLIGHT)
@@ -347,7 +300,7 @@ public class AutoHopPlugin extends Plugin
 		}
 		else
 		{
-			client.hopToWorld(quickHopTargetWorld);
+			client.hopToWorld(rsWorld);
 			resetQuickHopper();
 		}
 	}
@@ -369,6 +322,5 @@ public class AutoHopPlugin extends Plugin
 	private void resetQuickHopper()
 	{
 		displaySwitcherAttempts = 0;
-		quickHopTargetWorld = null;
 	}
 }

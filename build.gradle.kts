@@ -56,14 +56,14 @@ subprojects {
     apply(plugin = "com.simonharrer.modernizer")
 
     dependencies {
-        compileOnly(group = "com.openosrs", name = "http-api", version = "3.2.2")
-        compileOnly(group = "com.openosrs", name = "runelite-api", version = "3.2.2")
-        compileOnly(group = "com.openosrs", name = "runelite-client", version = "3.2.2")
+        compileOnly(group = "com.openosrs", name = "http-api", version = "3.3.1")
+        compileOnly(group = "com.openosrs", name = "runelite-api", version = "3.3.1")
+        compileOnly(group = "com.openosrs", name = "runelite-client", version = "3.3.1")
 
         compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.8")
         compileOnly(group = "com.google.inject", name = "guice", version = "4.2.3", classifier = "no_aop")
         compileOnly(group = "org.projectlombok", name = "lombok", version = "1.18.12")
-        compileOnly(group = "org.pf4j", name = "pf4j", version = "3.2.0")
+        compileOnly(group = "org.pf4j", name = "pf4j", version = "3.3.1")
 
         // kotlin
         compileOnly(kotlin("stdlib"))

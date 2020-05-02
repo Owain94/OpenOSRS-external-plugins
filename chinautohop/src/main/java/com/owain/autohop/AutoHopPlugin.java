@@ -12,6 +12,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.Player;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatColorType;
@@ -54,6 +55,7 @@ public class AutoHopPlugin extends Plugin
 	@Inject
 	private AutoHopConfig config;
 
+	private net.runelite.api.World quickHopTargetWorld;
 	private int displaySwitcherAttempts = 0;
 
 	@Provides
@@ -272,7 +274,17 @@ public class AutoHopPlugin extends Plugin
 				.runeLiteFormattedMessage(chatMessage)
 				.build());
 
+		quickHopTargetWorld = rsWorld;
 		displaySwitcherAttempts = 0;
+	}
+
+	@Subscribe
+	private void onGameTick(GameTick event)
+	{
+		if (quickHopTargetWorld == null)
+		{
+			return;
+		}
 
 		if (client.getWidget(WidgetInfo.WORLD_SWITCHER_LIST) == null)
 		{
@@ -280,7 +292,7 @@ public class AutoHopPlugin extends Plugin
 
 			if (++displaySwitcherAttempts >= DISPLAY_SWITCHER_MAX_ATTEMPTS)
 			{
-				chatMessage = new ChatMessageBuilder()
+				String chatMessage = new ChatMessageBuilder()
 					.append(ChatColorType.NORMAL)
 					.append("Failed to quick-hop after ")
 					.append(ChatColorType.HIGHLIGHT)
@@ -300,7 +312,7 @@ public class AutoHopPlugin extends Plugin
 		}
 		else
 		{
-			client.hopToWorld(rsWorld);
+			client.hopToWorld(quickHopTargetWorld);
 			resetQuickHopper();
 		}
 	}
@@ -322,5 +334,6 @@ public class AutoHopPlugin extends Plugin
 	private void resetQuickHopper()
 	{
 		displaySwitcherAttempts = 0;
+		quickHopTargetWorld = null;
 	}
 }

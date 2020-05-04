@@ -161,7 +161,6 @@ public class AutoHopPlugin extends Plugin
 		currentWorldTypes.remove(WorldType.BOUNTY);
 		currentWorldTypes.remove(WorldType.SKILL_TOTAL);
 		currentWorldTypes.remove(WorldType.LAST_MAN_STANDING);
-		currentWorldTypes.remove(WorldType.DEADMAN_TOURNAMENT);
 
 		List<World> worlds = worldResult.getWorlds();
 
@@ -174,7 +173,6 @@ public class AutoHopPlugin extends Plugin
 
 			EnumSet<WorldType> types = world.getTypes().clone();
 
-			types.remove(WorldType.BOUNTY);
 			types.remove(WorldType.LAST_MAN_STANDING);
 
 			if (types.contains(WorldType.SKILL_TOTAL))

@@ -174,7 +174,6 @@ public class AutoHopPlugin extends Plugin
 
 			EnumSet<WorldType> types = world.getTypes().clone();
 
-			types.remove(WorldType.BOUNTY);
 			types.remove(WorldType.LAST_MAN_STANDING);
 
 			if (types.contains(WorldType.SKILL_TOTAL))

@@ -139,6 +139,56 @@ public class AutoHopPlugin extends Plugin
 		hop();
 	}
 
+	private World findWorld(List<World> worlds, EnumSet<WorldType> currentWorldTypes, int totalLevel)
+	{
+		World world = worlds.get(new Random().nextInt(worlds.size()));
+
+		EnumSet<WorldType> types = world.getTypes().clone();
+
+		types.remove(WorldType.LAST_MAN_STANDING);
+
+		if (types.contains(WorldType.SKILL_TOTAL))
+		{
+			try
+			{
+				int totalRequirement = Integer.parseInt(world.getActivity().substring(0, world.getActivity().indexOf(" ")));
+
+				if (totalLevel >= totalRequirement)
+				{
+					types.remove(WorldType.SKILL_TOTAL);
+				}
+			}
+			catch (NumberFormatException ex)
+			{
+				log.warn("Failed to parse total level requirement for target world", ex);
+			}
+		}
+
+		if (currentWorldTypes.equals(types))
+		{
+			int worldLocation = world.getLocation();
+
+			if (config.american() && worldLocation == 0)
+			{
+				return world;
+			}
+			else if (config.unitedkingdom() && worldLocation == 1)
+			{
+				return world;
+			}
+			else if (config.australia() && worldLocation == 3)
+			{
+				return world;
+			}
+			else if (config.germany() && worldLocation == 7)
+			{
+				return world;
+			}
+		}
+
+		return null;
+	}
+
 	private void hop()
 	{
 		WorldResult worldResult = worldService.getWorlds();
@@ -169,69 +219,11 @@ public class AutoHopPlugin extends Plugin
 		World world;
 		do
 		{
-			world = worlds.get(new Random().nextInt(worlds.size()));
-
-			EnumSet<WorldType> types = world.getTypes().clone();
-
-			types.remove(WorldType.LAST_MAN_STANDING);
-
-			if (types.contains(WorldType.SKILL_TOTAL))
-			{
-				try
-				{
-					int totalRequirement = Integer.parseInt(world.getActivity().substring(0, world.getActivity().indexOf(" ")));
-
-					if (totalLevel >= totalRequirement)
-					{
-						types.remove(WorldType.SKILL_TOTAL);
-					}
-				}
-				catch (NumberFormatException ex)
-				{
-					log.warn("Failed to parse total level requirement for target world", ex);
-				}
-			}
-
-			if (currentWorldTypes.equals(types))
-			{
-				int worldLocation = world.getLocation();
-
-				if (config.american() && worldLocation == 0)
-				{
-					break;
-				}
-				else if (config.unitedkingdom() && worldLocation == 1)
-				{
-					break;
-				}
-				else if (config.australia() && worldLocation == 3)
-				{
-					break;
-				}
-				else if (config.germany() && worldLocation == 7)
-				{
-					break;
-				}
-			}
+			world = findWorld(worlds, currentWorldTypes, totalLevel);
 		}
-		while (world != currentWorld);
+		while (world == null || world != currentWorld);
 
-		if (world == currentWorld)
-		{
-			String chatMessage = new ChatMessageBuilder()
-				.append(ChatColorType.NORMAL)
-				.append("Couldn't find a world to quick-hop to.")
-				.build();
-
-			chatMessageManager.queue(QueuedMessage.builder()
-				.type(ChatMessageType.CONSOLE)
-				.runeLiteFormattedMessage(chatMessage)
-				.build());
-		}
-		else
-		{
-			hop(world.getId());
-		}
+		hop(world.getId());
 	}
 
 	private void hop(int worldId)

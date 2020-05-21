@@ -1,7 +1,6 @@
 package com.owain.chinlogin
 
 import com.google.inject.Provides
-import com.owain.chinbankpin.ChinLoginConfig
 import net.runelite.api.Client
 import net.runelite.api.GameState
 import net.runelite.api.events.GameStateChanged

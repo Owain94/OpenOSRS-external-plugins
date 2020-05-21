@@ -1,4 +1,4 @@
-package com.owain.chinbankpin
+package com.owain.chinlogin
 
 import net.runelite.client.config.Config
 import net.runelite.client.config.ConfigGroup

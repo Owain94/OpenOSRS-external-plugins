@@ -15,9 +15,9 @@ import javax.inject.Inject
 
 @Extension
 @PluginDescriptor(
-        name = "Chin login",
-        description = "Automatically logs you in on the login screen because a 6 hour log is annoying",
-        type = PluginType.MISCELLANEOUS,
+    name = "Chin login",
+    description = "Automatically logs you in on the login screen because a 6 hour log is annoying",
+    type = PluginType.MISCELLANEOUS,
     enabledByDefault = false
 )
 class ChinLoginPlugin : Plugin() {

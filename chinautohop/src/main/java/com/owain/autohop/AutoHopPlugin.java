@@ -80,7 +80,7 @@ public class AutoHopPlugin extends Plugin
 		{
 			if (player == null ||
 				player.equals(local) ||
-				!PvPUtil.isAttackable(client, player))
+				(config.cmbBracket() && !PvPUtil.isAttackable(client, player)))
 			{
 				continue;
 			}
@@ -110,7 +110,7 @@ public class AutoHopPlugin extends Plugin
 		if (local == null ||
 			player == null ||
 			player.equals(local) ||
-			!PvPUtil.isAttackable(client, player))
+			(config.cmbBracket() && !PvPUtil.isAttackable(client, player)))
 		{
 			return;
 		}

@@ -46,11 +46,23 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "alwaysHop",
-		name = "Always hop",
-		description = "Always hop when a player within your combat brakcet spawns",
+		keyName = "cmbBracket",
+		name = "Within combat bracket",
+		description = "Only hop if the player is within your combat bracket",
 		titleSection = "hopTitle",
 		position = 2
+	)
+	default boolean cmbBracket()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "alwaysHop",
+		name = "Hop on player spawn",
+		description = "Hop when a player  spawns",
+		titleSection = "hopTitle",
+		position = 3
 	)
 	default boolean alwaysHop()
 	{
@@ -62,7 +74,7 @@ public interface AutoHopConfig extends Config
 		name = "Skulled",
 		description = "Hop when a player within your combat brakcet spawns that has a skull",
 		titleSection = "hopTitle",
-		position = 3,
+		position = 4,
 		hide = "alwaysHop"
 	)
 	default boolean skulledHop()
@@ -75,7 +87,7 @@ public interface AutoHopConfig extends Config
 		name = "Log under",
 		description = "Hop when a player within your combat bracket spawns underneath you",
 		titleSection = "hopTitle",
-		position = 4,
+		position = 5,
 		hide = "alwaysHop"
 	)
 	default boolean underHop()
@@ -87,7 +99,7 @@ public interface AutoHopConfig extends Config
 		keyName = "worldsTitle",
 		name = "Worlds",
 		description = "",
-		position = 5
+		position = 6
 	)
 	default Title worldsTitle()
 	{
@@ -99,7 +111,7 @@ public interface AutoHopConfig extends Config
 		name = "American",
 		description = "Allow hopping to American worlds",
 		titleSection = "worldsTitle",
-		position = 6
+		position = 7
 	)
 	default boolean american()
 	{
@@ -111,7 +123,7 @@ public interface AutoHopConfig extends Config
 		name = "UK",
 		description = "Allow hopping to UK worlds",
 		titleSection = "worldsTitle",
-		position = 7
+		position = 8
 	)
 	default boolean unitedkingdom()
 	{
@@ -123,7 +135,7 @@ public interface AutoHopConfig extends Config
 		name = "German",
 		description = "Allow hopping to German worlds",
 		titleSection = "worldsTitle",
-		position = 8
+		position = 9
 	)
 	default boolean germany()
 	{
@@ -135,7 +147,7 @@ public interface AutoHopConfig extends Config
 		name = "Australian",
 		description = "Allow hopping to Australian worlds",
 		titleSection = "worldsTitle",
-		position = 9
+		position = 10
 	)
 	default boolean australia()
 	{
@@ -146,7 +158,7 @@ public interface AutoHopConfig extends Config
 		keyName = "ignoresTitle",
 		name = "Ignore",
 		description = "",
-		position = 10
+		position = 11
 	)
 	default Title ignoresTitle()
 	{
@@ -158,7 +170,7 @@ public interface AutoHopConfig extends Config
 		name = "Friends",
 		description = "Don't hop when the player spawned is on your friend list",
 		titleSection = "ignoresTitle",
-		position = 11
+		position = 12
 	)
 	default boolean friends()
 	{
@@ -170,7 +182,7 @@ public interface AutoHopConfig extends Config
 		name = "Clan members",
 		description = "Don't hop when the player spawned is in your clan chat",
 		titleSection = "ignoresTitle",
-		position = 12
+		position = 13
 	)
 	default boolean clanmember()
 	{

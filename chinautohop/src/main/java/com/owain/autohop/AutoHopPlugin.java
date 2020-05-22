@@ -222,7 +222,7 @@ public class AutoHopPlugin extends Plugin
 		{
 			world = findWorld(worlds, currentWorldTypes, totalLevel);
 		}
-		while (world == null || world != currentWorld);
+		while (world == null || world == currentWorld);
 
 		hop(world.getId());
 	}

@@ -104,6 +104,11 @@ subprojects {
         withType<Checkstyle> {
             group = "verification"
         }
+
+        register<Copy>("copyDeps") {
+            into("./build/deps/")
+            from(configurations["runtimeClasspath"])
+        }
     }
 }
 

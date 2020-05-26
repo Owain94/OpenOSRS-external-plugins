@@ -40,7 +40,7 @@ public class RunecraftingProfitOverlay extends Overlay
 	private final RunecraftingProfitPlugin plugin;
 	private final RunecraftingProfitConfig config;
 	private final PanelComponent panelComponent = new PanelComponent();
-	RunecraftingProfitSession session;
+	private final RunecraftingProfitSession session;
 
 	@Inject
 	RunecraftingProfitOverlay(RunecraftingProfitPlugin plugin, RunecraftingProfitConfig config)

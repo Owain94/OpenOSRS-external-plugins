@@ -139,10 +139,7 @@ public class RunecraftingProfitPlugin extends Plugin
 			try
 			{
 				ArrayList<Item> items = getInventoryContents();
-				if (items != null)
-				{
-					session.updatePreviousRunesInInventory(items);
-				}
+				session.updatePreviousRunesInInventory(items);
 			}
 			catch (NullPointerException e)
 			{
@@ -153,10 +150,7 @@ public class RunecraftingProfitPlugin extends Plugin
 		else if (anim.getActor() == client.getLocalPlayer() && (anim.getActor().getAnimation() != RUNECRAFTING_ANIMATION) && lastTickAnimationWasRunecrafting)
 		{
 			ArrayList<Item> inventroyContents = getInventoryContents();
-			if (inventroyContents != null)
-			{
-				session.updateTotalCraftedRunes(inventroyContents);
-			}
+			session.updateTotalCraftedRunes(inventroyContents);
 		}
 	}
 
@@ -164,14 +158,7 @@ public class RunecraftingProfitPlugin extends Plugin
 	{
 		ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
 		Item[] itemsArray = inventory.getItems();
-		if (itemsArray != null)
-		{
-			return new ArrayList<>(Arrays.asList(itemsArray));
-		}
-		else
-		{
-			return null;
-		}
+		return new ArrayList<>(Arrays.asList(itemsArray));
 	}
 
 	@Schedule(

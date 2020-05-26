@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 import net.runelite.api.Item;
 import net.runelite.client.game.ItemManager;
@@ -39,11 +40,11 @@ import net.runelite.client.game.ItemManager;
 public class RunecraftingProfitSession
 {
 	private final RunecraftingProfitPlugin plugin;
-	private HashMap<Integer, Integer> previousRunesInInventory = new HashMap<>();
-	private HashMap<Integer, Integer> numberOfTotalRunesCrafted = new HashMap<>();
-	private HashMap<Runes, Integer> profitPerRuneType = new HashMap<>();
-	private HashSet<Integer> runesSet = new HashSet<>();
-	private HashMap<Integer, Integer> runePrices = new HashMap<>();
+	private final ItemManager itemManager;
+	private final Map<Integer, Integer> previousRunesInInventory = new HashMap<>();
+	private final Map<Integer, Integer> numberOfTotalRunesCrafted = new HashMap<>();
+	private final Map<Runes, Integer> profitPerRuneType = new HashMap<>();
+	private final Set<Integer> runesSet = new HashSet<>();
 	private int totalProfit = 0;
 	private int totalRunesCrafted = 0;
 	private double totalProfitPerHour = 0.0;
@@ -58,10 +59,9 @@ public class RunecraftingProfitSession
 			runesSet.add(rune.getItemId());
 			numberOfTotalRunesCrafted.put(rune.getItemId(), 0);
 			profitPerRuneType.put(rune, 0);
-			int price = itemManager.getItemPrice(rune.getItemId());
-			runePrices.put(rune.getItemId(), price);
 		}
 		this.plugin = plugin;
+		this.itemManager = itemManager;
 	}
 
 	void updatePreviousRunesInInventory(ArrayList<Item> items)
@@ -102,7 +102,8 @@ public class RunecraftingProfitSession
 		{
 			int runeId = entry.getKey().getItemId();
 			int numberOfRunesCrafted = this.numberOfTotalRunesCrafted.get(runeId);
-			int profitForRuneType = this.runePrices.get(runeId) * numberOfRunesCrafted;
+			int price = itemManager.getItemPrice(runeId);
+			int profitForRuneType = price * numberOfRunesCrafted;
 			profitPerRuneType.replace(entry.getKey(), profitForRuneType);
 			totalProfit += profitForRuneType;
 			totalRunesCrafted += numberOfRunesCrafted;
@@ -120,12 +121,12 @@ public class RunecraftingProfitSession
 		return totalRunesCrafted;
 	}
 
-	HashMap<Runes, Integer> getProfitPerRuneType()
+	Map<Runes, Integer> getProfitPerRuneType()
 	{
 		return profitPerRuneType;
 	}
 
-	HashMap<Integer, Integer> getNumberOfTotalRunesCrafted()
+	Map<Integer, Integer> getNumberOfTotalRunesCrafted()
 	{
 		return numberOfTotalRunesCrafted;
 	}

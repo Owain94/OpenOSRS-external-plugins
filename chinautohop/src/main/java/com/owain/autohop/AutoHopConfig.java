@@ -35,10 +35,10 @@ import net.runelite.client.config.Title;
 public interface AutoHopConfig extends Config
 {
 	@ConfigTitleSection(
-			keyName = "hopTitle",
-			name = "Hop",
-			description = "",
-			position = 1
+		keyName = "hopTitle",
+		name = "Hop",
+		description = "",
+		position = 1
 	)
 	default Title hopTitle()
 	{
@@ -46,11 +46,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "cmbBracket",
-			name = "Within combat bracket",
-			description = "Only hop if the player is within your combat bracket",
-			titleSection = "hopTitle",
-			position = 2
+		keyName = "cmbBracket",
+		name = "Within combat bracket",
+		description = "Only hop if the player is within your combat bracket",
+		titleSection = "hopTitle",
+		position = 2
 	)
 	default boolean cmbBracket()
 	{
@@ -58,11 +58,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "alwaysHop",
-			name = "Hop on player spawn",
-			description = "Hop when a player  spawns",
-			titleSection = "hopTitle",
-			position = 3
+		keyName = "alwaysHop",
+		name = "Hop on player spawn",
+		description = "Hop when a player  spawns",
+		titleSection = "hopTitle",
+		position = 3
 	)
 	default boolean alwaysHop()
 	{
@@ -70,11 +70,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "chatHop",
-			name = "Hop on chat message",
-			description = "Hop whenever any message is entered into chat",
-			titleSection = "hopTitle",
-			position = 4
+		keyName = "chatHop",
+		name = "Hop on chat message",
+		description = "Hop whenever any message is entered into chat",
+		titleSection = "hopTitle",
+		position = 4
 	)
 	default boolean chatHop()
 	{
@@ -82,11 +82,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "hopRadius",
-			name = "Hop radius",
-			description = "Hop only when another player enters radius",
-			titleSection = "hopTitle",
-			position = 5
+		keyName = "hopRadius",
+		name = "Hop radius",
+		description = "Hop only when another player enters radius",
+		titleSection = "hopTitle",
+		position = 5
 	)
 	default boolean hopRadius()
 	{
@@ -94,13 +94,13 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "playerRadius",
-			name = "Player radius",
-			description = "Radius (tiles) for player to be within to trigger hop",
-			titleSection = "hopTitle",
-			position = 6,
-			hidden = true,
-			unhide = "hopRadius"
+		keyName = "playerRadius",
+		name = "Player radius",
+		description = "Radius (tiles) for player to be within to trigger hop",
+		titleSection = "hopTitle",
+		position = 6,
+		hidden = true,
+		unhide = "hopRadius"
 	)
 	default int playerRadius()
 	{
@@ -108,12 +108,12 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "skulledHop",
-			name = "Skulled",
-			description = "Hop when a player within your combat bracket spawns that has a skull",
-			titleSection = "hopTitle",
-			position = 7,
-			hide = "alwaysHop"
+		keyName = "skulledHop",
+		name = "Skulled",
+		description = "Hop when a player within your combat bracket spawns that has a skull",
+		titleSection = "hopTitle",
+		position = 7,
+		hide = "alwaysHop"
 	)
 	default boolean skulledHop()
 	{
@@ -121,12 +121,12 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "underHop",
-			name = "Log under",
-			description = "Hop when a player within your combat bracket spawns underneath you",
-			titleSection = "hopTitle",
-			position = 8,
-			hide = "alwaysHop"
+		keyName = "underHop",
+		name = "Log under",
+		description = "Hop when a player within your combat bracket spawns underneath you",
+		titleSection = "hopTitle",
+		position = 8,
+		hide = "alwaysHop"
 	)
 	default boolean underHop()
 	{
@@ -134,10 +134,10 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigTitleSection(
-			keyName = "worldsTitle",
-			name = "Worlds",
-			description = "",
-			position = 9
+		keyName = "worldsTitle",
+		name = "Worlds",
+		description = "",
+		position = 9
 	)
 	default Title worldsTitle()
 	{
@@ -145,11 +145,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "american",
-			name = "American",
-			description = "Allow hopping to American worlds",
-			titleSection = "worldsTitle",
-			position = 10
+		keyName = "american",
+		name = "American",
+		description = "Allow hopping to American worlds",
+		titleSection = "worldsTitle",
+		position = 10
 	)
 	default boolean american()
 	{
@@ -157,11 +157,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "unitedkingdom",
-			name = "UK",
-			description = "Allow hopping to UK worlds",
-			titleSection = "worldsTitle",
-			position = 11
+		keyName = "unitedkingdom",
+		name = "UK",
+		description = "Allow hopping to UK worlds",
+		titleSection = "worldsTitle",
+		position = 11
 	)
 	default boolean unitedkingdom()
 	{
@@ -169,11 +169,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "germany",
-			name = "German",
-			description = "Allow hopping to German worlds",
-			titleSection = "worldsTitle",
-			position = 12
+		keyName = "germany",
+		name = "German",
+		description = "Allow hopping to German worlds",
+		titleSection = "worldsTitle",
+		position = 12
 	)
 	default boolean germany()
 	{
@@ -181,11 +181,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "australia",
-			name = "Australian",
-			description = "Allow hopping to Australian worlds",
-			titleSection = "worldsTitle",
-			position = 13
+		keyName = "australia",
+		name = "Australian",
+		description = "Allow hopping to Australian worlds",
+		titleSection = "worldsTitle",
+		position = 13
 	)
 	default boolean australia()
 	{
@@ -193,10 +193,10 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigTitleSection(
-			keyName = "ignoresTitle",
-			name = "Ignore",
-			description = "",
-			position = 14
+		keyName = "ignoresTitle",
+		name = "Ignore",
+		description = "",
+		position = 14
 	)
 	default Title ignoresTitle()
 	{
@@ -204,11 +204,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "friends",
-			name = "Friends",
-			description = "Don't hop when the player spawned is on your friend list",
-			titleSection = "ignoresTitle",
-			position = 15
+		keyName = "friends",
+		name = "Friends",
+		description = "Don't hop when the player spawned is on your friend list",
+		titleSection = "ignoresTitle",
+		position = 15
 	)
 	default boolean friends()
 	{
@@ -216,11 +216,11 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "clanmembers",
-			name = "Clan members",
-			description = "Don't hop when the player spawned is in your clan chat",
-			titleSection = "ignoresTitle",
-			position = 16
+		keyName = "clanmembers",
+		name = "Clan members",
+		description = "Don't hop when the player spawned is in your clan chat",
+		titleSection = "ignoresTitle",
+		position = 16
 	)
 	default boolean clanmember()
 	{

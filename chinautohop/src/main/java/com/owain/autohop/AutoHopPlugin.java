@@ -34,10 +34,10 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-		name = "Chin auto hop",
-		description = "Hop away from people",
-		type = PluginType.MISCELLANEOUS,
-		enabledByDefault = false
+	name = "Chin auto hop",
+	description = "Hop away from people",
+	type = PluginType.MISCELLANEOUS,
+	enabledByDefault = false
 )
 @Slf4j
 public class AutoHopPlugin extends Plugin
@@ -79,9 +79,9 @@ public class AutoHopPlugin extends Plugin
 		for (Player player : client.getPlayers())
 		{
 			if (player == null ||
-					player.equals(local) ||
-					(config.cmbBracket() && !PvPUtil.isAttackable(client, player))
-					|| (config.hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > config.playerRadius()))
+				player.equals(local) ||
+				(config.cmbBracket() && !PvPUtil.isAttackable(client, player))
+				|| (config.hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > config.playerRadius()))
 			{
 				continue;
 			}
@@ -109,10 +109,10 @@ public class AutoHopPlugin extends Plugin
 		final Player player = event.getPlayer();
 
 		if (local == null ||
-				player == null ||
-				player.equals(local) ||
-				(config.cmbBracket() && !PvPUtil.isAttackable(client, player))
-				|| (config.hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > config.playerRadius()))
+			player == null ||
+			player.equals(local) ||
+			(config.cmbBracket() && !PvPUtil.isAttackable(client, player))
+			|| (config.hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > config.playerRadius()))
 		{
 			return;
 		}
@@ -134,8 +134,8 @@ public class AutoHopPlugin extends Plugin
 	private void shouldHop(Player player)
 	{
 		if ((config.friends() && player.isFriend()) ||
-				(config.clanmember() && player.isClanMember()) ||
-				(config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()))
+			(config.clanmember() && player.isClanMember()) ||
+			(config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()))
 		{
 			return;
 		}
@@ -255,19 +255,19 @@ public class AutoHopPlugin extends Plugin
 		}
 
 		String chatMessage = new ChatMessageBuilder()
-				.append(ChatColorType.NORMAL)
-				.append("Hopping away from a player. New world: ")
-				.append(ChatColorType.HIGHLIGHT)
-				.append(Integer.toString(world.getId()))
-				.append(ChatColorType.NORMAL)
-				.append("..")
-				.build();
+			.append(ChatColorType.NORMAL)
+			.append("Hopping away from a player. New world: ")
+			.append(ChatColorType.HIGHLIGHT)
+			.append(Integer.toString(world.getId()))
+			.append(ChatColorType.NORMAL)
+			.append("..")
+			.build();
 
 		chatMessageManager
-				.queue(QueuedMessage.builder()
-						.type(ChatMessageType.CONSOLE)
-						.runeLiteFormattedMessage(chatMessage)
-						.build());
+			.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(chatMessage)
+				.build());
 
 		quickHopTargetWorld = rsWorld;
 		displaySwitcherAttempts = 0;
@@ -288,19 +288,19 @@ public class AutoHopPlugin extends Plugin
 			if (++displaySwitcherAttempts >= DISPLAY_SWITCHER_MAX_ATTEMPTS)
 			{
 				String chatMessage = new ChatMessageBuilder()
-						.append(ChatColorType.NORMAL)
-						.append("Failed to quick-hop after ")
-						.append(ChatColorType.HIGHLIGHT)
-						.append(Integer.toString(displaySwitcherAttempts))
-						.append(ChatColorType.NORMAL)
-						.append(" attempts.")
-						.build();
+					.append(ChatColorType.NORMAL)
+					.append("Failed to quick-hop after ")
+					.append(ChatColorType.HIGHLIGHT)
+					.append(Integer.toString(displaySwitcherAttempts))
+					.append(ChatColorType.NORMAL)
+					.append(" attempts.")
+					.build();
 
 				chatMessageManager
-						.queue(QueuedMessage.builder()
-								.type(ChatMessageType.CONSOLE)
-								.runeLiteFormattedMessage(chatMessage)
-								.build());
+					.queue(QueuedMessage.builder()
+						.type(ChatMessageType.CONSOLE)
+						.runeLiteFormattedMessage(chatMessage)
+						.build());
 
 				resetQuickHopper();
 			}

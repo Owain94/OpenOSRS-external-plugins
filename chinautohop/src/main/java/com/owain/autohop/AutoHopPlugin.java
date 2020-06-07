@@ -35,7 +35,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Chin auto hop",
-	description = "Hop away from people in the wilderness",
+	description = "Hop away from people",
 	type = PluginType.MISCELLANEOUS,
 	enabledByDefault = false
 )
@@ -80,7 +80,8 @@ public class AutoHopPlugin extends Plugin
 		{
 			if (player == null ||
 				player.equals(local) ||
-				(config.cmbBracket() && !PvPUtil.isAttackable(client, player)))
+				(config.cmbBracket() && !PvPUtil.isAttackable(client, player))
+				|| (config.hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > config.playerRadius()))
 			{
 				continue;
 			}
@@ -110,7 +111,8 @@ public class AutoHopPlugin extends Plugin
 		if (local == null ||
 			player == null ||
 			player.equals(local) ||
-			(config.cmbBracket() && !PvPUtil.isAttackable(client, player)))
+			(config.cmbBracket() && !PvPUtil.isAttackable(client, player))
+			|| (config.hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > config.playerRadius()))
 		{
 			return;
 		}
@@ -132,7 +134,8 @@ public class AutoHopPlugin extends Plugin
 	private void shouldHop(Player player)
 	{
 		if ((config.friends() && player.isFriend()) ||
-			(config.clanmember() && player.isClanMember()))
+			(config.clanmember() && player.isClanMember()) ||
+			(config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()))
 		{
 			return;
 		}
@@ -253,7 +256,7 @@ public class AutoHopPlugin extends Plugin
 
 		String chatMessage = new ChatMessageBuilder()
 			.append(ChatColorType.NORMAL)
-			.append("Hopping away from a player in the wilderness. New world: ")
+			.append("Hopping away from a player. New world: ")
 			.append(ChatColorType.HIGHLIGHT)
 			.append(Integer.toString(world.getId()))
 			.append(ChatColorType.NORMAL)
@@ -312,7 +315,7 @@ public class AutoHopPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE)
+		if (event.getType() != ChatMessageType.GAMEMESSAGE && !(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && event.getName() != client.getLocalPlayer().getName()))
 		{
 			return;
 		}
@@ -320,6 +323,12 @@ public class AutoHopPlugin extends Plugin
 		if (event.getMessage().equals("Please finish what you're doing before using the World Switcher."))
 		{
 			resetQuickHopper();
+			return;
+		}
+
+		if (config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && event.getName() != client.getLocalPlayer().getName())
+		{
+			hop();
 		}
 	}
 

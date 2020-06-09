@@ -315,7 +315,8 @@ public class AutoHopPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE && !(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && event.getName() != client.getLocalPlayer().getName()))
+		String eventName = event.getName().replaceAll("[^\\p{ASCII}]", " "); //bug where event name translates space to an unknown symbol
+		if (event.getType() != ChatMessageType.GAMEMESSAGE && !(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && eventName != client.getLocalPlayer().getName()) && client.getLocalPlayer().getName() != null)
 		{
 			return;
 		}
@@ -326,8 +327,9 @@ public class AutoHopPlugin extends Plugin
 			return;
 		}
 
-		if (config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && event.getName() != client.getLocalPlayer().getName())
+		if (config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && !eventName.equals(client.getLocalPlayer().getName()) && client.getLocalPlayer().getName() != null)
 		{
+			log.info("Chat message found -> Hopping");
 			hop();
 		}
 	}

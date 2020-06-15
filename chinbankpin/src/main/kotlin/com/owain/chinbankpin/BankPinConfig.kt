@@ -10,7 +10,8 @@ interface BankPinConfig : Config {
             keyName = "bankpin",
             name = "Bank Pin",
             description = "Bank pin that will be entered",
-            position = 0
+            position = 0,
+            secret = true
     )
     @JvmDefault
     fun bankpin(): String {

@@ -21,7 +21,8 @@ interface ChinLoginConfig : Config {
             keyName = "password",
             name = "Password",
             description = "",
-            position = 1
+            position = 1,
+            secret = true
     )
     @JvmDefault
     fun password(): String {

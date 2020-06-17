@@ -1,6 +1,4 @@
 import com.savvasdalkitsis.jsonmerger.JsonMerger
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.gradle.api.DefaultTask
@@ -18,6 +16,8 @@ import kotlin.collections.ArrayList
 
 
 open class BootstrapTask : DefaultTask() {
+
+    private val EXTERNALS = listOf("chinnmz-plugin")
 
     private fun formatDate(date: Date?) = with(date ?: Date()) {
         SimpleDateFormat("yyyy-MM-dd").format(this)
@@ -91,8 +91,7 @@ open class BootstrapTask : DefaultTask() {
                         pluginAdded = true
                     }
 
-                    if (!pluginAdded)
-                    {
+                    if (!pluginAdded)  {
                         plugins.add(pluginObject)
                     }
 
@@ -100,10 +99,19 @@ open class BootstrapTask : DefaultTask() {
                 }
             }
 
+            for (i in 0 until baseBootstrap.length()) {
+                val item = baseBootstrap.getJSONObject(i)
+
+                if (!EXTERNALS.contains(item.get("id"))) {
+                    continue
+                }
+
+                plugins.add(item)
+            }
+
             File(bootstrapDir, "plugins.json").printWriter().use { out ->
                 out.println(plugins.toString())
             }
         }
-
     }
 }

@@ -14,6 +14,7 @@ import net.runelite.client.plugins.PluginDescriptor
 import net.runelite.client.plugins.PluginType
 import org.pf4j.Extension
 import java.awt.Rectangle
+import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -68,14 +69,31 @@ class ChinLoginPlugin : Plugin() {
     private fun onGameStateChanged(gameStateChanged: GameStateChanged) {
         loginClicked = false
 
-        if (config.email() == "" || config.password() == "") {
+        if (executorService == null || config.email() == "" || config.password() == "") {
             return
         }
 
-        if (gameStateChanged.gameState == GameState.LOGIN_SCREEN) {
-            client.username = config.email()
-            client.setPassword(config.password())
-            client.gameState = GameState.LOGGING_IN
+        executorService!!.submit {
+            try {
+                if (client.gameState == GameState.LOGIN_SCREEN) {
+                    val username = config.email()
+                    val password = config.password()
+                    if (username != "" && password != "") {
+                        waitDelayTime(400, 600)
+
+                        sendKey(KeyEvent.VK_ENTER)
+
+                        client.username = config.email()
+                        client.setPassword(config.password())
+
+                        waitDelayTime(400, 600)
+
+                        sendKey(KeyEvent.VK_ENTER)
+                        sendKey(KeyEvent.VK_ENTER)
+                    }
+                }
+            } catch (e: InterruptedException) {
+            }
         }
     }
 
@@ -145,6 +163,19 @@ class ChinLoginPlugin : Plugin() {
             return
         }
 
+        client.canvas.dispatchEvent(e)
+    }
+
+    private fun sendKey(key: Int) {
+        keyEvent(KeyEvent.KEY_PRESSED, key)
+        keyEvent(KeyEvent.KEY_RELEASED, key)
+    }
+
+    private fun keyEvent(id: Int, key: Int) {
+        val e = KeyEvent(
+                client.canvas, id, System.currentTimeMillis(),
+                0, key, KeyEvent.CHAR_UNDEFINED
+        )
         client.canvas.dispatchEvent(e)
     }
 

@@ -135,7 +135,7 @@ public class AutoHopPlugin extends Plugin
 	private void shouldHop(Player player)
 	{
 		if ((config.friends() && player.isFriend()) ||
-			(config.clanmember() && player.isClanMember()) ||
+			(config.clanmember() && player.isFriendsChatMember()) ||
 			(config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()))
 		{
 			return;

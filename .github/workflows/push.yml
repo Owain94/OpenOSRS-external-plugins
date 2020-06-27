@@ -17,11 +17,14 @@ jobs:
           java-version: 11
 
       - uses: actions/checkout@v2.3.1
+        with:
+          path: Owain94-external-plugins
 
       - uses: actions/checkout@v2.3.1
         with:
           repository: open-osrs/runelite
           ref: master
+          path: OpenOSRS
 
       - uses: actions/cache@v2.0.0
         with:
@@ -32,28 +35,32 @@ jobs:
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Assembling client
         run: ./gradlew assemble --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Building client
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Upload client artifacts to local maven
         run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: Owain94-external-plugins
 
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
+        working-directory: Owain94-external-plugins
+
 
       - name: Building plugins
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
+        working-directory: Owain94-external-plugins
 
   checkstyleMain:
     runs-on: ubuntu-latest
@@ -66,11 +73,14 @@ jobs:
           java-version: 11
 
       - uses: actions/checkout@v2.3.1
+        with:
+          path: Owain94-external-plugins
 
       - uses: actions/checkout@v2.3.1
         with:
           repository: open-osrs/runelite
           ref: master
+          path: OpenOSRS
 
       - uses: actions/cache@v2.0.0
         with:
@@ -81,28 +91,31 @@ jobs:
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Assembling client
         run: ./gradlew assemble --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Building client
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Upload client artifacts to local maven
         run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: Owain94-external-plugins
 
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Checking plugins code conventions (Main)
         run: ./gradlew checkstyleMain --console=plain
+        working-directory: Owain94-external-plugins
 
   checkstyleTest:
     runs-on: ubuntu-latest
@@ -115,11 +128,14 @@ jobs:
           java-version: 11
 
       - uses: actions/checkout@v2.3.1
+        with:
+          path: Owain94-external-plugins
 
       - uses: actions/checkout@v2.3.1
         with:
           repository: open-osrs/runelite
           ref: master
+          path: OpenOSRS
 
       - uses: actions/cache@v2.0.0
         with:
@@ -130,28 +146,31 @@ jobs:
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Assembling client
         run: ./gradlew assemble --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Building client
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Upload client artifacts to local maven
         run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: Owain94-external-plugins
 
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Checking plugins code conventions (Test)
         run: ./gradlew checkstyleTest --console=plain
+        working-directory: Owain94-external-plugins
 
   update_draft_release:
     name: Draft release
@@ -174,11 +193,14 @@ jobs:
           java-version: 11
 
       - uses: actions/checkout@v2.3.1
+        with:
+          path: Owain94-external-plugins
 
       - uses: actions/checkout@v2.3.1
         with:
           repository: open-osrs/runelite
           ref: master
+          path: OpenOSRS
 
       - uses: actions/cache@v2.0.0
         with:
@@ -189,39 +211,45 @@ jobs:
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Assembling client
         run: ./gradlew assemble --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Building client
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Upload client artifacts to local maven
         run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: Owain94-external-plugins
 
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Building plugins
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Bootstrapping plugins
         run: ./gradlew bootstrapPlugins --stacktrace --console=plain
+        working-directory: Owain94-external-plugins
 
       - uses: actions/checkout@v2.3.1
         with:
           repository: Owain94/OpenOSRS-external-plugins-hosting
           ref: master
+          path: Owain94-external-plugins-hosting
 
       - name: Copy bootstrap
         run: cp -af /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins/build/bootstrap/. /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins-hosting/
+        working-directory: Owain94-external-plugins-hosting
 
       - name: Commit bootstrap
         run: |
@@ -230,7 +258,7 @@ jobs:
           || git -c user.name="GitHub" -c user.email="noreply@github.com" commit \
             --author="github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>" \
             -m "Automatic plugin bootstrap"
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins-hosting
+        working-directory: Owain94-external-plugins-hosting
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -238,3 +266,4 @@ jobs:
           github_token: ${{ secrets.Owain }}
           directory: /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins-hosting
           repository: Owain94/OpenOSRS-external-plugins-hosting
+        working-directory: Owain94-external-plugins-hosting

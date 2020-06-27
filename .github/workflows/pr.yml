@@ -35,11 +35,14 @@ jobs:
           java-version: 11
 
       - uses: actions/checkout@v2.3.1
+        with:
+          path: Owain94-external-plugins
 
       - uses: actions/checkout@v2.3.1
         with:
           repository: open-osrs/runelite
           ref: master
+          path: OpenOSRS
 
       - uses: actions/cache@v2.0.0
         with:
@@ -50,28 +53,31 @@ jobs:
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Assembling client
         run: ./gradlew assemble --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Building client
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Upload client artifacts to local maven
         run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: Owain94-external-plugins
 
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Building plugins
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
+        working-directory: Owain94-external-plugins
 
 
   checkstyleMain:
@@ -86,11 +92,14 @@ jobs:
           java-version: 11
 
       - uses: actions/checkout@v2.3.1
+        with:
+          path: Owain94-external-plugins
 
       - uses: actions/checkout@v2.3.1
         with:
           repository: open-osrs/runelite
           ref: master
+          path: OpenOSRS
 
       - uses: actions/cache@v2.0.0
         with:
@@ -101,28 +110,31 @@ jobs:
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Assembling client
         run: ./gradlew assemble --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Building client
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Upload client artifacts to local maven
         run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: Owain94-external-plugins
 
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Checking plugins code conventions (Main)
         run: ./gradlew checkstyleMain --console=plain
+        working-directory: Owain94-external-plugins
 
   checkstyleTest:
     name: Checkstyle test
@@ -136,11 +148,14 @@ jobs:
           java-version: 11
 
       - uses: actions/checkout@v2.3.1
+        with:
+          path: Owain94-external-plugins
 
       - uses: actions/checkout@v2.3.1
         with:
           repository: open-osrs/runelite
           ref: master
+          path: OpenOSRS
 
       - uses: actions/cache@v2.0.0
         with:
@@ -151,28 +166,31 @@ jobs:
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Assembling client
         run: ./gradlew assemble --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Building client
         run: ./gradlew build --stacktrace -x test -x checkstyleMain --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Upload client artifacts to local maven
         run: ./gradlew :http-api:publishToMavenLocal :runelite-api:publishToMavenLocal :runelite-client:publishToMavenLocal --console=plain
-        working-directory: /home/runner/work/OpenOSRS-external-plugins/runelite
+        working-directory: OpenOSRS
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: Owain94-external-plugins
 
       - name: Assembling plugins
         run: ./gradlew assemble --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Checking plugins code conventions (Test)
         run: ./gradlew checkstyleTest --console=plain
+        working-directory: Owain94-external-plugins
 
   bump:
     name: Check version numbers
@@ -202,27 +220,33 @@ jobs:
           java-version: 11
 
       - uses: actions/checkout@v2.3.1
+        with:
+          path: Owain94-external-plugins
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: Owain94-external-plugins
 
       - name: Bump version numbers
         id: bumpNewChanged
         if: steps.changedFiles.outputs.files_created != '' && steps.changedFiles.outputs.files_updated != ''
         run: |
           ./gradlew bumpVersion --newFiles="${{ steps.changedFiles.outputs.files_created }}" --changedFiles="${{ steps.changedFiles.outputs.files_updated }}" --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Bump version numbers
         id: bumpChanged
         if: steps.changedFiles.outputs.files_created == '' && steps.changedFiles.outputs.files_updated != ''
         run: |
           ./gradlew bumpVersion --changedFiles="${{ steps.changedFiles.outputs.files_updated }}" --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Bump version numbers
         id: bumpNew
         if: steps.changedFiles.outputs.files_created != '' && steps.changedFiles.outputs.files_updated == ''
         run: |
           ./gradlew bumpVersion --newFiles="${{ steps.changedFiles.outputs.files_created }}" --console=plain
+        working-directory: Owain94-external-plugins
 
       - name: Detect changes
         id: detectChanges
@@ -234,6 +258,7 @@ jobs:
 
               exit 1
           fi
+        working-directory: Owain94-external-plugins
 
   approve:
     name: Approve

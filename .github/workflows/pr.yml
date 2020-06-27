@@ -210,7 +210,7 @@ jobs:
 
       - id: changedFiles
         name: Changed files exporter
-        uses: futuratrepadeira/changed-files@v3.0.0
+        uses: futuratrepadeira/changed-files@v3.2.1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 

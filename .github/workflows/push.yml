@@ -246,6 +246,7 @@ jobs:
           repository: Owain94/OpenOSRS-external-plugins-hosting
           ref: master
           path: Owain94-external-plugins-hosting
+          token: ${{ secrets.Owain }}
 
       - name: Copy bootstrap
         run: cp -af /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins/Owain94-external-plugins/build/bootstrap/. /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins/Owain94-external-plugins-hosting
@@ -264,5 +265,5 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.Owain }}
-          directory: Owain94-external-plugins-hosting
+          directory: /home/runner/work/OpenOSRS-external-plugins/OpenOSRS-external-plugins/Owain94-external-plugins-hosting
           repository: Owain94/OpenOSRS-external-plugins-hosting

@@ -15,10 +15,10 @@ import javax.inject.Inject
 
 @Extension
 @PluginDescriptor(
-    name = "Chin glass blow",
-    description = "Automatically select the item to make on molten glass related widgets",
-    type = PluginType.MISCELLANEOUS,
-    enabledByDefault = false
+        name = "Chin glass blow",
+        description = "Automatically select the item to make on molten glass related widgets",
+        type = PluginType.MISCELLANEOUS,
+        enabledByDefault = false
 )
 class GlassblowPlugin : Plugin() {
 
@@ -36,7 +36,7 @@ class GlassblowPlugin : Plugin() {
     @Subscribe
     fun onGameTick(event: GameTick) {
         if (client.getWidget(270, 14) != null) {
-            if (client.getWidget(270, 14).name.contains("Beer glass")) {
+            if (client.getWidget(270, 14)!!.name.contains("Beer glass")) {
                 when (config.output()) {
                     GlassblowConfig.GlassType.BEER_GLASS -> sendKey(49)
                     GlassblowConfig.GlassType.CANDLE_LANTERN -> sendKey(50)
@@ -47,7 +47,9 @@ class GlassblowPlugin : Plugin() {
                     GlassblowConfig.GlassType.LANTERN_LENS -> sendKey(55)
                     GlassblowConfig.GlassType.LIGHT_ORB -> sendKey(56)
                 }
-            } else if (client.getWidget(270, 14).name.contains("Molten glass")) {
+            } else if (client.getWidget(270, 14)!!.name.contains("Molten glass")) {
+                sendKey(49)
+            } else if (client.getWidget(270, 14)!!.name.contains("shark")) {
                 sendKey(49)
             }
         }

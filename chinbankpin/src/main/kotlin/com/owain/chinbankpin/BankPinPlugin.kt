@@ -21,7 +21,7 @@ import javax.inject.Inject
         name = "Chin bank pin",
         description = "Automatically enters your bank pin",
         type = PluginType.MISCELLANEOUS,
-    enabledByDefault = false
+        enabledByDefault = false
 )
 class BankPinPlugin : Plugin() {
     @Inject
@@ -50,10 +50,10 @@ class BankPinPlugin : Plugin() {
     @Subscribe
     fun onGameTick(event: GameTick) {
         if (client.getWidget(WidgetID.BANK_PIN_GROUP_ID, BANK_PIN_INSTRUCTION_TEXT.childId) == null
-                || (client.getWidget(BANK_PIN_INSTRUCTION_TEXT).text != "First click the FIRST digit."
-                        && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).text != "Now click the SECOND digit."
-                        && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).text != "Time for the THIRD digit."
-                        && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).text != "Finally, the FOURTH digit.")) {
+                || (client.getWidget(BANK_PIN_INSTRUCTION_TEXT)!!.text != "First click the FIRST digit."
+                        && client.getWidget(BANK_PIN_INSTRUCTION_TEXT)!!.text != "Now click the SECOND digit."
+                        && client.getWidget(BANK_PIN_INSTRUCTION_TEXT)!!.text != "Time for the THIRD digit."
+                        && client.getWidget(BANK_PIN_INSTRUCTION_TEXT)!!.text != "Finally, the FOURTH digit.")) {
             return
         }
 
@@ -66,7 +66,7 @@ class BankPinPlugin : Plugin() {
         val digits = number.toCharArray()
         var charCode = -1
 
-        when (client.getWidget(BANK_PIN_INSTRUCTION_TEXT).text) {
+        when (client.getWidget(BANK_PIN_INSTRUCTION_TEXT)!!.text) {
             "First click the FIRST digit." -> {
                 if (first) {
                     return

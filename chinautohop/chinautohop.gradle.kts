@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.18"
+version = "0.0.19"
 
 project.extra["PluginName"] = "Chin auto hop"
-project.extra["PluginDescription"] = "Automatically hops away from people in the wilderness"
+project.extra["PluginDescription"] = "Automatically hops away from people"
 
 dependencies {
     annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")

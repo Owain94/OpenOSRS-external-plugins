@@ -36,7 +36,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Chin auto hop",
-	description = "Hop away from people",
+	description = "Automatically hops away from people",
 	type = PluginType.MISCELLANEOUS,
 	enabledByDefault = false
 )
@@ -44,6 +44,7 @@ import org.pf4j.Extension;
 public class AutoHopPlugin extends Plugin
 {
 	private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
+	private static final int GRAND_EXCHANGE_REGION = 12598;
 
 	@Inject
 	private Client client;
@@ -71,11 +72,11 @@ public class AutoHopPlugin extends Plugin
 	{
 		final Player local = client.getLocalPlayer();
 
-		if (event.getGameState() != GameState.LOGGED_IN || local == null)
+		if (event.getGameState() != GameState.LOGGED_IN || local == null ||
+			(config.disableGrandExchange() && local.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION))
 		{
 			return;
 		}
-
 
 		for (Player player : client.getPlayers())
 		{
@@ -112,8 +113,7 @@ public class AutoHopPlugin extends Plugin
 		if (local == null ||
 			player == null ||
 			player.equals(local) ||
-			(config.cmbBracket() && !PvPUtil.isAttackable(client, player))
-			|| (config.hopRadius() && player.getWorldLocation().distanceTo(local.getWorldLocation()) > config.playerRadius()))
+			(config.cmbBracket() && !PvPUtil.isAttackable(client, player)))
 		{
 			return;
 		}
@@ -136,7 +136,8 @@ public class AutoHopPlugin extends Plugin
 	{
 		if ((config.friends() && player.isFriend()) ||
 			(config.clanmember() && player.isFriendsChatMember()) ||
-			(config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()))
+			(config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()) ||
+			(config.disableGrandExchange() && player.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION))
 		{
 			return;
 		}
@@ -316,8 +317,13 @@ public class AutoHopPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
+		final Player local = client.getLocalPlayer();
 		String eventName = Text.sanitize(event.getName());
-		if (event.getType() != ChatMessageType.GAMEMESSAGE && !(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && eventName != client.getLocalPlayer().getName()) && client.getLocalPlayer().getName() != null)
+
+		if ((config.disableGrandExchange() && local.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
+			event.getType() != ChatMessageType.GAMEMESSAGE &&
+				!(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && eventName != local.getName()) &&
+				local.getName() != null)
 		{
 			return;
 		}
@@ -328,7 +334,9 @@ public class AutoHopPlugin extends Plugin
 			return;
 		}
 
-		if (config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && !eventName.equals(client.getLocalPlayer().getName()) && client.getLocalPlayer().getName() != null)
+		if (config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT &&
+			!eventName.equals(client.getLocalPlayer().getName()) &&
+			client.getLocalPlayer().getName() != null)
 		{
 			log.info("Chat message found -> Hopping");
 			hop();

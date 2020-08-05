@@ -115,7 +115,7 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 
 	private JSpinner createSpinner(int defaultValue, int min)
 	{
-		SpinnerModel model = new SpinnerNumberModel(defaultValue, 1, Integer.MAX_VALUE, 1);
+		SpinnerModel model = new SpinnerNumberModel(defaultValue, min, Integer.MAX_VALUE, 1);
 		JSpinner spinner = new JSpinner(model);
 		Component editor = spinner.getEditor();
 		JFormattedTextField spinnerTextField = ((JSpinner.DefaultEditor) editor).getTextField();

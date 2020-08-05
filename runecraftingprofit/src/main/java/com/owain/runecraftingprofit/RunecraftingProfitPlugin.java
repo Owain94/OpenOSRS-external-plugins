@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Dalton <delps1001@gmail.com>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,66 +24,68 @@
  */
 package com.owain.runecraftingprofit;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Multisets;
 import com.google.inject.Provides;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
-import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.OverlayMenuClicked;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
 	name = "Runecrafting Profit",
 	description = "Shows various runecrafting stats",
-	type = PluginType.SKILLING,
-	enabledByDefault = false
+	type = PluginType.SKILLING
 )
 @Slf4j
 public class RunecraftingProfitPlugin extends Plugin
 {
 	private static final int RUNECRAFTING_ANIMATION = 791;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean displayProfit;
-	@Getter(AccessLevel.PACKAGE)
-	private boolean displayOverlay;
-	private boolean lastTickAnimationWasRunecrafting;
-	private boolean firstRunecraft;
-	private Instant lastRunecraftingAnimation;
-	private Instant startTime;
-
 	@Inject
 	private Client client;
-
-	@Inject
-	private RunecraftingProfitSession session;
-
-	@Inject
-	private RunecraftingProfitOverlay overlay;
 
 	@Inject
 	private RunecraftingProfitConfig config;
 
 	@Inject
+	private RunecraftingProfitOverlay overlay;
+
+	@Inject
 	private OverlayManager overlayManager;
+
+	@Inject
+	private ItemManager itemManager;
+
+	@Getter(AccessLevel.PACKAGE)
+	private RunecraftingProfitSession session;
+
+	private Multiset<Integer> inventorySnapshot;
 
 	@Provides
 	RunecraftingProfitConfig getConfig(ConfigManager configManager)
@@ -95,114 +96,110 @@ public class RunecraftingProfitPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		session = null;
 		overlayManager.add(overlay);
-		lastRunecraftingAnimation = Instant.now();
 	}
 
 	@Override
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
-		session.clearSession();
-		this.firstRunecraft = false;
-		this.displayOverlay = false;
+		session = null;
 	}
 
 	@Subscribe
-	public void onGameTick(GameTick event)
+	private void onOverlayMenuClicked(OverlayMenuClicked overlayMenuClicked)
 	{
-		if (ChronoUnit.MINUTES.between(this.lastRunecraftingAnimation, Instant.now()) >= config.overlayTimeout())
+		OverlayMenuEntry overlayMenuEntry = overlayMenuClicked.getEntry();
+		if (overlayMenuEntry.getMenuOpcode() == MenuOpcode.RUNELITE_OVERLAY
+			&& overlayMenuClicked.getEntry().getOption().equals(RunecraftingProfitOverlay.RUNECRAFT_PROFIT_RESET)
+			&& overlayMenuClicked.getOverlay() == overlay)
 		{
-			displayOverlay = false;
+			session = null;
+		}
+	}
+
+	@Subscribe
+	private void onGameTick(GameTick gameTick)
+	{
+		if (session == null || config.timeout() == 0)
+		{
 			return;
 		}
-		else
-		{
-			displayOverlay = true;
-		}
-		Player localPlayer = client.getLocalPlayer();
-		lastTickAnimationWasRunecrafting = localPlayer.getAnimation() == RUNECRAFTING_ANIMATION;
-	}
 
+		Duration statTimeout = Duration.ofMinutes(config.timeout());
+		Duration sinceCut = Duration.between(session.getLastRunecraftAction(), Instant.now());
+
+		if (sinceCut.compareTo(statTimeout) >= 0)
+		{
+			session = null;
+		}
+	}
 
 	@Subscribe
-	private void onAnimationChanged(AnimationChanged anim)
+	public void onItemContainerChanged(ItemContainerChanged event)
 	{
-		if (anim.getActor() == client.getLocalPlayer() && anim.getActor().getAnimation() == RUNECRAFTING_ANIMATION)
+		if (client.getLocalPlayer() == null || event.getContainerId() != InventoryID.INVENTORY.getId())
 		{
-			this.lastRunecraftingAnimation = Instant.now();
-			if (!this.firstRunecraft)
-			{
-				startTime = Instant.now();
-				this.firstRunecraft = true;
-			}
-			try
-			{
-				ArrayList<Item> items = getInventoryContents();
-				session.updatePreviousRunesInInventory(items);
-			}
-			catch (NullPointerException e)
-			{
-				log.debug("inventory is empty...");
-			}
-
+			return;
 		}
-		else if (anim.getActor() == client.getLocalPlayer() && (anim.getActor().getAnimation() != RUNECRAFTING_ANIMATION) && lastTickAnimationWasRunecrafting)
+
+		Player localPlayer = client.getLocalPlayer();
+
+		if (localPlayer.getAnimation() == RUNECRAFTING_ANIMATION)
 		{
-			ArrayList<Item> inventroyContents = getInventoryContents();
-			session.updateTotalCraftedRunes(inventroyContents);
+			if (session == null)
+			{
+				session = new RunecraftingProfitSession(itemManager);
+			}
+
+			session.updateLastRunecraftAction();
+			processInventoryChange();
+		}
+
+		takeInventorySnapshot();
+	}
+
+	private void takeInventorySnapshot()
+	{
+		final ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+		if (itemContainer != null)
+		{
+			inventorySnapshot = HashMultiset.create();
+			Arrays.stream(itemContainer.getItems())
+				.forEach(item -> inventorySnapshot.add(item.getId(), item.getQuantity()));
 		}
 	}
 
-	private ArrayList<Item> getInventoryContents()
+	private void processInventoryChange()
 	{
-		ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
-		Item[] itemsArray = inventory.getItems();
-		return new ArrayList<>(Arrays.asList(itemsArray));
-	}
+		if (client.getLocalPlayer() == null)
+		{
+			return;
+		}
 
-	@Schedule(
-		period = 5,
-		unit = ChronoUnit.SECONDS
-	)
-	public void alternateProfitAndRunesCrafted()
-	{
-		this.displayProfit = !this.displayProfit;
-	}
+		final ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
 
-	public Instant getStartTime()
-	{
-		return startTime;
-	}
+		if (inventorySnapshot == null || itemContainer == null)
+		{
+			return;
+		}
 
-	public Client getClient()
-	{
-		return client;
-	}
+		Multiset<Integer> currentInventory = HashMultiset.create();
+		Arrays.stream(itemContainer.getItems())
+			.forEach(item -> currentInventory.add(item.getId(), item.getQuantity()));
 
-	public void setClient(Client client)
-	{
-		this.client = client;
-	}
+		final Multiset<Integer> diff = Multisets.difference(currentInventory, inventorySnapshot);
 
-	boolean isFirstRunecraft()
-	{
-		return firstRunecraft;
-	}
+		List<ItemStack> items = diff.entrySet().stream()
+			.map(e -> new ItemStack(e.getElement(), e.getCount(), client.getLocalPlayer().getLocalLocation()))
+			.collect(Collectors.toList());
 
-	public Instant getLastRunecraftingAnimation()
-	{
-		return lastRunecraftingAnimation;
-	}
+		for (ItemStack i : items)
+		{
+			session.updateCraftedRunes(i.getId(), i.getQuantity());
+		}
 
-	public RunecraftingProfitSession getSession()
-	{
-		return session;
+		inventorySnapshot = null;
 	}
-
-	public void setSession(RunecraftingProfitSession session)
-	{
-		this.session = session;
-	}
-
 }

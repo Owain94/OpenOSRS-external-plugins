@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Dalton <delps1001@gmail.com>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,32 +27,26 @@ package com.owain.runecraftingprofit;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Units;
 
-@ConfigGroup("runecrafting")
+@ConfigGroup("runecraftingprofit")
 public interface RunecraftingProfitConfig extends Config
 {
 	@ConfigItem(
-		keyName = "profit per hour",
-		name = "Display profit per hour",
-		description = "Show profit per hour"
+		position = 1,
+		keyName = "timeout",
+		name = "Session timout",
+		description = "Configures the time until the session resets and the overlay is hidden (0 = Disable feature)"
 	)
-	default boolean displayProfitPerHour()
+	@Units(Units.MINUTES)
+	default int timeout()
 	{
-		return true;
+		return 5;
 	}
 
 	@ConfigItem(
-		keyName = "overlay timeout",
-		name = "Overlay timeout",
-		description = "How long to wait before hiding the overlay after last runecrafting at an altar"
-	)
-	default int overlayTimeout()
-	{
-		return 3;
-	}
-
-	@ConfigItem(
-		keyName = "individual rune type",
+		position = 2,
+		keyName = "individualRuneType",
 		name = "Display individual rune",
 		description = "Toggle displaying individual rune count and profit."
 	)
@@ -61,5 +54,4 @@ public interface RunecraftingProfitConfig extends Config
 	{
 		return true;
 	}
-
 }

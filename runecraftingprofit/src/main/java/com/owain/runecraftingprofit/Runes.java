@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Dalton <delps1001@gmail.com>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,42 +24,59 @@
  */
 package com.owain.runecraftingprofit;
 
-import lombok.Getter;
 import static net.runelite.api.ItemID.*;
+import net.runelite.client.game.ItemManager;
 
 public enum Runes
 {
-	AIR(1, AIR_RUNE),
-	WATER(2, WATER_RUNE),
-	EARTH(3, EARTH_RUNE),
-	FIRE(4, FIRE_RUNE),
-	MIND(5, MIND_RUNE),
-	CHAOS(6, CHAOS_RUNE),
-	DEATH(7, DEATH_RUNE),
-	BLOOD(8, BLOOD_RUNE),
-	COSMIC(9, COSMIC_RUNE),
-	NATURE(10, NATURE_RUNE),
-	LAW(11, LAW_RUNE),
-	BODY(12, BODY_RUNE),
-	SOUL(13, SOUL_RUNE),
-	ASTRAL(14, ASTRAL_RUNE),
-	WRATCH(15, WRATH_RUNE);
+	AIR("Air", AIR_RUNE),
+	MIND("Mind", MIND_RUNE),
+	WATER("Water", WATER_RUNE),
+	EARTH("Earth", EARTH_RUNE),
+	FIRE("Fire", FIRE_RUNE),
+	BODY("Body", BODY_RUNE),
+	COSMIC("Cosmic", COSMIC_RUNE),
+	CHAOS("Chaos", CHAOS_RUNE),
+	ASTRAL("Astral", ASTRAL_RUNE),
+	NATURE("Nature", NATURE_RUNE),
+	LAW("Law", LAW_RUNE),
+	DEATH("Death", DEATH_RUNE),
+	BLOOD("Blood", BLOOD_RUNE),
+	SOUL("Soul", SOUL_RUNE),
+	WRATCH("Wrath", WRATH_RUNE),
 
-	@Getter
-	private final int id;
-	@Getter
+	MIST("Mist", MIST_RUNE),
+	DUST("Dust", DUST_RUNE),
+	MUD("Mud", MUD_RUNE),
+	SMOKE("Smoke", SMOKE_RUNE),
+	STEAM("Steam", STEAM_RUNE),
+	LAVA("Lava", LAVA_RUNE),
+
+	;
+
+	private final String name;
 	private final int itemId;
 
-	Runes(int id, int itemId)
+	Runes(final String name, final int itemId)
 	{
-		this.id = id;
+		this.name = name;
 		this.itemId = itemId;
 	}
 
-	public String getName()
+	@Override
+	public String toString()
 	{
-		String name = this.name();
-		name = name.substring(0, 1) + name.substring(1, name.length()).toLowerCase();
 		return name;
 	}
+
+	public int getItemId()
+	{
+		return itemId;
+	}
+
+	public long getPrice(ItemManager itemManager)
+	{
+		return itemManager.getItemPrice(itemId);
+	}
 }
+

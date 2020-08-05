@@ -49,7 +49,6 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Chin break handler",
 	description = "Automatically takes breaks for you (?)",
-	enabledByDefault = false,
 	type = PluginType.MISCELLANEOUS
 )
 @Slf4j

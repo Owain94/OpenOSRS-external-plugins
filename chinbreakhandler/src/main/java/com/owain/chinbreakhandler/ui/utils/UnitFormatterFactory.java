@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2020, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,25 +22,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.owain.chinbreakhandler.ui.utils;
 
-rootProject.name = "Owain94 external plugins"
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JFormattedTextField;
+import lombok.RequiredArgsConstructor;
 
-include(":chinautohop")
-include(":chinbankpin")
-include(":chinbreakhandler")
-include(":chinglassblow")
-include(":chinlogin")
-include(":farmingprofit")
-include(":ignorecompliance")
-include(":runecraftingprofit")
-include(":warcallingindicators")
+@RequiredArgsConstructor
+public final class UnitFormatterFactory extends JFormattedTextField.AbstractFormatterFactory
+{
+	private final Map<JFormattedTextField, JFormattedTextField.AbstractFormatter> formatters = new HashMap<>();
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
-
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@Override
+	public JFormattedTextField.AbstractFormatter getFormatter(final JFormattedTextField tf)
+	{
+		return formatters.computeIfAbsent(tf, (key) -> new UnitFormatter());
+	}
 }

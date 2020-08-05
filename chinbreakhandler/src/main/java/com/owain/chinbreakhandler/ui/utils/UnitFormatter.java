@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2020, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,25 +22,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.owain.chinbreakhandler.ui.utils;
 
-rootProject.name = "Owain94 external plugins"
+import java.text.ParseException;
+import javax.swing.JFormattedTextField;
 
-include(":chinautohop")
-include(":chinbankpin")
-include(":chinbreakhandler")
-include(":chinglassblow")
-include(":chinlogin")
-include(":farmingprofit")
-include(":ignorecompliance")
-include(":runecraftingprofit")
-include(":warcallingindicators")
+final class UnitFormatter extends JFormattedTextField.AbstractFormatter
+{
+	private final String units = " mins";
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+	@Override
+	public Object stringToValue(final String text) throws ParseException
+	{
+		final String trimmedText;
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+		// Using the spinner controls causes the value to have the unit on the end, so remove it
+		if (text.endsWith(units))
+		{
+			trimmedText = text.substring(0, text.length() - units.length());
+		}
+		else
+		{
+			trimmedText = text;
+		}
+
+		try
+		{
+			return Integer.valueOf(trimmedText);
+		}
+		catch (NumberFormatException e)
+		{
+			throw new ParseException(trimmedText + " is not an integer.", 0);
+		}
+	}
+
+	@Override
+	public String valueToString(final Object value)
+	{
+		return value + units;
+	}
 }

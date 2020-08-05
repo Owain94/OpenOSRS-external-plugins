@@ -100,6 +100,14 @@ chinBreakHandler.startBreak(this, Instant.now().plus(15, ChronoUnit.MINUTES));
 
 And that's everything you'll need to do to implement this into your plugin!
 
+
+If you just simply want to logout of the game, for example when you hit an error state you can use the following. (This also works when your plugin isn't registered)
+```java
+chinBreakHandler.logoutNow(this);
+```
+
+
+
 ## Complete code
 
 Configurable by the user

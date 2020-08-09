@@ -100,13 +100,28 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 
 	private void milliseconds(long ignored)
 	{
+		Instant now = Instant.now();
+		
+		Map<Plugin, Instant> startTimes = chinBreakHandler.getStartTimes();
+
+		if (startTimes.containsKey(plugin))
+		{
+			Duration duration = Duration.between(chinBreakHandler.getStartTimes().get(plugin), now);
+			runtimeLabel.setText(formatDuration(duration));
+		}
+
+		Map<Plugin, Integer> breaks = chinBreakHandler.getAmountOfBreaks();
+
+		if (breaks.containsKey(plugin))
+		{
+			breaksLabel.setText(String.valueOf(chinBreakHandler.getAmountOfBreaks().get(plugin)));
+		}
+
 		if (!chinBreakHandler.isBreakPlanned(plugin) && !chinBreakHandler.isBreakActive(plugin))
 		{
 			timeLabel.setText("00:00:00");
 			return;
 		}
-
-		Instant now = Instant.now();
 
 		if (chinBreakHandler.isBreakPlanned(plugin))
 		{
@@ -139,21 +154,6 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 		else
 		{
 			timeLabel.setText("-");
-		}
-
-		Map<Plugin, Instant> startTimes = chinBreakHandler.getStartTimes();
-
-		if (startTimes.containsKey(plugin))
-		{
-			Duration duration = Duration.between(chinBreakHandler.getStartTimes().get(plugin), now);
-			runtimeLabel.setText(formatDuration(duration));
-		}
-
-		Map<Plugin, Integer> breaks = chinBreakHandler.getAmountOfBreaks();
-
-		if (breaks.containsKey(plugin))
-		{
-			breaksLabel.setText(String.valueOf(chinBreakHandler.getAmountOfBreaks().get(plugin)));
 		}
 	}
 

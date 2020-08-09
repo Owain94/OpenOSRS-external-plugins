@@ -77,7 +77,7 @@ public class ChinBreakHandlerPlugin extends Plugin
 	private NavigationButton navButton;
 	private ChinBreakHandlerPanel panel;
 
-	public final Map<Plugin, Disposable> secondDisposable = new HashMap<>();
+	public final Map<Plugin, Disposable> disposables = new HashMap<>();
 	public Disposable activeBreaks;
 	public Disposable secondsDisposable;
 	public Disposable activeDisposable;
@@ -147,8 +147,10 @@ public class ChinBreakHandlerPlugin extends Plugin
 		panel.pluginDisposable.dispose();
 		panel.activeDisposable.dispose();
 		panel.currentDisposable.dispose();
+		panel.startDisposable.dispose();
+		panel.configDisposable.dispose();
 
-		for (Disposable disposable : secondDisposable.values())
+		for (Disposable disposable : disposables.values())
 		{
 			if (!disposable.isDisposed())
 			{

@@ -19,6 +19,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -40,7 +41,10 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 	private final Plugin plugin;
 
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
+	private final JPanel infoPanel = new JPanel(new GridBagLayout());
 	private final JLabel timeLabel = new JLabel();
+	private final JLabel runtimeLabel = new JLabel();
+	private final JLabel breaksLabel = new JLabel();
 
 	@Override
 	public Dimension getPreferredSize()
@@ -63,9 +67,9 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 			.configChanged
 			.subscribe(this::onConfigChanged);
 
-		if (chinBreakHandlerPlugin.secondDisposable.containsKey(plugin))
+		if (chinBreakHandlerPlugin.disposables.containsKey(plugin))
 		{
-			Disposable seconds = chinBreakHandlerPlugin.secondDisposable.get(plugin);
+			Disposable seconds = chinBreakHandlerPlugin.disposables.get(plugin);
 
 			if (!seconds.isDisposed())
 			{
@@ -74,10 +78,10 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 		}
 
 		Disposable secondsDisposable = Observable
-			.interval(250, TimeUnit.MILLISECONDS)
+			.interval(500, TimeUnit.MILLISECONDS)
 			.subscribe(this::milliseconds);
 
-		chinBreakHandlerPlugin.secondDisposable.put(plugin, secondsDisposable);
+		chinBreakHandlerPlugin.disposables.put(plugin, secondsDisposable);
 
 		init();
 	}
@@ -98,7 +102,7 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 	{
 		if (!chinBreakHandler.isBreakPlanned(plugin) && !chinBreakHandler.isBreakActive(plugin))
 		{
-			timeLabel.setText("Error?");
+			timeLabel.setText("00:00:00");
 			return;
 		}
 
@@ -136,11 +140,26 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 		{
 			timeLabel.setText("-");
 		}
+
+		Map<Plugin, Instant> startTimes = chinBreakHandler.getStartTimes();
+
+		if (startTimes.containsKey(plugin))
+		{
+			Duration duration = Duration.between(chinBreakHandler.getStartTimes().get(plugin), now);
+			runtimeLabel.setText(formatDuration(duration));
+		}
+
+		Map<Plugin, Integer> breaks = chinBreakHandler.getAmountOfBreaks();
+
+		if (breaks.containsKey(plugin))
+		{
+			breaksLabel.setText(String.valueOf(chinBreakHandler.getAmountOfBreaks().get(plugin)));
+		}
 	}
 
 	private void onConfigChanged(ConfigChanged configChanged)
 	{
-		if (!configChanged.getGroup().equals(CONFIG_GROUP) || !configChanged.getKey().contains(sanitizedName(plugin)))
+		if (configChanged == null || !configChanged.getGroup().equals(CONFIG_GROUP) || !configChanged.getKey().contains(sanitizedName(plugin)))
 		{
 			return;
 		}
@@ -189,9 +208,11 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 		titleWrapper.add(titleActions, BorderLayout.EAST);
 
 		statusPanel();
+		infoPanel();
 
 		add(titleWrapper, BorderLayout.NORTH);
 		add(contentPanel, BorderLayout.CENTER);
+		add(infoPanel, BorderLayout.SOUTH);
 	}
 
 	private void statusPanel()
@@ -261,5 +282,47 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 		c.gridx = 0;
 		c.gridy = 1;
 		contentPanel.add(timeLabel, c);
+	}
+
+	private void infoPanel()
+	{
+		infoPanel.removeAll();
+
+		infoPanel.setBackground(BACKGROUND_COLOR);
+		infoPanel.setBorder(new CompoundBorder(
+			new CompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, PANEL_BACKGROUND_COLOR),
+				BorderFactory.createLineBorder(BACKGROUND_COLOR)
+			), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.insets = new Insets(2, 0, 2, 0);
+		c.weightx = 2;
+		c.gridx = 0;
+		c.gridy = 0;
+
+		infoPanel.add(new JLabel("Total runtime"), c);
+
+		c.insets = new Insets(2, 0, 2, 0);
+		c.weightx = 1;
+		c.gridx = 0;
+		c.gridy = 1;
+
+		infoPanel.add(runtimeLabel, c);
+
+		c.insets = new Insets(2, 0, 2, 0);
+		c.weightx = 2;
+		c.gridx = 1;
+		c.gridy = 0;
+
+		infoPanel.add(new JLabel("Amount of breaks"), c);
+
+		c.insets = new Insets(2, 0, 2, 0);
+		c.weightx = 1;
+		c.gridx = 1;
+		c.gridy = 1;
+
+		infoPanel.add(breaksLabel, c);
 	}
 }

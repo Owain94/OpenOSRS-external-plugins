@@ -38,6 +38,9 @@ public class ChinBreakHandler
 	private final PublishSubject<Map<Plugin, Instant>> activeBreaksSubject = PublishSubject.create();
 	private final PublishSubject<Pair<Plugin, Instant>> currentActiveBreaksSubject = PublishSubject.create();
 
+	private final Map<Plugin, Instant> startTimes = new HashMap<>();
+	private final Map<Plugin, Integer> amountOfBreaks = new HashMap<>();
+
 	private final PublishSubject<Plugin> logoutActionSubject = PublishSubject.create();
 
 	public final PublishSubject<ConfigChanged> configChanged = PublishSubject.create();
@@ -84,6 +87,9 @@ public class ChinBreakHandler
 	{
 		activePlugins.add(plugin);
 		activeSubject.onNext(activePlugins);
+
+		startTimes.put(plugin, Instant.now());
+		amountOfBreaks.put(plugin, 0);
 	}
 
 	public void stopPlugin(Plugin plugin)
@@ -93,6 +99,9 @@ public class ChinBreakHandler
 
 		removePlannedBreak(plugin);
 		stopBreak(plugin);
+
+		startTimes.remove(plugin);
+		amountOfBreaks.remove(plugin);
 	}
 
 	public @NonNull Observable<Set<Plugin>> getActiveObservable()
@@ -162,6 +171,15 @@ public class ChinBreakHandler
 		activeBreaksSubject.onNext(activeBreaks);
 
 		currentActiveBreaksSubject.onNext(Pair.of(plugin, breakUntil));
+
+		if (amountOfBreaks.containsKey(plugin))
+		{
+			amountOfBreaks.put(plugin, amountOfBreaks.get(plugin) + 1);
+		}
+		else
+		{
+			amountOfBreaks.put(plugin, 1);
+		}
 	}
 
 	public void startBreak(Plugin plugin, Instant instant)
@@ -208,5 +226,15 @@ public class ChinBreakHandler
 	public @NonNull Observable<Plugin> getlogoutActionObservable()
 	{
 		return logoutActionSubject.hide();
+	}
+
+	public Map<Plugin, Instant> getStartTimes()
+	{
+		return startTimes;
+	}
+
+	public Map<Plugin, Integer> getAmountOfBreaks()
+	{
+		return amountOfBreaks;
 	}
 }

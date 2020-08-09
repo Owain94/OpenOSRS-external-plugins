@@ -5,6 +5,7 @@
 package com.owain.chinbreakhandler.ui;
 
 import com.google.inject.Inject;
+import com.owain.chinbreakhandler.ChinBreakHandler;
 import com.owain.chinbreakhandler.ChinBreakHandlerPlugin;
 import static com.owain.chinbreakhandler.ui.ChinBreakHandlerPanel.PANEL_BACKGROUND_COLOR;
 import com.owain.chinbreakhandler.ui.utils.DeferredDocumentChangedListener;
@@ -30,6 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.ui.PluginPanel;
 import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 
@@ -42,12 +44,14 @@ public class ChinBreakHandlerAccountPanel extends JPanel
 	}
 
 	private final ConfigManager configManager;
+	private final ChinBreakHandler chinBreakHandler;
 	private final JPanel contentPanel = new JPanel(new GridLayout(0, 1));
 
 	@Inject
-	ChinBreakHandlerAccountPanel(ChinBreakHandlerPlugin chinBreakHandlerPlugin)
+	ChinBreakHandlerAccountPanel(ChinBreakHandlerPlugin chinBreakHandlerPlugin, ChinBreakHandler chinBreakHandler)
 	{
 		this.configManager = chinBreakHandlerPlugin.getConfigManager();
+		this.chinBreakHandler = chinBreakHandler;
 
 		setupDefaults();
 
@@ -172,6 +176,11 @@ public class ChinBreakHandlerAccountPanel extends JPanel
 		}
 		else
 		{
+			ConfigChanged configChanged = new ConfigChanged();
+			configChanged.setGroup("mock");
+			configChanged.setKey("mock");
+			chinBreakHandler.configChanged.onNext(configChanged);
+
 			if (!ChinBreakHandlerPlugin.data.contains(":"))
 			{
 				contentPanel.add(new JLabel("No accounts found"));

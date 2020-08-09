@@ -2,6 +2,7 @@ package com.owain.chinbreakhandler.ui;
 
 import com.owain.chinbreakhandler.ChinBreakHandler;
 import com.owain.chinbreakhandler.ChinBreakHandlerPlugin;
+import com.owain.chinbreakhandler.ui.utils.JMultilineLabel;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
@@ -14,16 +15,17 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.ClientUI;
@@ -61,6 +63,10 @@ public class ChinBreakHandlerPanel extends PluginPanel
 	public @NonNull Disposable pluginDisposable;
 	public @NonNull Disposable activeDisposable;
 	public @NonNull Disposable currentDisposable;
+	public @NonNull Disposable startDisposable;
+	public @NonNull Disposable configDisposable;
+
+	private final JPanel notificationPanel = new JPanel(new BorderLayout());
 
 	@Inject
 	private ChinBreakHandlerPanel(ChinBreakHandlerPlugin chinBreakHandlerPlugin, ChinBreakHandler chinBreakHandler)
@@ -79,7 +85,7 @@ public class ChinBreakHandlerPanel extends PluginPanel
 		activeDisposable = chinBreakHandler
 			.getActiveObservable()
 			.subscribe(
-				(Set<Plugin> ignore) ->
+				(ignored) ->
 					SwingUtil.syncExec(() ->
 						buildPanel(chinBreakHandler.getPlugins()))
 			);
@@ -87,9 +93,31 @@ public class ChinBreakHandlerPanel extends PluginPanel
 		currentDisposable = chinBreakHandler
 			.getActiveBreaksObservable()
 			.subscribe(
-				(Map<Plugin, Instant> ignore) ->
+				(ignored) ->
 					SwingUtil.syncExec(() ->
 						buildPanel(chinBreakHandler.getPlugins()))
+			);
+
+		startDisposable = chinBreakHandler
+			.getActiveObservable()
+			.subscribe(
+				(ignored) ->
+					SwingUtil.syncExec(() -> {
+						notificationPanel();
+						notificationPanel.revalidate();
+						notificationPanel.repaint();
+					})
+			);
+
+		configDisposable = chinBreakHandler
+			.configChanged
+			.subscribe(
+				(ignored) ->
+					SwingUtil.syncExec(() -> {
+						notificationPanel();
+						notificationPanel.revalidate();
+						notificationPanel.repaint();
+					})
 			);
 
 		this.setBackground(PANEL_BACKGROUND_COLOR);
@@ -171,12 +199,74 @@ public class ChinBreakHandlerPanel extends PluginPanel
 		return titlePanel;
 	}
 
+	private boolean notificationPanel()
+	{
+		notificationPanel.removeAll();
+
+		Set<Plugin> activePlugins = chinBreakHandler.getActivePlugins();
+
+		boolean manual = Boolean.parseBoolean(chinBreakHandlerPlugin.getConfigManager().getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, "accountselection"));
+
+		String data = ChinBreakHandlerPlugin.data;
+
+		if (activePlugins.isEmpty() || manual || (data != null && !data.trim().isEmpty()))
+		{
+			return false;
+		}
+
+		JPanel titleWrapper = new JPanel(new BorderLayout());
+		titleWrapper.setBackground(new Color(125, 40, 40));
+		titleWrapper.setBorder(new CompoundBorder(
+			BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(115, 30, 30)),
+			BorderFactory.createLineBorder(new Color(125, 40, 40))
+		));
+
+		JLabel title = new JLabel();
+		title.setText("Warning");
+		title.setFont(NORMAL_FONT);
+		title.setPreferredSize(new Dimension(0, 24));
+		title.setForeground(Color.WHITE);
+		title.setBorder(new EmptyBorder(0, 8, 0, 0));
+
+		titleWrapper.add(title, BorderLayout.CENTER);
+
+		notificationPanel.add(titleWrapper, BorderLayout.NORTH);
+
+		JPanel contentPanel = new JPanel(new BorderLayout());
+		contentPanel.setBackground(new Color(125, 40, 40));
+
+		JMultilineLabel description = new JMultilineLabel();
+
+		description.setText("Please make sure to unlock your profiles plugins data in the account tab!");
+		description.setFont(SMALL_FONT);
+		description.setDisabledTextColor(Color.WHITE);
+		description.setBackground(new Color(115, 30, 30));
+
+		description.setBorder(new EmptyBorder(5, 5, 10, 5));
+
+		contentPanel.add(description, BorderLayout.CENTER);
+
+		notificationPanel.add(contentPanel, BorderLayout.CENTER);
+
+		return true;
+	}
+
 	private JPanel statusPanel()
 	{
 		Set<Plugin> activePlugins = chinBreakHandler.getActivePlugins();
 
 		JPanel contentPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+
+		if (notificationPanel())
+		{
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.weightx = 1.0;
+			c.gridy += 1;
+			c.insets = new Insets(5, 10, 0, 10);
+
+			contentPanel.add(notificationPanel, c);
+		}
 
 		if (activePlugins.isEmpty())
 		{
@@ -203,7 +293,7 @@ public class ChinBreakHandlerPanel extends PluginPanel
 		JTabbedPane mainTabPane = new JTabbedPane();
 
 		JScrollPane pluginPanel = wrapContainer(contentPane(plugins));
-		JScrollPane repositoryPanel = wrapContainer(new ChinBreakHandlerAccountPanel(chinBreakHandlerPlugin));
+		JScrollPane repositoryPanel = wrapContainer(new ChinBreakHandlerAccountPanel(chinBreakHandlerPlugin, chinBreakHandler));
 
 		mainTabPane.add("Plugins", pluginPanel);
 		mainTabPane.add("Accounts", repositoryPanel);

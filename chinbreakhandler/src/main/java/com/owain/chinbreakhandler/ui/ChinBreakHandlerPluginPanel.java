@@ -5,6 +5,7 @@
 package com.owain.chinbreakhandler.ui;
 
 import com.owain.chinbreakhandler.ChinBreakHandlerPlugin;
+import static com.owain.chinbreakhandler.ChinBreakHandlerPlugin.isNumeric;
 import static com.owain.chinbreakhandler.ChinBreakHandlerPlugin.sanitizedName;
 import static com.owain.chinbreakhandler.ui.ChinBreakHandlerPanel.BACKGROUND_COLOR;
 import static com.owain.chinbreakhandler.ui.ChinBreakHandlerPanel.NORMAL_FONT;
@@ -88,11 +89,13 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 
 		if (configurable)
 		{
+			String pluginName = sanitizedName(plugin);
+
 			JToggleButton onOffToggle = new OnOffToggleButton();
 
-			onOffToggle.setSelected(Boolean.parseBoolean(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-enabled")));
+			onOffToggle.setSelected(Boolean.parseBoolean(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-enabled")));
 			onOffToggle.addItemListener(i ->
-				configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-enabled", onOffToggle.isSelected()));
+				configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-enabled", onOffToggle.isSelected()));
 
 			titleActions.add(onOffToggle, BorderLayout.EAST);
 		}
@@ -113,9 +116,9 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 		}
 	}
 
-	private JSpinner createSpinner(int defaultValue, int min)
+	private JSpinner createSpinner(int value)
 	{
-		SpinnerModel model = new SpinnerNumberModel(defaultValue, min, Integer.MAX_VALUE, 1);
+		SpinnerModel model = new SpinnerNumberModel(value, 0, Integer.MAX_VALUE, 1);
 		JSpinner spinner = new JSpinner(model);
 		Component editor = spinner.getEditor();
 		JFormattedTextField spinnerTextField = ((JSpinner.DefaultEditor) editor).getTextField();
@@ -143,6 +146,8 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 
 	private JPanel breakPanel()
 	{
+		String pluginName = sanitizedName(plugin);
+
 		JPanel contentPanel = new JPanel(new GridBagLayout());
 		contentPanel.setBackground(BACKGROUND_COLOR);
 		contentPanel.setBorder(new CompoundBorder(
@@ -152,72 +157,32 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 			), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
 		JSpinner thresholdFrom = createSpinner(
-			parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom"), 60),
-			10
+			parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-thresholdfrom"), 60)
 		);
 
 		JSpinner thresholdTo = createSpinner(
-			parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto"), 120),
-			10
+			parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-thresholdto"), 120)
 		);
 
 		JSpinner breakFrom = createSpinner(
-			parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom"), 10),
-			5
+			parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-breakfrom"), 10)
 		);
 
 		JSpinner breakTo = createSpinner(
-			parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto"), 15),
-			5
+			parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-breakto"), 15)
 		);
 
 		thresholdFrom.addChangeListener(e ->
-		{
-			if ((int) thresholdFrom.getValue() < (int) thresholdTo.getValue())
-			{
-				configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom", thresholdFrom.getValue());
-			}
-			else
-			{
-				thresholdFrom.setValue(parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom"), 20));
-			}
-		});
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-thresholdfrom", thresholdFrom.getValue()));
 
 		thresholdTo.addChangeListener(e ->
-		{
-			if ((int) thresholdTo.getValue() > (int) thresholdFrom.getValue())
-			{
-				configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto", thresholdTo.getValue());
-			}
-			else
-			{
-				thresholdTo.setValue(parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto"), 20));
-			}
-		});
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-thresholdto", thresholdTo.getValue()));
 
 		breakFrom.addChangeListener(e ->
-		{
-			if ((int) breakFrom.getValue() < (int) breakTo.getValue())
-			{
-				configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom", breakFrom.getValue());
-			}
-			else
-			{
-				breakFrom.setValue(parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom"), 20));
-			}
-		});
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-breakfrom", breakFrom.getValue()));
 
 		breakTo.addChangeListener(e ->
-		{
-			if ((int) breakTo.getValue() > (int) breakFrom.getValue())
-			{
-				configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto", breakTo.getValue());
-			}
-			else
-			{
-				breakTo.setValue(parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto"), 20));
-			}
-		});
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-breakto", breakTo.getValue()));
 
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -286,6 +251,8 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 
 	private JPanel typePanel()
 	{
+		String pluginName = sanitizedName(plugin);
+
 		JPanel contentPanel = new JPanel(new GridLayout(0, 2));
 		contentPanel.setBackground(BACKGROUND_COLOR);
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -295,16 +262,16 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 		JCheckBox logoutButton = new JCheckBox("Logout");
 		JCheckBox afkButton = new JCheckBox("AFK");
 
-		boolean logout = Boolean.parseBoolean(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-logout"));
+		boolean logout = Boolean.parseBoolean(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-logout"));
 
 		logoutButton.setSelected(logout);
 		afkButton.setSelected(!logout);
 
 		logoutButton.addActionListener(e ->
-			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-logout", logoutButton.isSelected()));
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-logout", logoutButton.isSelected()));
 
 		afkButton.addActionListener(e ->
-			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-logout", !afkButton.isSelected()));
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-logout", !afkButton.isSelected()));
 
 		buttonGroup.add(logoutButton);
 		buttonGroup.add(afkButton);
@@ -313,6 +280,49 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 		contentPanel.add(afkButton);
 
 		return contentPanel;
+	}
+
+	private void setupDefaults()
+	{
+		String pluginName = sanitizedName(plugin);
+
+		String enabled = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom");
+		String logout = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-logout");
+
+		String thresholdfrom = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom");
+		String thresholdto = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto");
+		String breakfrom = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom");
+		String breakto = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto");
+
+		if (enabled == null)
+		{
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-enabled", false);
+		}
+
+		if (logout == null)
+		{
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-logout", true);
+		}
+
+		if (!isNumeric(thresholdfrom) || (isNumeric(thresholdfrom) && Integer.parseInt(thresholdfrom) < 0))
+		{
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-thresholdfrom", 60);
+		}
+
+		if (!isNumeric(thresholdto) || (isNumeric(thresholdto) && Integer.parseInt(thresholdto) < 0))
+		{
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-thresholdto", 120);
+		}
+
+		if (!isNumeric(breakfrom) || (isNumeric(breakfrom) && Integer.parseInt(breakfrom) < 0))
+		{
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-breakfrom", 10);
+		}
+
+		if (!isNumeric(breakto) || (isNumeric(breakto) && Integer.parseInt(breakto) < 0))
+		{
+			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-breakto", 15);
+		}
 	}
 
 	private int parseInt(String value, int def)
@@ -324,39 +334,6 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 		catch (NumberFormatException e)
 		{
 			return def;
-		}
-	}
-
-	private void setupDefaults()
-	{
-		if (configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-enabled") == null)
-		{
-			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-enabled", false);
-		}
-
-		if (configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom") == null)
-		{
-			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom", 60);
-		}
-
-		if (configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto") == null)
-		{
-			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto", 120);
-		}
-
-		if (configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom") == null)
-		{
-			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom", 10);
-		}
-
-		if (configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto") == null)
-		{
-			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto", 15);
-		}
-
-		if (configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-logout") == null)
-		{
-			configManager.setConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-logout", true);
 		}
 	}
 }

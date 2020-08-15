@@ -67,9 +67,9 @@ subprojects {
     apply(plugin = "com.simonharrer.modernizer")
 
     dependencies {
-        compileOnly(group = "com.openosrs", name = "http-api", version = "3.4.1")
-        compileOnly(group = "com.openosrs", name = "runelite-api", version = "3.4.1")
-        compileOnly(group = "com.openosrs", name = "runelite-client", version = "3.4.1")
+        compileOnly(group = "com.openosrs", name = "http-api", version = "3.4.2")
+        compileOnly(group = "com.openosrs", name = "runelite-api", version = "3.4.2")
+        compileOnly(group = "com.openosrs", name = "runelite-client", version = "3.4.2")
 
         compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.8")
         compileOnly(group = "com.google.inject", name = "guice", version = "4.2.3", classifier = "no_aop")

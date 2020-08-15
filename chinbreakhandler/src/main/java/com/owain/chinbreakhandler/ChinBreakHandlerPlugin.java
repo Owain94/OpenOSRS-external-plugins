@@ -3,7 +3,6 @@ package com.owain.chinbreakhandler;
 import com.owain.chinbreakhandler.ui.ChinBreakHandlerPanel;
 import com.owain.chinbreakhandler.ui.utils.IntRandomNumberGenerator;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -19,13 +18,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Point;
-import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
@@ -51,7 +47,6 @@ import org.pf4j.Extension;
 	description = "Automatically takes breaks for you (?)",
 	type = PluginType.MISCELLANEOUS
 )
-@Slf4j
 public class ChinBreakHandlerPlugin extends Plugin
 {
 	public final static String CONFIG_GROUP = "chinbreakhandler";
@@ -76,6 +71,8 @@ public class ChinBreakHandlerPlugin extends Plugin
 
 	private NavigationButton navButton;
 	private ChinBreakHandlerPanel panel;
+	private boolean logout;
+	private int delay = -1;
 
 	public final Map<Plugin, Disposable> disposables = new HashMap<>();
 	public Disposable activeBreaks;
@@ -113,9 +110,9 @@ public class ChinBreakHandlerPlugin extends Plugin
 		activeDisposable = chinBreakHandler
 			.getActiveObservable()
 			.subscribe(
-				(ignore) ->
+				(plugins) ->
 				{
-					if (!ignore.isEmpty() && data == null)
+					if (!plugins.isEmpty() && (data == null) || chinBreakHandler.getActivePlugins().stream().anyMatch(e -> !this.isValidBreak(e)))
 					{
 						if (!navButton.isSelected())
 						{
@@ -132,6 +129,7 @@ public class ChinBreakHandlerPlugin extends Plugin
 				{
 					if (plugin != null)
 					{
+						logout = true;
 						state = ChinBreakHandlerState.LOGOUT;
 					}
 				}
@@ -188,12 +186,12 @@ public class ChinBreakHandlerPlugin extends Plugin
 
 	public void scheduleBreak(Plugin plugin)
 	{
-		int from = Integer.parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom"));
-		int to = Integer.parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto"));
+		int from = Integer.parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom")) * 60;
+		int to = Integer.parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto")) * 60;
 
 		int random = new IntRandomNumberGenerator(from, to).nextInt();
 
-		chinBreakHandler.planBreak(plugin, Instant.now().plus(random, ChronoUnit.MINUTES));
+		chinBreakHandler.planBreak(plugin, Instant.now().plus(random, ChronoUnit.SECONDS));
 	}
 
 	private void breakActivated(Pair<Plugin, Instant> pluginInstantPair)
@@ -202,6 +200,7 @@ public class ChinBreakHandlerPlugin extends Plugin
 
 		if (!chinBreakHandler.getPlugins().get(plugin) || Boolean.parseBoolean(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-logout")))
 		{
+			logout = true;
 			state = ChinBreakHandlerState.LOGOUT;
 		}
 	}
@@ -298,8 +297,13 @@ public class ChinBreakHandlerPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick gameTick)
 	{
-		if (state == ChinBreakHandlerState.LOGIN_SCREEN && !chinBreakHandler.getActiveBreaks().isEmpty())
+		if (state == ChinBreakHandlerState.NULL && logout && delay == 0)
 		{
+			state = ChinBreakHandlerState.LOGOUT;
+		}
+		else if (state == ChinBreakHandlerState.LOGIN_SCREEN && !chinBreakHandler.getActiveBreaks().isEmpty())
+		{
+			logout = false;
 			handleLoginScreen();
 		}
 		else if (state == ChinBreakHandlerState.LOGOUT)
@@ -317,12 +321,46 @@ public class ChinBreakHandlerPlugin extends Plugin
 		else if (state == ChinBreakHandlerState.LOGOUT_BUTTON)
 		{
 			leftClickRandom();
+			delay = new IntRandomNumberGenerator(20, 25).nextInt();
 		}
 		else if (state == ChinBreakHandlerState.INVENTORY)
 		{
 			// Inventory
 			client.runScript(915, 3);
+			state = ChinBreakHandlerState.RESUME;
+		}
+		else if (state == ChinBreakHandlerState.RESUME)
+		{
+			for (Plugin plugin : chinBreakHandler.getActiveBreaks().keySet())
+			{
+				chinBreakHandler.stopBreak(plugin);
+			}
+
 			state = ChinBreakHandlerState.NULL;
+		}
+		else if (!chinBreakHandler.getActiveBreaks().isEmpty())
+		{
+			if (chinBreakHandler
+				.getActiveBreaks()
+				.keySet()
+				.stream()
+				.anyMatch(e ->
+					!Boolean.parseBoolean(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(e) + "-logout"))))
+			{
+				if (client.getKeyboardIdleTicks() > 14900)
+				{
+					client.setKeyboardIdleTicks(0);
+				}
+				if (client.getMouseIdleTicks() > 14900)
+				{
+					client.setMouseIdleTicks(0);
+				}
+			}
+		}
+
+		if (delay > 0)
+		{
+			delay--;
 		}
 	}
 
@@ -340,11 +378,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 			menuOptionClicked.setParam1(24772686);
 
 			state = ChinBreakHandlerState.INVENTORY;
-
-			for (Plugin plugin : chinBreakHandler.getActiveBreaks().keySet())
-			{
-				chinBreakHandler.stopBreak(plugin);
-			}
 		}
 		else if (state == ChinBreakHandlerState.LOGOUT_BUTTON)
 		{
@@ -356,20 +389,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 			menuOptionClicked.setParam1(11927560);
 
 			state = ChinBreakHandlerState.NULL;
-		}
-	}
-
-	@Subscribe
-	public void onChatMessage(ChatMessage chatMessage)
-	{
-		if (chatMessage.getType() == ChatMessageType.ENGINE && chatMessage.getMessage().contains("You can't log out until 10 seconds"))
-		{
-			int random = new IntRandomNumberGenerator(12, 20).nextInt();
-
-			Single.just(1)
-				.delaySubscription(random, TimeUnit.SECONDS)
-				.subscribe((ignored) ->
-					state = ChinBreakHandlerState.LOGOUT_BUTTON);
 		}
 	}
 
@@ -393,7 +412,7 @@ public class ChinBreakHandlerPlugin extends Plugin
 
 			mouseEvent(MouseEvent.MOUSE_PRESSED, point);
 			mouseEvent(MouseEvent.MOUSE_RELEASED, point);
-			mouseEvent(MouseEvent.MOUSE_FIRST, point);
+			mouseEvent(MouseEvent.MOUSE_CLICKED, point);
 		});
 	}
 
@@ -424,5 +443,37 @@ public class ChinBreakHandlerPlugin extends Plugin
 		);
 
 		client.getCanvas().dispatchEvent(e);
+	}
+
+	public boolean isValidBreak(Plugin plugin)
+	{
+		String thresholdfrom = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom");
+		String thresholdto = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto");
+		String breakfrom = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom");
+		String breakto = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto");
+
+		return isNumeric(thresholdfrom) &&
+			isNumeric(thresholdto) &&
+			isNumeric(breakfrom) &&
+			isNumeric(breakto) &&
+			Integer.parseInt(thresholdfrom) <= Integer.parseInt(thresholdto) &&
+			Integer.parseInt(breakfrom) <= Integer.parseInt(breakto);
+	}
+
+	public static boolean isNumeric(String strNum)
+	{
+		if (strNum == null)
+		{
+			return false;
+		}
+		try
+		{
+			Double.parseDouble(strNum);
+		}
+		catch (NumberFormatException nfe)
+		{
+			return false;
+		}
+		return true;
 	}
 }

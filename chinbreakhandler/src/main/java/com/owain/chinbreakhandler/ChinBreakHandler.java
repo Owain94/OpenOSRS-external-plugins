@@ -158,16 +158,16 @@ public class ChinBreakHandler
 
 	public void startBreak(Plugin plugin)
 	{
-		int from = Integer.parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom"));
-		int to = Integer.parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto"));
+		int from = Integer.parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom")) * 60;
+		int to = Integer.parseInt(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakto")) * 60;
 
 		int random = new IntRandomNumberGenerator(from, to).nextInt();
 
 		removePlannedBreak(plugin);
 
-		Instant breakUntil = Instant.now().plus(random, ChronoUnit.MINUTES);
+		Instant breakUntil = Instant.now().plus(random, ChronoUnit.SECONDS);
 
-		activeBreaks.put(plugin, Instant.now().plus(random, ChronoUnit.MINUTES));
+		activeBreaks.put(plugin, breakUntil);
 		activeBreaksSubject.onNext(activeBreaks);
 
 		currentActiveBreaksSubject.onNext(Pair.of(plugin, breakUntil));
@@ -190,6 +190,15 @@ public class ChinBreakHandler
 		activeBreaksSubject.onNext(activeBreaks);
 
 		currentActiveBreaksSubject.onNext(Pair.of(plugin, instant));
+
+		if (amountOfBreaks.containsKey(plugin))
+		{
+			amountOfBreaks.put(plugin, amountOfBreaks.get(plugin) + 1);
+		}
+		else
+		{
+			amountOfBreaks.put(plugin, 1);
+		}
 	}
 
 	public void stopBreak(Plugin plugin)

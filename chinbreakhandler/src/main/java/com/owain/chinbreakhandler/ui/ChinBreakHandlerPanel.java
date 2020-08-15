@@ -11,12 +11,14 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -66,7 +68,8 @@ public class ChinBreakHandlerPanel extends PluginPanel
 	public @NonNull Disposable startDisposable;
 	public @NonNull Disposable configDisposable;
 
-	private final JPanel notificationPanel = new JPanel(new BorderLayout());
+	private final JPanel unlockAccountPanel = new JPanel(new BorderLayout());
+	private final JPanel breakTimingsPanel = new JPanel(new GridLayout(0, 1));
 
 	@Inject
 	private ChinBreakHandlerPanel(ChinBreakHandlerPlugin chinBreakHandlerPlugin, ChinBreakHandler chinBreakHandler)
@@ -103,9 +106,13 @@ public class ChinBreakHandlerPanel extends PluginPanel
 			.subscribe(
 				(ignored) ->
 					SwingUtil.syncExec(() -> {
-						notificationPanel();
-						notificationPanel.revalidate();
-						notificationPanel.repaint();
+						unlockAccountsPanel();
+						unlockAccountPanel.revalidate();
+						unlockAccountPanel.repaint();
+
+						breakTimingsPanel();
+						breakTimingsPanel.revalidate();
+						breakTimingsPanel.repaint();
 					})
 			);
 
@@ -114,9 +121,9 @@ public class ChinBreakHandlerPanel extends PluginPanel
 			.subscribe(
 				(ignored) ->
 					SwingUtil.syncExec(() -> {
-						notificationPanel();
-						notificationPanel.revalidate();
-						notificationPanel.repaint();
+						unlockAccountsPanel();
+						unlockAccountPanel.revalidate();
+						unlockAccountPanel.repaint();
 					})
 			);
 
@@ -199,9 +206,9 @@ public class ChinBreakHandlerPanel extends PluginPanel
 		return titlePanel;
 	}
 
-	private boolean notificationPanel()
+	private boolean unlockAccountsPanel()
 	{
-		notificationPanel.removeAll();
+		unlockAccountPanel.removeAll();
 
 		Set<Plugin> activePlugins = chinBreakHandler.getActivePlugins();
 
@@ -230,7 +237,7 @@ public class ChinBreakHandlerPanel extends PluginPanel
 
 		titleWrapper.add(title, BorderLayout.CENTER);
 
-		notificationPanel.add(titleWrapper, BorderLayout.NORTH);
+		unlockAccountPanel.add(titleWrapper, BorderLayout.NORTH);
 
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		contentPanel.setBackground(new Color(125, 40, 40));
@@ -246,7 +253,62 @@ public class ChinBreakHandlerPanel extends PluginPanel
 
 		contentPanel.add(description, BorderLayout.CENTER);
 
-		notificationPanel.add(contentPanel, BorderLayout.CENTER);
+		unlockAccountPanel.add(contentPanel, BorderLayout.CENTER);
+
+		return true;
+	}
+
+	private boolean breakTimingsPanel()
+	{
+		breakTimingsPanel.removeAll();
+
+		Set<Plugin> pluginStream = chinBreakHandler.getActivePlugins().stream().filter(e -> !chinBreakHandlerPlugin.isValidBreak(e)).collect(Collectors.toSet());
+
+		if (pluginStream.isEmpty())
+		{
+			return false;
+		}
+
+		for (Plugin plugin : pluginStream)
+		{
+			JPanel wrapperPanel = new JPanel(new BorderLayout());
+
+			JPanel titleWrapper = new JPanel(new BorderLayout());
+			titleWrapper.setBackground(new Color(125, 40, 40));
+			titleWrapper.setBorder(new CompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(115, 30, 30)),
+				BorderFactory.createLineBorder(new Color(125, 40, 40))
+			));
+
+			JLabel title = new JLabel();
+			title.setText("Warning");
+			title.setFont(NORMAL_FONT);
+			title.setPreferredSize(new Dimension(0, 24));
+			title.setForeground(Color.WHITE);
+			title.setBorder(new EmptyBorder(0, 8, 0, 0));
+
+			titleWrapper.add(title, BorderLayout.CENTER);
+
+			wrapperPanel.add(titleWrapper, BorderLayout.NORTH);
+
+			JPanel contentPanel = new JPanel(new BorderLayout());
+			contentPanel.setBackground(new Color(125, 40, 40));
+
+			JMultilineLabel description = new JMultilineLabel();
+
+			description.setText("The break timings for " + plugin.getName() + " are invalid!");
+			description.setFont(SMALL_FONT);
+			description.setDisabledTextColor(Color.WHITE);
+			description.setBackground(new Color(115, 30, 30));
+
+			description.setBorder(new EmptyBorder(5, 5, 10, 5));
+
+			contentPanel.add(description, BorderLayout.CENTER);
+
+			wrapperPanel.add(contentPanel, BorderLayout.CENTER);
+
+			breakTimingsPanel.add(wrapperPanel);
+		}
 
 		return true;
 	}
@@ -258,14 +320,24 @@ public class ChinBreakHandlerPanel extends PluginPanel
 		JPanel contentPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
-		if (notificationPanel())
+		if (unlockAccountsPanel())
 		{
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.weightx = 1.0;
 			c.gridy += 1;
 			c.insets = new Insets(5, 10, 0, 10);
 
-			contentPanel.add(notificationPanel, c);
+			contentPanel.add(unlockAccountPanel, c);
+		}
+
+		if (breakTimingsPanel())
+		{
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.weightx = 1.0;
+			c.gridy += 1;
+			c.insets = new Insets(5, 10, 0, 10);
+
+			contentPanel.add(breakTimingsPanel, c);
 		}
 
 		if (activePlugins.isEmpty())

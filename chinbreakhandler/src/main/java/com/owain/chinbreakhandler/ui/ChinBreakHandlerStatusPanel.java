@@ -155,6 +155,13 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 		{
 			timeLabel.setText("-");
 		}
+
+		boolean enabled = Boolean.parseBoolean(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-enabled"));
+
+		if (enabled && chinBreakHandler.getPlugins().get(plugin) && chinBreakHandlerPlugin.isValidBreak(plugin) && !chinBreakHandler.isBreakPlanned(plugin) && !chinBreakHandler.isBreakActive(plugin))
+		{
+			chinBreakHandlerPlugin.scheduleBreak(plugin);
+		}
 	}
 
 	private void onConfigChanged(ConfigChanged configChanged)
@@ -254,7 +261,7 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 				return;
 			}
 
-			if (chinBreakHandler.getPlugins().get(plugin) && !chinBreakHandler.isBreakPlanned(plugin) && !chinBreakHandler.isBreakActive(plugin))
+			if (chinBreakHandler.getPlugins().get(plugin) && chinBreakHandlerPlugin.isValidBreak(plugin) && !chinBreakHandler.isBreakPlanned(plugin) && !chinBreakHandler.isBreakActive(plugin))
 			{
 				chinBreakHandlerPlugin.scheduleBreak(plugin);
 			}

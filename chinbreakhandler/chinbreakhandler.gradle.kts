@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.7"
 
-project.extra["PluginName"] = "Runecrafting Profit"
-project.extra["PluginDescription"] = "Shows various runecrafting stats"
+project.extra["PluginName"] = "Chin break handler"
+project.extra["PluginDescription"] = "Automatically takes breaks for you (?)"
 
 dependencies {
     annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")
@@ -35,6 +35,11 @@ dependencies {
 
 tasks {
     jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        from(configurations.runtimeClasspath.get()
+                .map { if (it.isDirectory) it else zipTree(it) })
+
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,

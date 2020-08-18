@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Dalton <delps1001@gmail.com>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,107 +24,102 @@
  */
 package com.owain.runecraftingprofit;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
-import net.runelite.client.ui.overlay.Overlay;
+import javax.inject.Singleton;
+import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY;
+import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
+import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
+import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
+import net.runelite.client.ui.overlay.components.TitleComponent;
+import net.runelite.client.ui.overlay.components.table.TableAlignment;
+import net.runelite.client.ui.overlay.components.table.TableComponent;
+import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.QuantityFormatter;
+import org.apache.commons.lang3.tuple.Pair;
 
-
-public class RunecraftingProfitOverlay extends Overlay
+@Singleton
+class RunecraftingProfitOverlay extends OverlayPanel
 {
+	private static final Color HIGHLIGHT_COLOR = new Color(255, 200, 0, 255);
+	private static final Comparator<Map.Entry<Runes, Long>> CMP = Map.Entry.comparingByValue();
+	static final String RUNECRAFT_PROFIT_RESET = "Reset";
+
 	private final RunecraftingProfitPlugin plugin;
 	private final RunecraftingProfitConfig config;
-	private final PanelComponent panelComponent = new PanelComponent();
-	private final RunecraftingProfitSession session;
 
 	@Inject
-	RunecraftingProfitOverlay(RunecraftingProfitPlugin plugin, RunecraftingProfitConfig config)
+	private RunecraftingProfitOverlay(final RunecraftingProfitPlugin plugin, final RunecraftingProfitConfig config)
 	{
+		super(plugin);
+
 		setPosition(OverlayPosition.TOP_LEFT);
+
 		this.plugin = plugin;
 		this.config = config;
-		this.session = plugin.getSession();
+
+		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Runecrafting profit overlay"));
+		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY, RUNECRAFT_PROFIT_RESET, "Runecrafting profit overlay"));
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-
-		//only display the overlay after the first RC animation occurs...
-		if (!plugin.isFirstRunecraft())
+		RunecraftingProfitSession session = plugin.getSession();
+		if (session == null)
 		{
 			return null;
 		}
 
-		//only display the UI if the player has done the RC animation in the last TIMEOUT_INTERVAL minutes
-		if (!plugin.isDisplayOverlay())
+		panelComponent.getChildren().add(TitleComponent.builder()
+			.text("Runecrafting profit")
+			.color(Color.GREEN)
+			.build());
+
+		TableComponent tableComponent = new TableComponent();
+		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.CENTER, TableAlignment.RIGHT);
+		tableComponent.addRow(
+			ColorUtil.prependColorTag("Rune", HIGHLIGHT_COLOR),
+			ColorUtil.prependColorTag("Crafted", HIGHLIGHT_COLOR),
+			ColorUtil.prependColorTag("Profit", HIGHLIGHT_COLOR));
+
+		if (config.displayIndividualRuneTypes())
 		{
-			return null;
-		}
+			List<Map.Entry<Runes, Long>> sorted = new LinkedList<>(session.getRuneProfit().entrySet());
+			sorted.sort(CMP.reversed());
+			Map<Runes, Integer> craftedRunes = session.getCraftedRunes();
 
-		panelComponent.getChildren().clear();
-
-
-		if (plugin.isDisplayProfit())
-		{
-			if (config.displayIndividualRuneTypes())
+			for (Map.Entry<Runes, Long> runes : sorted)
 			{
-				for (Runes rune : Runes.values())
+				Runes rune = runes.getKey();
+				int crafted = craftedRunes.get(rune);
+
+				if (crafted > 0)
 				{
-					int profitForRuneType = session.getProfitPerRuneType().get(rune);
-					if (profitForRuneType > 0)
-					{
-						panelComponent.getChildren().add(LineComponent.builder()
-							.left(rune.getName() + ":")
-							.right(QuantityFormatter.quantityToStackSize(profitForRuneType) + " gp")
-							.build());
-					}
+					long price = session.getRunePrices().get(rune) * crafted;
+					tableComponent.addRow(rune.toString(), String.valueOf(crafted), QuantityFormatter.quantityToStackSize(price) + " gp");
 				}
 			}
-
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Total: ")
-				.right(QuantityFormatter.quantityToStackSize(session.getTotalProfit()) + " gp")
-				.build());
 		}
-		else
+
+		Pair<Integer, Long> totalCrafted = session.getTotalCrafted();
+
+		if (totalCrafted.getLeft() > 0 && totalCrafted.getRight() > 0)
 		{
-			if (config.displayIndividualRuneTypes())
-			{
-				for (Runes rune : Runes.values())
-				{
-					int totalForRuneType = session.getNumberOfTotalRunesCrafted().get(rune.getItemId());
-					if (totalForRuneType > 0)
-					{
-						panelComponent.getChildren().add(LineComponent.builder()
-							.left(rune.getName() + ":")
-							.right(Integer.toString(totalForRuneType))
-							.build());
-					}
-
-				}
-			}
-
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Total: ")
-				.right(Integer.toString(session.getTotalRunesCrafted()))
-				.build());
+			tableComponent.addRow("", "", "");
+			tableComponent.addRow("Total", String.valueOf(totalCrafted.getLeft()), QuantityFormatter.quantityToStackSize(totalCrafted.getRight()) + " gp");
 		}
 
-		//display profit per hour if enabled
-		if (config.displayProfitPerHour())
-		{
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Profit/hr: ")
-				.right(QuantityFormatter.quantityToStackSize((long) session.getTotalProfitPerHour()))
-				.build());
-		}
+		panelComponent.getChildren().add(tableComponent);
 
-
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 }

@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
- * Copyright (c) 2018, Dalton <delps1001@gmail.com>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,133 +24,58 @@
  */
 package com.owain.runecraftingprofit;
 
-
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import javax.inject.Inject;
-import net.runelite.api.Item;
+import javax.inject.Singleton;
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.runelite.client.game.ItemManager;
+import org.apache.commons.lang3.tuple.Pair;
 
-public class RunecraftingProfitSession
+@Singleton
+class RunecraftingProfitSession
 {
-	private final RunecraftingProfitPlugin plugin;
-	private final ItemManager itemManager;
-	private final Map<Integer, Integer> previousRunesInInventory = new HashMap<>();
-	private final Map<Integer, Integer> numberOfTotalRunesCrafted = new HashMap<>();
-	private final Map<Runes, Integer> profitPerRuneType = new HashMap<>();
-	private final Set<Integer> runesSet = new HashSet<>();
-	private int totalProfit = 0;
-	private int totalRunesCrafted = 0;
-	private double totalProfitPerHour = 0.0;
+	@Getter(AccessLevel.PACKAGE)
+	private Instant lastRunecraftAction;
+	@Getter(AccessLevel.PACKAGE)
+	private final Map<Runes, Integer> craftedRunes = new HashMap<>();
+	@Getter(AccessLevel.PACKAGE)
+	private final Map<Runes, Long> runePrices = new HashMap<>();
+	@Getter(AccessLevel.PACKAGE)
+	private final Map<Runes, Long> runeProfit = new HashMap<>();
+	@Getter(AccessLevel.PACKAGE)
+	private Pair<Integer, Long> totalCrafted = Pair.of(0, 0L);
 
-
-	@Inject
-	public RunecraftingProfitSession(RunecraftingProfitPlugin plugin, ItemManager itemManager)
+	RunecraftingProfitSession(final ItemManager itemManager)
 	{
 		for (Runes rune : Runes.values())
 		{
-			previousRunesInInventory.put(rune.getItemId(), 0);
-			runesSet.add(rune.getItemId());
-			numberOfTotalRunesCrafted.put(rune.getItemId(), 0);
-			profitPerRuneType.put(rune, 0);
-		}
-		this.plugin = plugin;
-		this.itemManager = itemManager;
-	}
-
-	void updatePreviousRunesInInventory(ArrayList<Item> items)
-	{
-		clearPreviousRunesInInventory();
-		for (Item item : items)
-		{
-			this.previousRunesInInventory.replace(item.getId(), item.getQuantity());
+			craftedRunes.put(rune, 0);
+			runeProfit.put(rune, 0L);
+			runePrices.put(rune, rune.getPrice(itemManager));
 		}
 	}
 
-	void updateTotalCraftedRunes(ArrayList<Item> items)
+	void updateLastRunecraftAction()
 	{
-		for (Item item : items)
+		this.lastRunecraftAction = Instant.now();
+	}
+
+	void updateCraftedRunes(int itemId, int qty)
+	{
+		for (Map.Entry<Runes, Integer> entry : craftedRunes.entrySet())
 		{
-			if (runesSet.contains(item.getId()))
+			Runes rune = entry.getKey();
+			if (rune.getItemId() == itemId)
 			{
-				int updatedRuneCount = this.numberOfTotalRunesCrafted.get(item.getId()) + (item.getQuantity() - this.previousRunesInInventory.get(item.getId()));
-				this.numberOfTotalRunesCrafted.replace(item.getId(), updatedRuneCount);
+				int amount = entry.getValue() + qty;
+				entry.setValue(amount);
+				long profit = amount * runePrices.get(rune);
+				runeProfit.put(rune, profit);
+
+				totalCrafted = Pair.of(totalCrafted.getLeft() + qty, totalCrafted.getRight() + qty * runePrices.get(rune));
 			}
 		}
-		updateProfitPerRuneType();
-	}
-
-	private void clearPreviousRunesInInventory()
-	{
-		for (Map.Entry<Integer, Integer> entry : this.previousRunesInInventory.entrySet())
-		{
-			this.previousRunesInInventory.replace(entry.getKey(), 0);
-		}
-	}
-
-	private void updateProfitPerRuneType()
-	{
-		totalProfit = 0;
-		totalRunesCrafted = 0;
-		for (Map.Entry<Runes, Integer> entry : profitPerRuneType.entrySet())
-		{
-			int runeId = entry.getKey().getItemId();
-			int numberOfRunesCrafted = this.numberOfTotalRunesCrafted.get(runeId);
-			int price = itemManager.getItemPrice(runeId);
-			int profitForRuneType = price * numberOfRunesCrafted;
-			profitPerRuneType.replace(entry.getKey(), profitForRuneType);
-			totalProfit += profitForRuneType;
-			totalRunesCrafted += numberOfRunesCrafted;
-		}
-		updateTotalProfitPerHour();
-	}
-
-	int getTotalProfit()
-	{
-		return totalProfit;
-	}
-
-	int getTotalRunesCrafted()
-	{
-		return totalRunesCrafted;
-	}
-
-	Map<Runes, Integer> getProfitPerRuneType()
-	{
-		return profitPerRuneType;
-	}
-
-	Map<Integer, Integer> getNumberOfTotalRunesCrafted()
-	{
-		return numberOfTotalRunesCrafted;
-	}
-
-	public double getTotalProfitPerHour()
-	{
-		return totalProfitPerHour;
-	}
-
-	void clearSession()
-	{
-		for (Runes rune : Runes.values())
-		{
-			previousRunesInInventory.replace(rune.getItemId(), 0);
-			numberOfTotalRunesCrafted.replace(rune.getItemId(), 0);
-			profitPerRuneType.replace(rune, 0);
-		}
-		this.totalProfit = 0;
-		this.totalRunesCrafted = 0;
-		this.totalProfitPerHour = 0;
-	}
-
-	private void updateTotalProfitPerHour()
-	{
-		double timeElapsedHours = (double) ChronoUnit.SECONDS.between(plugin.getStartTime(), Instant.now()) / 3600.0;
-		this.totalProfitPerHour = this.totalProfit / timeElapsedHours;
 	}
 }

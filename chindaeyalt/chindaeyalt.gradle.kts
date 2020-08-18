@@ -23,22 +23,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.4"
+version = "0.0.1"
 
-project.extra["PluginName"] = "Runecrafting Profit"
-project.extra["PluginDescription"] = "Shows various runecrafting stats"
+project.extra["PluginName"] = "Chin daeyalt"
+project.extra["PluginDescription"] = "Daeyalt essence miner"
 
 dependencies {
     annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")
     annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.2.0")
+
+    compileOnly(project(":chinbreakhandler"))
 }
 
 tasks {
     jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        from(configurations.runtimeClasspath.get()
+                .map { if (it.isDirectory) it else zipTree(it) })
+
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Dependencies" to "chinbreakhandler-plugin",
                     "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]

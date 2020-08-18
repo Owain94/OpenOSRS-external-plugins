@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2020, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,27 +22,43 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.owain.chinbreakhandler.ui.utils;
 
-version = "0.0.4"
+import java.text.ParseException;
+import javax.swing.JFormattedTextField;
 
-project.extra["PluginName"] = "Runecrafting Profit"
-project.extra["PluginDescription"] = "Shows various runecrafting stats"
+final class UnitFormatter extends JFormattedTextField.AbstractFormatter
+{
+	private final String units = " mins";
 
-dependencies {
-    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")
-    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.2.0")
-}
+	@Override
+	public Object stringToValue(final String text) throws ParseException
+	{
+		final String trimmedText;
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+		// Using the spinner controls causes the value to have the unit on the end, so remove it
+		if (text.endsWith(units))
+		{
+			trimmedText = text.substring(0, text.length() - units.length());
+		}
+		else
+		{
+			trimmedText = text;
+		}
+
+		try
+		{
+			return Integer.valueOf(trimmedText);
+		}
+		catch (NumberFormatException e)
+		{
+			throw new ParseException(trimmedText + " is not an integer.", 0);
+		}
+	}
+
+	@Override
+	public String valueToString(final Object value)
+	{
+		return value + units;
+	}
 }

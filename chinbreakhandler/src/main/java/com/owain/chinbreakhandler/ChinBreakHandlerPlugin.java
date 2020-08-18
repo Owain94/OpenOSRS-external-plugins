@@ -27,6 +27,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -381,12 +382,13 @@ public class ChinBreakHandlerPlugin extends Plugin
 		}
 		else if (state == ChinBreakHandlerState.LOGOUT_BUTTON)
 		{
+			int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
 			menuOptionClicked.setOption("Logout");
 			menuOptionClicked.setTarget("");
 			menuOptionClicked.setIdentifier(1);
 			menuOptionClicked.setOpcode(MenuOpcode.CC_OP.getId());
 			menuOptionClicked.setParam0(-1);
-			menuOptionClicked.setParam1(11927560);
+			menuOptionClicked.setParam1(param1);
 
 			state = ChinBreakHandlerState.NULL;
 		}

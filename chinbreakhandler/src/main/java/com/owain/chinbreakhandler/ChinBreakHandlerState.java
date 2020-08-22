@@ -11,7 +11,6 @@ public enum ChinBreakHandlerState
 	NULL,
 
 	LOGIN_SCREEN,
-	LOGIN_MESSAGE_SCREEN,
 	INVENTORY,
 	RESUME,
 

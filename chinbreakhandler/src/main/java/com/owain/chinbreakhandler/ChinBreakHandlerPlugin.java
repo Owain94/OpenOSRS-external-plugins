@@ -357,8 +357,9 @@ public class ChinBreakHandlerPlugin extends Plugin
 		}
 		else if (!chinBreakHandler.getActiveBreaks().isEmpty())
 		{
-			if (chinBreakHandler
-				.getActiveBreaks()
+			Map<Plugin, Instant> activeBreaks = chinBreakHandler.getActiveBreaks();
+
+			if (activeBreaks
 				.keySet()
 				.stream()
 				.anyMatch(e ->
@@ -371,6 +372,21 @@ public class ChinBreakHandlerPlugin extends Plugin
 				if (client.getMouseIdleTicks() > 14900)
 				{
 					client.setMouseIdleTicks(0);
+				}
+
+				boolean finished = true;
+
+				for (Instant duration : activeBreaks.values())
+				{
+					if (Instant.now().isBefore(duration))
+					{
+						finished = false;
+					}
+				}
+
+				if (finished)
+				{
+					state = ChinBreakHandlerState.INVENTORY;
 				}
 			}
 		}

@@ -18,7 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuOpcode;
@@ -50,7 +49,6 @@ import org.pf4j.Extension;
 	description = "Automatically takes breaks for you (?)",
 	type = PluginType.MISCELLANEOUS
 )
-@Slf4j
 public class ChinBreakHandlerPlugin extends Plugin
 {
 	public final static String CONFIG_GROUP = "chinbreakhandler";
@@ -404,8 +402,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 				playButton.getId(),
 				false
 			);
-
-			log.info("Play menu entry added");
 		}
 		else if (state == ChinBreakHandlerState.LOGOUT_BUTTON)
 		{
@@ -436,8 +432,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 				param1,
 				false
 			);
-
-			log.info("Logout entry added");
 		}
 	}
 
@@ -465,11 +459,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 			);
 
 			state = ChinBreakHandlerState.INVENTORY;
-
-			if (menuOptionClicked.isConsumed())
-			{
-				log.info("Play entry clicked");
-			}
 		}
 		else if (state == ChinBreakHandlerState.LOGOUT_BUTTON)
 		{
@@ -503,11 +492,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 			);
 
 			state = ChinBreakHandlerState.NULL;
-
-			if (menuOptionClicked.isConsumed())
-			{
-				log.info("Logout entry clicked");
-			}
 		}
 	}
 

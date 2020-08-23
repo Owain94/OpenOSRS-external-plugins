@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.11"
+version = "0.0.12"
 
 project.extra["PluginName"] = "Chin break handler"
 project.extra["PluginDescription"] = "Automatically takes breaks for you (?)"

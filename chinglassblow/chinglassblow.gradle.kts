@@ -27,7 +27,7 @@ plugins {
     kotlin("kapt")
 }
 
-version = "0.0.7"
+version = "0.0.8"
 
 project.extra["PluginName"] = "Chin glass blow"
 project.extra["PluginDescription"] = "Automatically selects the product to glassblow"

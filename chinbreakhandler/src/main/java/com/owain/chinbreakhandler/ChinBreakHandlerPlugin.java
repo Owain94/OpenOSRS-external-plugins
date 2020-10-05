@@ -460,7 +460,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 
 			if (playButton == null)
 			{
-				menuOptionClicked.consume();
 				return;
 			}
 

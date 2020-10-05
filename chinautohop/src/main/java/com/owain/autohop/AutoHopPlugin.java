@@ -10,6 +10,8 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
+import net.runelite.api.coords.WorldArea;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -45,6 +47,8 @@ public class AutoHopPlugin extends Plugin
 {
 	private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
 	private static final int GRAND_EXCHANGE_REGION = 12598;
+	private static final WorldArea FEROX_ENCLAVE_AREA = new WorldArea(new WorldPoint(3125, 3618, 0),
+		new WorldPoint(3153, 3639, 0));
 
 	@Inject
 	private Client client;
@@ -60,6 +64,7 @@ public class AutoHopPlugin extends Plugin
 
 	private net.runelite.api.World quickHopTargetWorld;
 	private int displaySwitcherAttempts = 0;
+	private boolean openInventory;
 
 	@Provides
 	AutoHopConfig getConfig(ConfigManager configManager)
@@ -73,11 +78,15 @@ public class AutoHopPlugin extends Plugin
 		final Player local = client.getLocalPlayer();
 
 		if (event.getGameState() != GameState.LOGGED_IN || local == null ||
-			(config.disableGrandExchange() && local.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION))
+			(config.disableGrandExchange() && local.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
+			(config.disableFeroxEnclave() && local.getWorldArea().intersectsWith(FEROX_ENCLAVE_AREA)))
 		{
 			return;
 		}
-
+		if (config.returnInventory())
+		{
+			openInventory = true;
+		}
 		for (Player player : client.getPlayers())
 		{
 			if (player == null ||
@@ -137,7 +146,8 @@ public class AutoHopPlugin extends Plugin
 		if ((config.friends() && player.isFriend()) ||
 			(config.clanmember() && player.isFriendsChatMember()) ||
 			(config.hopRadius() && player.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) > config.playerRadius()) ||
-			(config.disableGrandExchange() && player.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION))
+			(config.disableGrandExchange() && player.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
+			(config.disableFeroxEnclave() && player.getWorldArea().intersectsWith(FEROX_ENCLAVE_AREA)))
 		{
 			return;
 		}
@@ -278,6 +288,11 @@ public class AutoHopPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
+		if (config.returnInventory() && openInventory)
+		{
+			client.runScript(915, 3); //Open inventory
+			openInventory = false;
+		}
 		if (quickHopTargetWorld == null)
 		{
 			return;
@@ -320,7 +335,9 @@ public class AutoHopPlugin extends Plugin
 		final Player local = client.getLocalPlayer();
 		String eventName = Text.sanitize(event.getName());
 
-		if ((config.disableGrandExchange() && local.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
+		if (local == null ||
+			(config.disableGrandExchange() && local.getWorldLocation().getRegionID() == GRAND_EXCHANGE_REGION) ||
+			(config.disableFeroxEnclave() && local.getWorldArea().intersectsWith(FEROX_ENCLAVE_AREA)) ||
 			event.getType() != ChatMessageType.GAMEMESSAGE &&
 				!(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && eventName != local.getName()) &&
 				local.getName() != null)

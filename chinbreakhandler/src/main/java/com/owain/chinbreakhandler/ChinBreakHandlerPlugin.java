@@ -24,6 +24,7 @@ import net.runelite.api.MenuOpcode;
 import net.runelite.api.Point;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -178,7 +179,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 		}
 	}
 
-	@SuppressWarnings("unused")
 	@Subscribe
 	public void onConfigChanged(ConfigChanged configChanged)
 	{
@@ -284,7 +284,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 		return plugin.getName().toLowerCase().replace(" ", "");
 	}
 
-	@SuppressWarnings("unused")
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
@@ -294,7 +293,6 @@ public class ChinBreakHandlerPlugin extends Plugin
 		}
 	}
 
-	@SuppressWarnings("unused")
 	@Subscribe
 	public void onGameTick(GameTick gameTick)
 	{
@@ -305,7 +303,18 @@ public class ChinBreakHandlerPlugin extends Plugin
 		else if (state == ChinBreakHandlerState.LOGIN_SCREEN && !chinBreakHandler.getActiveBreaks().isEmpty())
 		{
 			logout = false;
-			handleLoginScreen();
+
+			Widget loginScreen = client.getWidget(WidgetInfo.LOGIN_CLICK_TO_PLAY_SCREEN);
+			Widget playButtonText = client.getWidget(WidgetID.LOGIN_CLICK_TO_PLAY_GROUP_ID, 87);
+
+			if (playButtonText != null && playButtonText.getText().equals("CLICK HERE TO PLAY"))
+			{
+				click();
+			}
+			else if (loginScreen == null)
+			{
+				state = ChinBreakHandlerState.INVENTORY;
+			}
 		}
 		else if (state == ChinBreakHandlerState.LOGOUT)
 		{
@@ -317,11 +326,18 @@ public class ChinBreakHandlerPlugin extends Plugin
 		{
 			// Logout tab
 			client.runScript(915, 10);
-			state = ChinBreakHandlerState.LOGOUT_BUTTON;
+
+			Widget logoutButton = client.getWidget(182, 8);
+			Widget logoutDoorButton = client.getWidget(69, 23);
+
+			if (logoutButton != null || logoutDoorButton != null)
+			{
+				state = ChinBreakHandlerState.LOGOUT_BUTTON;
+			}
 		}
 		else if (state == ChinBreakHandlerState.LOGOUT_BUTTON)
 		{
-			leftClickRandom();
+			click();
 			delay = new IntRandomNumberGenerator(20, 25).nextInt();
 		}
 		else if (state == ChinBreakHandlerState.INVENTORY)
@@ -341,8 +357,9 @@ public class ChinBreakHandlerPlugin extends Plugin
 		}
 		else if (!chinBreakHandler.getActiveBreaks().isEmpty())
 		{
-			if (chinBreakHandler
-				.getActiveBreaks()
+			Map<Plugin, Instant> activeBreaks = chinBreakHandler.getActiveBreaks();
+
+			if (activeBreaks
 				.keySet()
 				.stream()
 				.anyMatch(e ->
@@ -356,6 +373,21 @@ public class ChinBreakHandlerPlugin extends Plugin
 				{
 					client.setMouseIdleTicks(0);
 				}
+
+				boolean finished = true;
+
+				for (Instant duration : activeBreaks.values())
+				{
+					if (Instant.now().isBefore(duration))
+					{
+						finished = false;
+					}
+				}
+
+				if (finished)
+				{
+					state = ChinBreakHandlerState.INVENTORY;
+				}
 			}
 		}
 
@@ -365,52 +397,128 @@ public class ChinBreakHandlerPlugin extends Plugin
 		}
 	}
 
-	@SuppressWarnings("unused")
+	@Subscribe
+	public void onMenuEntryAdded(MenuEntryAdded menuEntryAdded)
+	{
+		if (state == ChinBreakHandlerState.LOGIN_SCREEN)
+		{
+			Widget playButton = client.getWidget(WidgetID.LOGIN_CLICK_TO_PLAY_GROUP_ID, 78);
+
+			if (playButton == null)
+			{
+				return;
+			}
+
+			client.insertMenuItem(
+				"Play",
+				"",
+				1,
+				MenuOpcode.CC_OP.getId(),
+				-1,
+				playButton.getId(),
+				false
+			);
+		}
+		else if (state == ChinBreakHandlerState.LOGOUT_BUTTON)
+		{
+			Widget logoutButton = client.getWidget(182, 8);
+			Widget logoutDoorButton = client.getWidget(69, 23);
+			int param1 = -1;
+
+			if (logoutButton != null)
+			{
+				param1 = logoutButton.getId();
+			}
+			else if (logoutDoorButton != null)
+			{
+				param1 = logoutDoorButton.getId();
+			}
+
+			if (param1 == -1)
+			{
+				return;
+			}
+
+			client.insertMenuItem(
+				"Logout",
+				"",
+				1,
+				MenuOpcode.CC_OP.getId(),
+				-1,
+				param1,
+				false
+			);
+		}
+	}
+
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
-		if (state == ChinBreakHandlerState.LOGIN_MESSAGE_SCREEN)
+		if (state == ChinBreakHandlerState.LOGIN_SCREEN)
 		{
-			menuOptionClicked.setOption("Play");
-			menuOptionClicked.setTarget("");
-			menuOptionClicked.setIdentifier(1);
-			menuOptionClicked.setOpcode(MenuOpcode.CC_OP.getId());
-			menuOptionClicked.setParam0(-1);
-			menuOptionClicked.setParam1(24772686);
+			Widget playButton = client.getWidget(WidgetID.LOGIN_CLICK_TO_PLAY_GROUP_ID, 78);
+
+			if (playButton == null)
+			{
+				return;
+			}
+
+			menuOptionClicked.consume();
+			client.invokeMenuAction(
+				"Play",
+				"",
+				1,
+				MenuOpcode.CC_OP.getId(),
+				-1,
+				playButton.getId()
+			);
 
 			state = ChinBreakHandlerState.INVENTORY;
 		}
 		else if (state == ChinBreakHandlerState.LOGOUT_BUTTON)
 		{
-			int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
-			menuOptionClicked.setOption("Logout");
-			menuOptionClicked.setTarget("");
-			menuOptionClicked.setIdentifier(1);
-			menuOptionClicked.setOpcode(MenuOpcode.CC_OP.getId());
-			menuOptionClicked.setParam0(-1);
-			menuOptionClicked.setParam1(param1);
+			Widget logoutButton = client.getWidget(182, 8);
+			Widget logoutDoorButton = client.getWidget(69, 23);
+			int param1 = -1;
+
+			if (logoutButton != null)
+			{
+				param1 = logoutButton.getId();
+			}
+			else if (logoutDoorButton != null)
+			{
+				param1 = logoutDoorButton.getId();
+			}
+
+			if (param1 == -1)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked.consume();
+			client.invokeMenuAction(
+				"Logout",
+				"",
+				1,
+				MenuOpcode.CC_OP.getId(),
+				-1,
+				param1
+			);
 
 			state = ChinBreakHandlerState.NULL;
 		}
 	}
 
-	private void handleLoginScreen()
-	{
-		Widget login = client.getWidget(WidgetID.LOGIN_CLICK_TO_PLAY_GROUP_ID, 87);
-
-		if (login != null && login.getText().equals("CLICK HERE TO PLAY"))
-		{
-			state = ChinBreakHandlerState.LOGIN_MESSAGE_SCREEN;
-
-			leftClickRandom();
-		}
-	}
-
-	private void leftClickRandom()
+	private void click()
 	{
 		executorService.submit(() ->
 		{
 			Point point = new Point(0, 0);
+
+			mouseEvent(MouseEvent.MOUSE_ENTERED, point);
+			mouseEvent(MouseEvent.MOUSE_EXITED, point);
+			mouseEvent(MouseEvent.MOUSE_MOVED, point);
 
 			mouseEvent(MouseEvent.MOUSE_PRESSED, point);
 			mouseEvent(MouseEvent.MOUSE_RELEASED, point);
@@ -449,6 +557,18 @@ public class ChinBreakHandlerPlugin extends Plugin
 
 	public boolean isValidBreak(Plugin plugin)
 	{
+		Map<Plugin, Boolean> plugins = chinBreakHandler.getPlugins();
+
+		if (!plugins.containsKey(plugin))
+		{
+			return false;
+		}
+
+		if (!plugins.get(plugin))
+		{
+			return true;
+		}
+
 		String thresholdfrom = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdfrom");
 		String thresholdto = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-thresholdto");
 		String breakfrom = configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, sanitizedName(plugin) + "-breakfrom");

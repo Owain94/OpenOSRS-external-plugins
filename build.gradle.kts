@@ -9,8 +9,8 @@ plugins {
     java
     kotlin("jvm") version "1.3.71"
     id("com.simonharrer.modernizer") version "2.1.0-1" apply false
-    id("com.github.ben-manes.versions") version "0.29.0"
-    id("se.patrikerdes.use-latest-versions") version "0.2.14"
+    id("com.github.ben-manes.versions") version "0.33.0"
+    id("se.patrikerdes.use-latest-versions") version "0.2.15"
 }
 
 apply<BootstrapPlugin>()
@@ -67,13 +67,13 @@ subprojects {
     apply(plugin = "com.simonharrer.modernizer")
 
     dependencies {
-        compileOnly(group = "com.openosrs", name = "http-api", version = "3.4.3")
-        compileOnly(group = "com.openosrs", name = "runelite-api", version = "3.4.3")
-        compileOnly(group = "com.openosrs", name = "runelite-client", version = "3.4.3")
+        compileOnly(group = "com.openosrs", name = "http-api", version = "3.4.5")
+        compileOnly(group = "com.openosrs", name = "runelite-api", version = "3.4.5")
+        compileOnly(group = "com.openosrs", name = "runelite-client", version = "3.4.5")
 
         compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.9")
         compileOnly(group = "com.google.inject", name = "guice", version = "4.2.3", classifier = "no_aop")
-        compileOnly(group = "org.projectlombok", name = "lombok", version = "1.18.12")
+        compileOnly(group = "org.projectlombok", name = "lombok", version = "1.18.14")
         compileOnly(group = "org.pf4j", name = "pf4j", version = "3.4.1")
         compileOnly(group = "io.reactivex.rxjava3", name = "rxjava", version = "3.0.6")
 

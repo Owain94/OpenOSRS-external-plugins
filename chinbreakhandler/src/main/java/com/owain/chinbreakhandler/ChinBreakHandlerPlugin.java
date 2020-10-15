@@ -271,7 +271,11 @@ public class ChinBreakHandlerPlugin extends Plugin
 						client.setUsername(finalUsername);
 						client.setPassword(finalPassword);
 
-						client.setGameState(GameState.LOGGING_IN);
+						// client.setGameState(GameState.LOGGING_IN);
+
+						sendKey(KeyEvent.VK_ENTER);
+						sendKey(KeyEvent.VK_ENTER);
+						sendKey(KeyEvent.VK_ENTER);
 					}
 				);
 

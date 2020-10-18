@@ -114,7 +114,7 @@ public class ChinBreakHandlerPlugin extends Plugin
 			.subscribe(
 				(plugins) ->
 				{
-					if (!plugins.isEmpty() && (data == null) || chinBreakHandler.getActivePlugins().stream().anyMatch(e -> !this.isValidBreak(e)))
+					if (!plugins.isEmpty())
 					{
 						if (!navButton.isSelected())
 						{

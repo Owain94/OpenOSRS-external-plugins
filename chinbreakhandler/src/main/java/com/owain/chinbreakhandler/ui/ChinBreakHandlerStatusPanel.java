@@ -31,6 +31,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.PluginPanel;
+import net.runelite.client.util.SwingUtil;
 
 @Slf4j
 public class ChinBreakHandlerStatusPanel extends JPanel
@@ -41,7 +42,9 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 	private final Plugin plugin;
 
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
+	private final JPanel infoWrapper = new JPanel(new BorderLayout());
 	private final JPanel infoPanel = new JPanel(new GridBagLayout());
+	private final JPanel extraDataPanel = new JPanel(new GridBagLayout());
 	private final JLabel timeLabel = new JLabel();
 	private final JLabel runtimeLabel = new JLabel();
 	private final JLabel breaksLabel = new JLabel();
@@ -83,6 +86,12 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 
 		chinBreakHandlerPlugin.disposables.put(plugin, secondsDisposable);
 
+		Disposable extraDataDisposable = chinBreakHandler
+			.getExtraDataObservable()
+			.subscribe((data) -> SwingUtil.syncExec(() -> this.extraData(data)));
+
+		chinBreakHandlerPlugin.disposables.put(plugin, extraDataDisposable);
+
 		init();
 	}
 
@@ -101,7 +110,7 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 	private void milliseconds(long ignored)
 	{
 		Instant now = Instant.now();
-		
+
 		Map<Plugin, Instant> startTimes = chinBreakHandler.getStartTimes();
 
 		if (startTimes.containsKey(plugin))
@@ -164,6 +173,83 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 		}
 	}
 
+	private void extraData(Map<Plugin, Map<String, String>> extraData)
+	{
+		Map<String, String> pluginData = extraData.get(plugin);
+
+		if (pluginData.isEmpty())
+		{
+			return;
+		}
+
+		extraDataPanel.removeAll();
+
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.insets = new Insets(2, 0, 2, 0);
+		c.gridx = 0;
+		c.gridy = 0;
+
+		pluginData.computeIfPresent("State", (k, v) -> {
+			JLabel keyLabel = new JLabel(k);
+			c.gridwidth = 2;
+			c.weightx = 2;
+			c.gridx = 0;
+			c.gridy = 0;
+			extraDataPanel.add(keyLabel, c);
+
+			JLabel valueLabel = new JLabel(v);
+			c.weightx = 1;
+			c.gridx = 0;
+			c.gridy = 1;
+			extraDataPanel.add(valueLabel, c);
+
+			c.gridx += 1;
+
+			return null;
+		});
+
+		int index = 0;
+		for (Map.Entry<String, String> data : pluginData.entrySet())
+		{
+			index++;
+
+			JLabel keyLabel = new JLabel(data.getKey());
+			JLabel valueLabel = new JLabel(data.getValue());
+
+			boolean bump = index % 2 == 0;
+
+			if (!bump && index == pluginData.size())
+			{
+				c.gridwidth = 2;
+			}
+			else
+			{
+				c.gridwidth = 1;
+			}
+
+			c.gridx = bump ? 1 : 0;
+
+			c.weightx = 2;
+			if (bump)
+			{
+				c.gridy -= 1;
+			}
+			else
+			{
+				c.gridy += 1;
+			}
+			extraDataPanel.add(keyLabel, c);
+
+			c.weightx = 1;
+			c.gridy += 1;
+			extraDataPanel.add(valueLabel, c);
+		}
+
+		extraDataPanel.revalidate();
+		extraDataPanel.repaint();
+	}
+
 	private void onConfigChanged(ConfigChanged configChanged)
 	{
 		if (configChanged == null || !configChanged.getGroup().equals(CONFIG_GROUP) || !configChanged.getKey().contains(sanitizedName(plugin)))
@@ -193,6 +279,13 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 			BorderFactory.createLineBorder(BACKGROUND_COLOR)
 		));
 
+		extraDataPanel.setBackground(BACKGROUND_COLOR);
+		extraDataPanel.setBorder(new CompoundBorder(
+			new CompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, PANEL_BACKGROUND_COLOR),
+				BorderFactory.createLineBorder(BACKGROUND_COLOR)
+			), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
 		JLabel title = new JLabel();
 		title.setText(plugin.getName());
 		title.setFont(NORMAL_FONT);
@@ -217,9 +310,12 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 		statusPanel();
 		infoPanel();
 
+		infoWrapper.add(infoPanel, BorderLayout.NORTH);
+		infoWrapper.add(extraDataPanel, BorderLayout.SOUTH);
+
 		add(titleWrapper, BorderLayout.NORTH);
 		add(contentPanel, BorderLayout.CENTER);
-		add(infoPanel, BorderLayout.SOUTH);
+		add(infoWrapper, BorderLayout.SOUTH);
 	}
 
 	private void statusPanel()

@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -44,6 +45,9 @@ public class ChinBreakHandler
 	private final PublishSubject<Plugin> logoutActionSubject = PublishSubject.create();
 
 	public final PublishSubject<ConfigChanged> configChanged = PublishSubject.create();
+
+	private final Map<Plugin, Map<String, String>> extraData = new HashMap<>();
+	private final PublishSubject<Map<Plugin, Map<String, String>>> extraDataSubject = PublishSubject.create();
 
 	@Inject
 	ChinBreakHandler(ConfigManager configManager)
@@ -205,6 +209,47 @@ public class ChinBreakHandler
 	{
 		activeBreaks.remove(plugin);
 		activeBreaksSubject.onNext(activeBreaks);
+	}
+
+	public void setExtraData(Plugin plugin, String key, String value)
+	{
+		extraData.putIfAbsent(plugin, new LinkedHashMap<>());
+		extraData.get(plugin).put(key, value);
+
+		extraDataSubject.onNext(extraData);
+	}
+
+	public void setExtraData(Plugin plugin, Map<String, String> data)
+	{
+		extraData.putIfAbsent(plugin, new LinkedHashMap<>());
+
+		data.forEach(
+			(key, value) -> extraData.get(plugin).merge(key, value, (existingData, newData) -> newData)
+		);
+
+		extraDataSubject.onNext(extraData);
+	}
+
+	public void removeExtraData(Plugin plugin, String key)
+	{
+		if (!extraData.containsKey(plugin))
+		{
+			return;
+		}
+
+		extraData.get(plugin).remove(key);
+		extraDataSubject.onNext(extraData);
+	}
+
+	public void resetExtraData(Plugin plugin)
+	{
+		extraData.remove(plugin);
+		extraDataSubject.onNext(extraData);
+	}
+
+	public @NonNull Observable<Map<Plugin, Map<String, String>>> getExtraDataObservable()
+	{
+		return extraDataSubject.hide();
 	}
 
 	public @NonNull Observable<Map<Plugin, Instant>> getActiveBreaksObservable()

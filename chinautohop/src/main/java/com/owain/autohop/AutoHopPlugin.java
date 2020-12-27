@@ -400,10 +400,10 @@ public class AutoHopPlugin extends Plugin
 	private void mouseEvent(int id, @NotNull Point point)
 	{
 		MouseEvent mouseEvent = new MouseEvent(
-				client.getCanvas(), id,
-				System.currentTimeMillis(),
-				0, point.getX(), point.getY(),
-				1, false, 1
+			client.getCanvas(), id,
+			System.currentTimeMillis(),
+			0, point.getX(), point.getY(),
+			1, false, 1
 		);
 
 		client.getCanvas().dispatchEvent(mouseEvent);

@@ -158,11 +158,24 @@ public interface AutoHopConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "logout",
+			name = "Logout instead",
+			description = "Logout instead of hopping, 1 tick faster",
+			titleSection = "hopTitle",
+			position = 10
+	)
+	default boolean logout()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 			keyName = "returnInventory",
 			name = "Return to inventory",
 			description = "Return to inventory after hopping",
 			titleSection = "hopTitle",
-			position = 10
+			position = 11,
+			hide = "logout"
 	)
 	default boolean returnInventory()
 	{
@@ -173,7 +186,8 @@ public interface AutoHopConfig extends Config
 			keyName = "worldsTitle",
 			name = "Worlds",
 			description = "",
-			position = 12
+			position = 12,
+			hide = "logout"
 	)
 	default Title worldsTitle()
 	{
@@ -185,7 +199,8 @@ public interface AutoHopConfig extends Config
 			name = "American",
 			description = "Allow hopping to American worlds",
 			titleSection = "worldsTitle",
-			position = 13
+			position = 13,
+			hide = "logout"
 	)
 	default boolean american()
 	{
@@ -197,7 +212,8 @@ public interface AutoHopConfig extends Config
 			name = "UK",
 			description = "Allow hopping to UK worlds",
 			titleSection = "worldsTitle",
-			position = 14
+			position = 14,
+			hide = "logout"
 	)
 	default boolean unitedkingdom()
 	{
@@ -209,7 +225,8 @@ public interface AutoHopConfig extends Config
 			name = "German",
 			description = "Allow hopping to German worlds",
 			titleSection = "worldsTitle",
-			position = 15
+			position = 15,
+			hide = "logout"
 	)
 	default boolean germany()
 	{
@@ -221,7 +238,8 @@ public interface AutoHopConfig extends Config
 			name = "Australian",
 			description = "Allow hopping to Australian worlds",
 			titleSection = "worldsTitle",
-			position = 16
+			position = 16,
+			hide = "logout"
 	)
 	default boolean australia()
 	{

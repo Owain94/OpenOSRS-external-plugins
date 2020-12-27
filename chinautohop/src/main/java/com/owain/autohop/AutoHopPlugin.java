@@ -1,21 +1,19 @@
 package com.owain.autohop;
 
 import com.google.inject.Provides;
+
+import java.awt.event.MouseEvent;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
+
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.PlayerSpawned;
+import net.runelite.api.events.*;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatColorType;
@@ -33,6 +31,7 @@ import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
 import net.runelite.http.api.worlds.WorldResult;
 import net.runelite.http.api.worlds.WorldType;
+import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
 @Extension
@@ -49,9 +48,13 @@ public class AutoHopPlugin extends Plugin
 	private static final int GRAND_EXCHANGE_REGION = 12598;
 	private static final WorldArea FEROX_ENCLAVE_AREA = new WorldArea(new WorldPoint(3125, 3618, 0),
 		new WorldPoint(3153, 3639, 0));
+	private boolean logout;
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private ExecutorService executorService;
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
@@ -112,7 +115,6 @@ public class AutoHopPlugin extends Plugin
 		}
 	}
 
-
 	@Subscribe
 	private void onPlayerSpawned(PlayerSpawned event)
 	{
@@ -152,7 +154,15 @@ public class AutoHopPlugin extends Plugin
 			return;
 		}
 
-		hop();
+		if (config.logout())
+		{
+			logout = true;
+			click();
+		}
+		else
+		{
+			hop();
+		}
 	}
 
 	private World findWorld(List<World> worlds, EnumSet<WorldType> currentWorldTypes, int totalLevel)
@@ -356,7 +366,28 @@ public class AutoHopPlugin extends Plugin
 			client.getLocalPlayer().getName() != null)
 		{
 			log.info("Chat message found -> Hopping");
-			hop();
+			if (config.logout())
+			{
+				logout = true;
+				click();
+			}
+			else
+			{
+				hop();
+			}
+		}
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (logout)
+		{
+			event.consume();
+			log.info("Logging out");
+			int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
+			client.invokeMenuAction("", "", 1, MenuOpcode.CC_OP.getId(), -1, param1);
+			logout = false;
 		}
 	}
 
@@ -364,5 +395,33 @@ public class AutoHopPlugin extends Plugin
 	{
 		displaySwitcherAttempts = 0;
 		quickHopTargetWorld = null;
+	}
+
+	private void mouseEvent(int id, @NotNull Point point)
+	{
+		MouseEvent mouseEvent = new MouseEvent(
+				client.getCanvas(), id,
+				System.currentTimeMillis(),
+				0, point.getX(), point.getY(),
+				1, false, 1
+		);
+
+		client.getCanvas().dispatchEvent(mouseEvent);
+	}
+
+	private void click()
+	{
+		executorService.submit(() ->
+		{
+			Point point = new Point(0, 0);
+
+			mouseEvent(MouseEvent.MOUSE_ENTERED, point);
+			mouseEvent(MouseEvent.MOUSE_EXITED, point);
+			mouseEvent(MouseEvent.MOUSE_MOVED, point);
+
+			mouseEvent(MouseEvent.MOUSE_PRESSED, point);
+			mouseEvent(MouseEvent.MOUSE_RELEASED, point);
+			mouseEvent(MouseEvent.MOUSE_CLICKED, point);
+		});
 	}
 }

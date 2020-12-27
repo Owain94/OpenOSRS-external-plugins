@@ -1,14 +1,12 @@
 package com.owain.autohop;
 
 import com.google.inject.Provides;
-
 import java.awt.event.MouseEvent;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldArea;

@@ -1,5 +1,7 @@
 package com.owain.chindaeyalt;
 
+import com.openosrs.client.ui.overlay.components.table.TableAlignment;
+import com.openosrs.client.ui.overlay.components.table.TableComponent;
 import static com.owain.chindaeyalt.ChinDaeyaltPlugin.PLUGIN_NAME;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,8 +11,6 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.TitleComponent;
-import net.runelite.client.ui.overlay.components.table.TableAlignment;
-import net.runelite.client.ui.overlay.components.table.TableComponent;
 
 public final class ChinDaeyaltOverlay extends OverlayPanel
 {

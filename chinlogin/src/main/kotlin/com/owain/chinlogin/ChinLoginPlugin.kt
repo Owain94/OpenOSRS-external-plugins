@@ -11,7 +11,6 @@ import net.runelite.client.config.ConfigManager
 import net.runelite.client.eventbus.Subscribe
 import net.runelite.client.plugins.Plugin
 import net.runelite.client.plugins.PluginDescriptor
-import net.runelite.client.plugins.PluginType
 import org.pf4j.Extension
 import java.awt.Rectangle
 import java.awt.event.KeyEvent
@@ -25,7 +24,6 @@ import javax.inject.Inject
 @PluginDescriptor(
     name = "Chin login",
     description = "Automatically logs you in on the login screen because a 6 hour log is annoying",
-    type = PluginType.MISCELLANEOUS,
     enabledByDefault = false
 )
 class ChinLoginPlugin : Plugin() {

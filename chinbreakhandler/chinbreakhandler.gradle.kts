@@ -23,14 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.16"
+version = "1.0.0"
 
 project.extra["PluginName"] = "Chin break handler"
 project.extra["PluginDescription"] = "Automatically takes breaks for you (?)"
 
 dependencies {
-    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")
-    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.2.0")
+    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.4")
+    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.6.0")
 }
 
 tasks {

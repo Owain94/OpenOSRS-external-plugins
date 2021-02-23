@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Player;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
@@ -51,7 +51,6 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import org.pf4j.Extension;
@@ -59,8 +58,7 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "Runecrafting Profit",
-	description = "Shows various runecrafting stats",
-	type = PluginType.SKILLING
+	description = "Shows various runecrafting stats"
 )
 @Slf4j
 public class RunecraftingProfitPlugin extends Plugin
@@ -111,7 +109,7 @@ public class RunecraftingProfitPlugin extends Plugin
 	private void onOverlayMenuClicked(OverlayMenuClicked overlayMenuClicked)
 	{
 		OverlayMenuEntry overlayMenuEntry = overlayMenuClicked.getEntry();
-		if (overlayMenuEntry.getMenuOpcode() == MenuOpcode.RUNELITE_OVERLAY
+		if (overlayMenuEntry.getMenuAction() == MenuAction.RUNELITE_OVERLAY
 			&& overlayMenuClicked.getEntry().getOption().equals(RunecraftingProfitOverlay.RUNECRAFT_PROFIT_RESET)
 			&& overlayMenuClicked.getOverlay() == overlay)
 		{

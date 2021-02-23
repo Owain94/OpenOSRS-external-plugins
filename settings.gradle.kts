@@ -25,13 +25,10 @@
 
 rootProject.name = "Owain94 external plugins"
 
-include(":chinautohop")
 include(":chinbankpin")
 include(":chinbreakhandler")
 include(":chindaeyalt")
-include(":chinglassblow")
 include(":chinlogin")
-include(":farmingprofit")
 include(":ignorecompliance")
 include(":runecraftingprofit")
 include(":warcallingindicators")

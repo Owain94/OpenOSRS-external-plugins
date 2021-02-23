@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Point;
 import net.runelite.api.events.GameObjectSpawned;
@@ -27,7 +27,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.HotkeyListener;
 import org.pf4j.Extension;
@@ -36,7 +35,6 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Chin daeyalt",
 	description = "Daeyalt essence miner",
-	type = PluginType.SKILLING,
 	enabledByDefault = false
 )
 @Slf4j
@@ -175,12 +173,12 @@ public class ChinDaeyaltPlugin extends Plugin
 			return;
 		}
 
-		menuOptionClicked.setOption("Mine");
-		menuOptionClicked.setTarget("<col=ffff>Daeyalt Essence");
-		menuOptionClicked.setIdentifier(ObjectID.DAEYALT_ESSENCE_39095);
-		menuOptionClicked.setOpcode(MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
-		menuOptionClicked.setParam0(daeyaltEssence.getSceneMinLocation().getX());
-		menuOptionClicked.setParam1(daeyaltEssence.getSceneMinLocation().getY());
+		menuOptionClicked.setMenuOption("Mine");
+		menuOptionClicked.setMenuTarget("<col=ffff>Daeyalt Essence");
+		menuOptionClicked.setId(ObjectID.DAEYALT_ESSENCE_39095);
+		menuOptionClicked.setMenuAction(MenuAction.GAME_OBJECT_FIRST_OPTION);
+		menuOptionClicked.setActionParam(daeyaltEssence.getSceneMinLocation().getX());
+		menuOptionClicked.setWidgetId(daeyaltEssence.getSceneMinLocation().getY());
 	}
 
 	boolean isInRegion()

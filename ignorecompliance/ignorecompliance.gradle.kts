@@ -27,17 +27,24 @@ plugins {
     kotlin("kapt")
 }
 
-version = "0.0.4"
+version = "1.0.0"
 
 project.extra["PluginName"] = "Ignore compliance"
 project.extra["PluginDescription"] = "Sets the compliance value of OpenOSRS to false"
 
 dependencies {
-    kapt(group = "org.pf4j", name = "pf4j", version = "3.2.0")
+    kapt(group = "org.pf4j", name = "pf4j", version = "3.6.0")
+
+    implementation(kotlin("stdlib"))
 }
 
 tasks {
     jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        from(configurations.runtimeClasspath.get()
+                .map { if (it.isDirectory) it else zipTree(it) })
+
         manifest {
             attributes(mapOf(
                     "Plugin-Version" to project.version,

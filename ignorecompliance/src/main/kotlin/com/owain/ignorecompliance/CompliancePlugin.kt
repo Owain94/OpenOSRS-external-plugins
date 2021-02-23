@@ -3,7 +3,6 @@ package com.owain.ignorecompliance
 import net.runelite.api.Client
 import net.runelite.client.plugins.Plugin
 import net.runelite.client.plugins.PluginDescriptor
-import net.runelite.client.plugins.PluginType
 import org.pf4j.Extension
 import javax.inject.Inject
 
@@ -11,7 +10,6 @@ import javax.inject.Inject
 @PluginDescriptor(
         name = "Ignore compliance",
         description = "Sets the compliance value of OpenOSRS to false",
-        type = PluginType.MISCELLANEOUS,
         enabledByDefault = false
 )
 class CompliancePlugin : Plugin() {

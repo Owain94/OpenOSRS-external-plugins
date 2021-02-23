@@ -29,48 +29,39 @@ import static com.owain.chindaeyalt.ChinDaeyaltPlugin.CONFIG_GROUP;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.ConfigTitle;
 import net.runelite.client.config.Keybind;
-import net.runelite.client.config.Title;
 import net.runelite.client.config.Units;
 
 @SuppressWarnings({"unused"})
 @ConfigGroup(CONFIG_GROUP)
 public interface ChinDaeyaltConfig extends Config
 {
-	@ConfigTitleSection(
-		keyName = "toggle",
+	@ConfigTitle(
 		name = "On / off toggle",
-		description = "",
+		description = "On / off toggle",
 		position = 1
 	)
-	default Title toggle()
-	{
-		return new Title();
-	}
+	String toggle = "toggle";
 
 	@ConfigItem(
 		keyName = "hotkeyToggle",
 		name = "Hotkey toggle",
 		description = "Toggles the plugin on and off",
 		position = 2,
-		titleSection = "toggle"
+		title = toggle
 	)
 	default Keybind hotkeyToggle()
 	{
 		return Keybind.NOT_SET;
 	}
 
-	@ConfigTitleSection(
-		keyName = "delays",
+	@ConfigTitle(
 		name = "Delays",
 		description = "",
 		position = 3
 	)
-	default Title delays()
-	{
-		return new Title();
-	}
+	String delays = "delays";
 
 	@Units(Units.MILLISECONDS)
 	@ConfigItem(
@@ -78,7 +69,7 @@ public interface ChinDaeyaltConfig extends Config
 		name = "Minimum delay",
 		description = "Absolute minimum delay between actions",
 		position = 4,
-		titleSection = "delays"
+		title = delays
 	)
 	default int minimumDelay()
 	{
@@ -91,7 +82,7 @@ public interface ChinDaeyaltConfig extends Config
 		name = "Maximum delay",
 		description = "Absolute maximum delay between actions",
 		position = 5,
-		titleSection = "delays"
+		title = delays
 	)
 	default int maximumDelay()
 	{
@@ -104,7 +95,7 @@ public interface ChinDaeyaltConfig extends Config
 		name = "Delay Target",
 		description = "",
 		position = 6,
-		titleSection = "delays"
+		title = delays
 	)
 	default int target()
 	{
@@ -117,7 +108,7 @@ public interface ChinDaeyaltConfig extends Config
 		name = "Delay Deviation",
 		description = "",
 		position = 7,
-		titleSection = "delays"
+		title = delays
 	)
 	default int deviation()
 	{
@@ -129,7 +120,7 @@ public interface ChinDaeyaltConfig extends Config
 		name = "Weighted Distribution",
 		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
 		position = 8,
-		titleSection = "delays"
+		title = delays
 	)
 	default boolean weightedDistribution()
 	{

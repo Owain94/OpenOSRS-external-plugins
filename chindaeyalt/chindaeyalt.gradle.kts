@@ -23,14 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.2"
+version = "1.0.0"
 
 project.extra["PluginName"] = "Chin daeyalt"
 project.extra["PluginDescription"] = "Daeyalt essence miner"
 
 dependencies {
-    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.12")
-    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.2.0")
+    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.4")
+    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.6.0")
 
     compileOnly(project(":chinbreakhandler"))
 }

@@ -28,15 +28,14 @@ import com.google.inject.Provides;
 import java.awt.Color;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import static net.runelite.api.MenuAction.*;
 import net.runelite.api.MenuEntry;
-import static net.runelite.api.MenuOpcode.*;
 import net.runelite.api.Player;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
@@ -46,7 +45,6 @@ import org.pf4j.Extension;
 	name = "War calling indicators",
 	description = "War War War.",
 	tags = {"skill", "total", "max", "PVP"},
-	type = PluginType.PVP,
 	enabledByDefault = false
 )
 public class WarIndicatorPlugin extends Plugin

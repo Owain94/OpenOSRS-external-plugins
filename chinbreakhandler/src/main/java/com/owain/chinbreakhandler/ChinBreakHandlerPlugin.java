@@ -410,12 +410,12 @@ public class ChinBreakHandlerPlugin extends Plugin
 				return;
 			}
 
-			menuOptionClicked.consume();
-			client.invokeMenuAction(
+			menuAction(
+				menuOptionClicked,
 				"Play",
 				"",
 				1,
-				MenuAction.CC_OP.getId(),
+				MenuAction.CC_OP,
 				-1,
 				playButton.getId()
 			);
@@ -443,12 +443,12 @@ public class ChinBreakHandlerPlugin extends Plugin
 				return;
 			}
 
-			menuOptionClicked.consume();
-			client.invokeMenuAction(
+			menuAction(
+				menuOptionClicked,
 				"Logout",
 				"",
 				1,
-				MenuAction.CC_OP.getId(),
+				MenuAction.CC_OP,
 				-1,
 				param1
 			);
@@ -544,5 +544,15 @@ public class ChinBreakHandlerPlugin extends Plugin
 			return false;
 		}
 		return true;
+	}
+
+	public void menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int param0, int param1)
+	{
+		menuOptionClicked.setMenuOption(option);
+		menuOptionClicked.setMenuTarget(target);
+		menuOptionClicked.setId(identifier);
+		menuOptionClicked.setMenuAction(menuAction);
+		menuOptionClicked.setActionParam(param0);
+		menuOptionClicked.setWidgetId(param1);
 	}
 }

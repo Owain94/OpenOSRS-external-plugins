@@ -27,13 +27,13 @@ plugins {
     kotlin("kapt")
 }
 
-version = "1.0.1"
+version = "1.1.0"
 
 project.extra["PluginName"] = "Chin bank pin"
 project.extra["PluginDescription"] = "Automatically enters your bank pin"
 
 dependencies {
-    kapt(group = "org.pf4j", name = "pf4j", version = "3.6.0")
+    kapt(Libraries.pf4j)
 
     implementation(kotlin("stdlib"))
 }

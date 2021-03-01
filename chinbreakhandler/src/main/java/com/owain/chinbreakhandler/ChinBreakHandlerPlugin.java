@@ -38,7 +38,6 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
 @Extension
@@ -473,7 +472,7 @@ public class ChinBreakHandlerPlugin extends Plugin
 		});
 	}
 
-	private void mouseEvent(int id, @NotNull Point point)
+	private void mouseEvent(int id, Point point)
 	{
 		MouseEvent mouseEvent = new MouseEvent(
 			client.getCanvas(), id,

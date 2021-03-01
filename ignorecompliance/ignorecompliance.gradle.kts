@@ -27,13 +27,13 @@ plugins {
     kotlin("kapt")
 }
 
-version = "1.0.0"
+version = "1.1.0"
 
 project.extra["PluginName"] = "Ignore compliance"
 project.extra["PluginDescription"] = "Sets the compliance value of OpenOSRS to false"
 
 dependencies {
-    kapt(group = "org.pf4j", name = "pf4j", version = "3.6.0")
+    kapt(Libraries.pf4j)
 
     implementation(kotlin("stdlib"))
 }

@@ -42,7 +42,7 @@ class BankPinPlugin : Plugin() {
     }
 
     override fun startUp() {
-        configManager.setConfiguration("openosrs", "keyboardPin", true)
+		configManager.setConfiguration("bank", "bankPinKeyboard", true)
     }
 
     @Subscribe

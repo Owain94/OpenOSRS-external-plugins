@@ -208,7 +208,8 @@ public class ChinBreakHandlerPanel extends PluginPanel
 
 		Set<Plugin> activePlugins = chinBreakHandler.getActivePlugins();
 
-		if (activePlugins.size() > 0) {
+		if (activePlugins.size() > 0)
+                {
 			scheduleBreakButton.addActionListener(e -> activePlugins.forEach(plugin -> chinBreakHandler.planBreak(plugin, Instant.now())));
 
 			titlePanel.add(scheduleBreakButton, BorderLayout.SOUTH);

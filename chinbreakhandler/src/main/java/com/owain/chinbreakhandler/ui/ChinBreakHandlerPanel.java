@@ -16,12 +16,14 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -166,6 +168,7 @@ public class ChinBreakHandlerPanel extends PluginPanel
 
 		JLabel title = new JLabel();
 		JLabel help = new JLabel(HELP_ICON);
+		JButton scheduleBreakButton = new JButton("Go on a break");
 
 		title.setText("Chin break handler");
 		title.setForeground(Color.WHITE);
@@ -202,6 +205,15 @@ public class ChinBreakHandlerPanel extends PluginPanel
 
 		titlePanel.add(title, BorderLayout.WEST);
 		titlePanel.add(help, BorderLayout.EAST);
+
+		Set<Plugin> activePlugins = chinBreakHandler.getActivePlugins();
+
+		if (activePlugins.size() > 0) {
+			scheduleBreakButton.addActionListener(e -> activePlugins.forEach(plugin -> chinBreakHandler.planBreak(plugin, Instant.now())));
+
+			titlePanel.add(scheduleBreakButton, BorderLayout.SOUTH);
+			scheduleBreakButton.setBorder(new EmptyBorder(3,3,3,3));
+		}
 
 		return titlePanel;
 	}

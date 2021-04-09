@@ -17,12 +17,14 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -360,6 +362,25 @@ public class ChinBreakHandlerPanel extends PluginPanel
 			c.insets = new Insets(5, 10, 0, 10);
 
 			contentPanel.add(statusPanel, c);
+		}
+
+		JButton scheduleBreakButton = new JButton("Schedule break now");
+
+		if (activePlugins.size() > 0)
+		{
+			scheduleBreakButton.addActionListener(e -> activePlugins.forEach(plugin -> {
+				if (!chinBreakHandler.isBreakActive(plugin))
+				{
+					chinBreakHandler.planBreak(plugin, Instant.now());
+				}
+			}));
+
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.weightx = 1.0;
+			c.gridy += 1;
+			c.insets = new Insets(5, 10, 0, 10);
+
+			contentPanel.add(scheduleBreakButton, c);
 		}
 
 		return contentPanel;

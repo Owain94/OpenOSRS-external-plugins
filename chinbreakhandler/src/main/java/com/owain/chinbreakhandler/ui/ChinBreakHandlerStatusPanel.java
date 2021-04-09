@@ -188,7 +188,7 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 				BorderFactory.createMatteBorder(0, 0, 1, 0, PANEL_BACKGROUND_COLOR),
 				BorderFactory.createLineBorder(BACKGROUND_COLOR)
 			), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		
+
 		extraDataPanel.removeAll();
 
 		GridBagConstraints c = new GridBagConstraints();

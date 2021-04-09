@@ -87,7 +87,7 @@ public class ChinBreakHandlerPlugin extends Plugin
 
 		panel = injector.getInstance(ChinBreakHandlerPanel.class);
 
-		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "chin_special.png");
+		final BufferedImage icon = ImageUtil.loadImageResource(getClass(), "chin_special.png");
 
 		navButton = NavigationButton.builder()
 			.tooltip("Chin break handler")

@@ -53,7 +53,7 @@ public class ChinBreakHandlerPanel extends PluginPanel
 	{
 		final BufferedImage helpIcon =
 			ImageUtil.recolorImage(
-				ImageUtil.getResourceStreamFromClass(ChinBreakHandlerPlugin.class, "help.png"), ColorScheme.BRAND_BLUE
+				ImageUtil.loadImageResource(ChinBreakHandlerPlugin.class, "help.png"), ColorScheme.BRAND_BLUE
 			);
 		HELP_ICON = new ImageIcon(helpIcon);
 		HELP_HOVER_ICON = new ImageIcon(ImageUtil.alphaOffset(helpIcon, 0.53f));

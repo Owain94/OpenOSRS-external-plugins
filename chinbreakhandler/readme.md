@@ -190,3 +190,25 @@ private void onGameTick(GameTick gameTick)
     chinBreakHandler.startBreak(this, Instant.now().plus(15, ChronoUnit.MINUTES));
 }
 ```
+
+## Making Chin break handler optional
+
+[Soxs](https://github.com/Soxs "Soxs Github") made a util to make the chin break handler fully optional. This way your users don't need my repository added in their OpenOSRS. When they do and have the chin break handler installed your plugin will show up and users can make use of the functionality. When they don't have the chin breka handler installed your plugin will still work like expected.
+
+[ReflectBreakHandler.java](https://gist.github.com/Soxs/50c3e49186a60f79b07ee976879a6c33)
+
+Simply add the code in the gist above to your project and change the following from the code examples above.
+
+From:
+
+```java
+@Inject
+private ChinBreakHandler chinBreakHandler;
+```
+
+To:
+
+```java
+@Inject
+private ReflectBreakHandler chinBreakHandler;
+```

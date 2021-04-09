@@ -35,6 +35,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.Units;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.PluginPanel;
 
@@ -123,7 +124,7 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 		Component editor = spinner.getEditor();
 		JFormattedTextField spinnerTextField = ((JSpinner.DefaultEditor) editor).getTextField();
 		spinnerTextField.setColumns(4);
-		spinnerTextField.setFormatterFactory(new UnitFormatterFactory());
+		spinnerTextField.setFormatterFactory(new UnitFormatterFactory(Units.MINUTES));
 
 		return spinner;
 	}

@@ -2,6 +2,7 @@ package com.owain.chinbreakhandler.ui;
 
 import com.owain.chinbreakhandler.ChinBreakHandler;
 import com.owain.chinbreakhandler.ChinBreakHandlerPlugin;
+import com.owain.chinbreakhandler.ui.utils.ConfigPanel;
 import com.owain.chinbreakhandler.ui.utils.JMultilineLabel;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -40,7 +41,7 @@ import net.runelite.client.util.SwingUtil;
 
 public class ChinBreakHandlerPanel extends PluginPanel
 {
-	final static Color PANEL_BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
+	public final static Color PANEL_BACKGROUND_COLOR = ColorScheme.DARK_GRAY_COLOR;
 	final static Color BACKGROUND_COLOR = ColorScheme.DARKER_GRAY_COLOR;
 
 	static final Font NORMAL_FONT = FontManager.getRunescapeFont();
@@ -61,6 +62,7 @@ public class ChinBreakHandlerPanel extends PluginPanel
 
 	private final ChinBreakHandlerPlugin chinBreakHandlerPlugin;
 	private final ChinBreakHandler chinBreakHandler;
+	private final ConfigPanel configPanel;
 
 	public @NonNull Disposable pluginDisposable;
 	public @NonNull Disposable activeDisposable;
@@ -72,12 +74,15 @@ public class ChinBreakHandlerPanel extends PluginPanel
 	private final JPanel breakTimingsPanel = new JPanel(new GridLayout(0, 1));
 
 	@Inject
-	private ChinBreakHandlerPanel(ChinBreakHandlerPlugin chinBreakHandlerPlugin, ChinBreakHandler chinBreakHandler)
+	private ChinBreakHandlerPanel(ChinBreakHandlerPlugin chinBreakHandlerPlugin, ChinBreakHandler chinBreakHandler, ConfigPanel configPanel)
 	{
 		super(false);
 
+		configPanel.init(chinBreakHandlerPlugin.getOptionsConfig());
+
 		this.chinBreakHandlerPlugin = chinBreakHandlerPlugin;
 		this.chinBreakHandler = chinBreakHandler;
+		this.configPanel = configPanel;
 
 		pluginDisposable = chinBreakHandler
 			.getPluginObservable()
@@ -366,9 +371,11 @@ public class ChinBreakHandlerPanel extends PluginPanel
 
 		JScrollPane pluginPanel = wrapContainer(contentPane(plugins));
 		JScrollPane repositoryPanel = wrapContainer(new ChinBreakHandlerAccountPanel(chinBreakHandlerPlugin, chinBreakHandler));
+		JScrollPane optionsPanel = wrapContainer(configPanel);
 
 		mainTabPane.add("Plugins", pluginPanel);
 		mainTabPane.add("Accounts", repositoryPanel);
+		mainTabPane.add("Options", optionsPanel);
 
 		return mainTabPane;
 	}

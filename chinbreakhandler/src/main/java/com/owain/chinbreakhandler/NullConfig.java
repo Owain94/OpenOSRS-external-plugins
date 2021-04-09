@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2020, Hydrox6 <ikada@protonmail.ch>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Dalton <delps1001@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,48 +23,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.owain.chinbreakhandler.ui.utils;
+package com.owain.chinbreakhandler;
 
-import java.text.ParseException;
-import javax.swing.JFormattedTextField;
+import static com.owain.chinbreakhandler.ChinBreakHandlerPlugin.CONFIG_GROUP;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
 
-final class UnitFormatter extends JFormattedTextField.AbstractFormatter
+@ConfigGroup(CONFIG_GROUP)
+public interface NullConfig extends Config
 {
-	private final String units;
 
-	UnitFormatter(String units)
-	{
-		this.units = units;
-	}
-
-	@Override
-	public Object stringToValue(final String text) throws ParseException
-	{
-		final String trimmedText;
-
-		// Using the spinner controls causes the value to have the unit on the end, so remove it
-		if (text.endsWith(units))
-		{
-			trimmedText = text.substring(0, text.length() - units.length());
-		}
-		else
-		{
-			trimmedText = text;
-		}
-
-		try
-		{
-			return Integer.valueOf(trimmedText);
-		}
-		catch (NumberFormatException e)
-		{
-			throw new ParseException(trimmedText + " is not an integer.", 0);
-		}
-	}
-
-	@Override
-	public String valueToString(final Object value)
-	{
-		return value + units;
-	}
 }

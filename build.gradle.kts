@@ -72,6 +72,7 @@ subprojects {
         compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
 
         compileOnly(Libraries.apacheCommonsText)
+        compileOnly(Libraries.guava)
         compileOnly(Libraries.guice)
         compileOnly(Libraries.lombok)
         compileOnly(Libraries.pf4j)

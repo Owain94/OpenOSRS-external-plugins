@@ -182,6 +182,13 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 			return;
 		}
 
+		extraDataPanel.setBackground(BACKGROUND_COLOR);
+		extraDataPanel.setBorder(new CompoundBorder(
+			new CompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, PANEL_BACKGROUND_COLOR),
+				BorderFactory.createLineBorder(BACKGROUND_COLOR)
+			), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		
 		extraDataPanel.removeAll();
 
 		GridBagConstraints c = new GridBagConstraints();
@@ -278,13 +285,6 @@ public class ChinBreakHandlerStatusPanel extends JPanel
 			BorderFactory.createMatteBorder(0, 0, 1, 0, PANEL_BACKGROUND_COLOR),
 			BorderFactory.createLineBorder(BACKGROUND_COLOR)
 		));
-
-		extraDataPanel.setBackground(BACKGROUND_COLOR);
-		extraDataPanel.setBorder(new CompoundBorder(
-			new CompoundBorder(
-				BorderFactory.createMatteBorder(0, 0, 1, 0, PANEL_BACKGROUND_COLOR),
-				BorderFactory.createLineBorder(BACKGROUND_COLOR)
-			), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
 		JLabel title = new JLabel();
 		title.setText(plugin.getName());

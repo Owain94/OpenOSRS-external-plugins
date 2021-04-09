@@ -79,8 +79,8 @@ public class ChinBreakHandlerAccountPanel extends JPanel
 		JCheckBox manualButton = new JCheckBox("Manual");
 		JCheckBox profilesButton = new JCheckBox("Profiles plugin");
 
-		String profilesSalt = configManager.getConfiguration("profiles", "salt");
-		boolean profilesSavePasswords = Boolean.parseBoolean(configManager.getConfiguration("profiles", "rememberPassword"));
+		String profilesSalt = configManager.getConfiguration("betterProfiles", "salt");
+		boolean profilesSavePasswords = Boolean.parseBoolean(configManager.getConfiguration("betterProfiles", "rememberPassword"));
 
 		if (profilesSalt == null || profilesSalt.length() == 0 || !profilesSavePasswords)
 		{

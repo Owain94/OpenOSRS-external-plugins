@@ -30,7 +30,7 @@ public class ProfilesData
 
 	public static String getProfileData(ConfigManager configManager, char[] password) throws InvalidKeySpecException, NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException
 	{
-		String tmp = configManager.getConfiguration("profiles", "profilesData");
+		String tmp = configManager.getConfiguration("betterProfiles", "profilesData");
 		if (tmp.startsWith("¬"))
 		{
 			tmp = tmp.substring(1);
@@ -41,7 +41,7 @@ public class ProfilesData
 
 	private static byte[] getSalt(ConfigManager configManager)
 	{
-		String salt = configManager.getConfiguration("profiles", "salt");
+		String salt = configManager.getConfiguration("betterProfiles", "salt");
 		if (salt.length() == 0)
 		{
 			return new byte[0];

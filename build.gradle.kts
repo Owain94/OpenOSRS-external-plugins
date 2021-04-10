@@ -10,7 +10,7 @@ plugins {
     checkstyle
     java
     kotlin("jvm") version "1.3.71"
-    id("com.simonharrer.modernizer") version "2.1.0-1" apply false
+    id("com.github.andygoossens.gradle-modernizer-plugin") version "1.4.0" apply false
 }
 
 apply<BootstrapPlugin>()
@@ -64,7 +64,7 @@ subprojects {
     apply<JavaPlugin>()
     apply(plugin = "checkstyle")
     apply(plugin = "kotlin")
-    apply(plugin = "com.simonharrer.modernizer")
+    apply(plugin = "com.github.andygoossens.gradle-modernizer-plugin")
 
     dependencies {
         compileOnly("com.openosrs:http-api:$openosrsVersion+")

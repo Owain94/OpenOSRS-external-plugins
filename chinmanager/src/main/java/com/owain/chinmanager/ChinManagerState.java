@@ -79,6 +79,7 @@ public class ChinManagerState
 		TELEPORTING
 			.onEnter(teleportState.teleport())
 			.onExit(teleportState.unsubscribe())
+			.transition(ChinManagerStates.BANK_PIN, BANK_PIN)
 			.transition(ChinManagerStates.IDLE, IDLE);
 
 		BANK_PIN

@@ -17,7 +17,7 @@ import kotlin.collections.ArrayList
 
 open class BootstrapTask : DefaultTask() {
 
-    private val EXTERNALS = listOf("chinautohop-plugin", "chinglassblow-plugin", "chinnmz-plugin", "chincursealch-plugin", "chingiantseaweed-plugin", "chinourania-plugin", "chinbirdhouse-plugin", "chinmta-plugin", "chinarceuuslibrary-plugin", "chintellyhoplog-plugin", "chinfarmrun-plugin")
+    private val EXTERNALS = listOf("chinautohop-plugin", "chinglassblow-plugin", "chinnmz-plugin", "chincursealch-plugin", "chingiantseaweed-plugin", "chinourania-plugin", "chinbirdhouse-plugin", "chinmta-plugin", "chinarceuuslibrary-plugin", "chintellyhoplog-plugin", "chinfarmrun-plugin", "chinamethyst-plugin")
 
     private fun formatDate(date: Date?) = with(date ?: Date()) {
         SimpleDateFormat("yyyy-MM-dd").format(this)

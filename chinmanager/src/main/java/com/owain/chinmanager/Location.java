@@ -72,5 +72,7 @@ public enum Location
 	PEST_CONTROL,
 	SOUL_WARS,
 
+	UNKNOWN
+
 	;
 }

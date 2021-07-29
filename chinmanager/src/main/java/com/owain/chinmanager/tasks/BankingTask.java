@@ -1124,7 +1124,7 @@ public class BankingTask implements Task<Void>
 					"Withdraw-1",
 					1,
 					MenuAction.CC_OP,
-					getFirstBankInventoryItemsPos(chinManagerPlugin.getLowestItemMatch(getTeleportJewellery(location)), client),
+					getFirstBankItemsPos(chinManagerPlugin.getLowestItemMatch(getTeleportJewellery(location)), client),
 					bankContainer.getId()
 				);
 			}

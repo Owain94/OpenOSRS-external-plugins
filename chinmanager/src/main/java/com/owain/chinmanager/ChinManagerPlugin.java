@@ -401,6 +401,7 @@ public class ChinManagerPlugin extends Plugin
 		overlayManager.add(managerTileIndicatorsOverlay);
 
 		configManager.setConfiguration("bank", "bankPinKeyboard", true);
+		client.setHideDisconnect(true);
 
 		Banking.ITEMS = Set.of();
 

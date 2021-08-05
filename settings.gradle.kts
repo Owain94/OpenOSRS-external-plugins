@@ -33,6 +33,7 @@ include(":chinlogin")
 include(":chinmanager")
 include(":chinstatemanager")
 include(":ignorecompliance")
+include(":oshi")
 include(":runecraftingprofit")
 include(":warcallingindicators")
 

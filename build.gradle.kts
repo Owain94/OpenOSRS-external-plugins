@@ -62,7 +62,6 @@ subprojects {
     }
 
     apply<JavaPlugin>()
-    apply(plugin = "checkstyle")
     apply(plugin = "kotlin")
     apply(plugin = "com.github.andygoossens.gradle-modernizer-plugin")
 
@@ -79,11 +78,15 @@ subprojects {
         compileOnly(Libraries.rxjava)
     }
 
-    checkstyle {
-        maxWarnings = 0
-        toolVersion = "8.25"
-        isShowViolations = true
-        isIgnoreFailures = false
+    if (this.name != "oshi") {
+        apply(plugin = "checkstyle")
+
+        checkstyle {
+            maxWarnings = 0
+            toolVersion = "8.25"
+            isShowViolations = true
+            isIgnoreFailures = false
+        }
     }
 
     configure<PublishingExtension> {

@@ -23,12 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.7.7"
+version = "2.8.0"
 
 project.extra["PluginName"] = "Chin manager"
 project.extra["PluginDescription"] = "Configure and manage chin plugins"
 
 dependencies {
+    api(project(":oshi"))
+
     annotationProcessor(Libraries.lombok)
     annotationProcessor(Libraries.pf4j)
 

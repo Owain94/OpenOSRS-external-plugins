@@ -86,6 +86,7 @@ import net.runelite.api.Scene;
 import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
 import net.runelite.api.TileObject;
+import net.runelite.api.VarClientInt;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -791,7 +792,10 @@ public class ChinManagerPlugin extends Plugin
 
 				if (finished && stateMachine.getState() == ChinManagerState.IDLE)
 				{
-					client.runScript(915, 3);
+					if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
+					{
+						client.runScript(915, 3);
+					}
 					stateMachine.accept(ChinManagerStates.RESUME);
 				}
 			}

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
+import net.runelite.api.VarClientInt;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -177,6 +178,11 @@ public class ContainerUtils
 
 	public static Collection<WidgetItem> getInventoryItems(Client client)
 	{
+		if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
+		{
+			client.runScript(915, 3);
+		}
+
 		Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
 		if (inventory == null || inventory.isHidden())

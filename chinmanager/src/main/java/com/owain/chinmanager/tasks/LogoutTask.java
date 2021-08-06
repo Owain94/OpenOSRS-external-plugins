@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.MenuAction;
+import net.runelite.api.VarClientInt;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
@@ -127,7 +128,10 @@ public class LogoutTask implements Task<Void>
 		else if (logoutState == LogoutState.LOGOUT_TAB_SWITCH)
 		{
 			// Logout tab
-			client.runScript(915, 10);
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 10)
+			{
+				client.runScript(915, 10);
+			}
 
 			logoutState = LogoutState.LOGOUT_TAB;
 		}

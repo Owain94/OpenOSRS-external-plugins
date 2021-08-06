@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
+import net.runelite.api.VarClientInt;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
@@ -78,7 +79,10 @@ public class LoginScreenTask implements Task<Void>
 		}
 		else if (loginScreen == null)
 		{
-			client.runScript(915, 3);
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
+			{
+				client.runScript(915, 3);
+			}
 			ChinManagerState.stateMachine.accept(ChinManagerStates.RESUME);
 		}
 	}

@@ -307,7 +307,10 @@ public class TeleportTask implements Task<Void>
 		}
 		else if (teleportState == TeleportState.EQUIPMENT)
 		{
-			client.runScript(915, 4);
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 4)
+			{
+				client.runScript(915, 4);
+			}
 			teleportState = TeleportState.TELEPORT_EQUIPMENT;
 		}
 		else if (teleportState == TeleportState.TELEPORT_EQUIPMENT)
@@ -509,7 +512,10 @@ public class TeleportTask implements Task<Void>
 				return;
 			}
 
-			client.runScript(915, 3);
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
+			{
+				client.runScript(915, 3);
+			}
 
 			TileObject exitPortal = chinManagerPlugin.getObject(ObjectID.PORTAL_4525);
 
@@ -805,7 +811,10 @@ public class TeleportTask implements Task<Void>
 		{
 			if (teleportState == TeleportState.MINIGAME_TELEPORT_WAIT)
 			{
-				client.runScript(915, 6);
+				if (client.getVar(VarClientInt.INVENTORY_TAB) != 6)
+				{
+					client.runScript(915, 6);
+				}
 			}
 
 			teleportState = TeleportState.TELEPORTING;
@@ -1626,7 +1635,10 @@ public class TeleportTask implements Task<Void>
 		}
 		else
 		{
-			client.runScript(915, 2);
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 2)
+			{
+				client.runScript(915, 2);
+			}
 
 			teleportState = TeleportState.SELECT_MINIGAME;
 		}

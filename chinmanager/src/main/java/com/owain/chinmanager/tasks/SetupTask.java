@@ -12,6 +12,7 @@ import static java.awt.event.KeyEvent.KEY_TYPED;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.VarClientInt;
 import net.runelite.client.callback.ClientThread;
 
 @Slf4j
@@ -55,7 +56,10 @@ public class SetupTask implements Task<Void>
 
 				clientThread.invoke(() -> {
 					ChinManagerState.stateMachine.accept(ChinManagerStates.IDLE);
-					client.runScript(915, 3);
+					if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
+					{
+						client.runScript(915, 3);
+					}
 					chinManager.setCurrentlyActive(chinManager.getActivePlugins().stream().findFirst().orElse(null));
 				});
 			}

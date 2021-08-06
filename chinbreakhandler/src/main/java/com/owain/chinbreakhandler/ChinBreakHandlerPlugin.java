@@ -29,6 +29,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuAction;
 import net.runelite.api.Point;
+import net.runelite.api.VarClientInt;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
@@ -383,7 +384,10 @@ public class ChinBreakHandlerPlugin extends Plugin
 		else if (state == ChinBreakHandlerState.LOGOUT_TAB)
 		{
 			// Logout tab
-			client.runScript(915, 10);
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 10)
+			{
+				client.runScript(915, 10);
+			}
 
 			Widget logoutButton = client.getWidget(182, 8);
 			Widget logoutDoorButton = client.getWidget(69, 23);
@@ -401,7 +405,10 @@ public class ChinBreakHandlerPlugin extends Plugin
 		else if (state == ChinBreakHandlerState.INVENTORY)
 		{
 			// Inventory
-			client.runScript(915, 3);
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
+			{
+				client.runScript(915, 3);
+			}
 			state = ChinBreakHandlerState.RESUME;
 		}
 		else if (state == ChinBreakHandlerState.RESUME)

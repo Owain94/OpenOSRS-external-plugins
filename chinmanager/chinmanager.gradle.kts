@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.8.1"
+version = "2.8.2"
 
 project.extra["PluginName"] = "Chin manager"
 project.extra["PluginDescription"] = "Configure and manage chin plugins"

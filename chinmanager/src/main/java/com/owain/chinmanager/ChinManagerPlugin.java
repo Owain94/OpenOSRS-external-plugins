@@ -9,7 +9,6 @@ import static com.owain.automation.ContainerUtils.getBankWidgetItemForItemsPos;
 import static com.owain.automation.ContainerUtils.getInventoryWidgetItemForItemsPos;
 import static com.owain.automation.ContainerUtils.hasBankItem;
 import static com.owain.automation.ContainerUtils.hasItem;
-import com.owain.automation.Pathfinding;
 import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.cookies.PersistentCookieJar;
 import com.owain.chinmanager.cookies.cache.SetCookieCache;
@@ -434,25 +433,25 @@ public class ChinManagerPlugin extends Plugin
 										.findFirst().ifPresent(equipment -> equipment.getEquipment().forEach((item) -> items.add(item.getId())));
 
 									items.addAll(
-									Stream.of(Set.of(
-										ItemID.TELEPORT_TO_HOUSE,
-										ItemID.LAW_RUNE,
-										ItemID.AIR_RUNE,
-										ItemID.EARTH_RUNE
-										),
-										DIGSIDE_PENDANTS,
-										RINGS_OF_DUELING,
-										GAMES_NECKLACES,
-										COMBAT_BRACELETS,
-										SKILLS_NECKLACES,
-										RINGS_OF_WEALTH,
-										AMULETS_OF_GLORY,
-										XERICS_TALISMAN,
-										CONSTRUCT_CAPE,
-										RUNE_POUCHES
-									)
-										.flatMap(Collection::stream)
-										.collect(Collectors.toSet())
+										Stream.of(Set.of(
+													ItemID.TELEPORT_TO_HOUSE,
+													ItemID.LAW_RUNE,
+													ItemID.AIR_RUNE,
+													ItemID.EARTH_RUNE
+												),
+												DIGSIDE_PENDANTS,
+												RINGS_OF_DUELING,
+												GAMES_NECKLACES,
+												COMBAT_BRACELETS,
+												SKILLS_NECKLACES,
+												RINGS_OF_WEALTH,
+												AMULETS_OF_GLORY,
+												XERICS_TALISMAN,
+												CONSTRUCT_CAPE,
+												RUNE_POUCHES
+											)
+											.flatMap(Collection::stream)
+											.collect(Collectors.toSet())
 									);
 
 									if (chinManager.getBankItems().containsKey(plugin))
@@ -1707,8 +1706,8 @@ public class ChinManagerPlugin extends Plugin
 			.filter(tileObject -> {
 				List<String> actions = Arrays.asList(
 					client.getObjectDefinition(
-						tileObject.getId()
-					)
+							tileObject.getId()
+						)
 						.getActions()
 				);
 
@@ -1753,8 +1752,8 @@ public class ChinManagerPlugin extends Plugin
 			.filter(tileObject -> {
 				List<String> actions = Arrays.asList(
 					client.getObjectDefinition(
-						tileObject.getId()
-					)
+							tileObject.getId()
+						)
 						.getActions()
 				);
 
@@ -1799,8 +1798,8 @@ public class ChinManagerPlugin extends Plugin
 			.filter(npc -> {
 				List<String> actions = Arrays.asList(
 					client.getNpcDefinition(
-						npc.getId()
-					)
+							npc.getId()
+						)
 						.getActions()
 				);
 
@@ -1829,8 +1828,8 @@ public class ChinManagerPlugin extends Plugin
 			.filter(npc -> {
 				List<String> actions = Arrays.asList(
 					client.getNpcDefinition(
-						npc.getId()
-					)
+							npc.getId()
+						)
 						.getActions()
 				);
 
@@ -1884,96 +1883,24 @@ public class ChinManagerPlugin extends Plugin
 			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
 			.sorted(Comparator.comparing(tileObject -> locatable.getWorldLocation().distanceTo(tileObject.getWorldLocation())))
 			.limit(limit)
-			.filter(tileObject -> ChinManagerPlugin.canReachWorldPointOrSurrounding(client, tileObject.getWorldLocation()))
-			.findFirst()
-			.orElse(getReachableObjectAlt(client, ids, locatable));
-	}
+			.min(Comparator.comparing(tileObject -> {
+				Tile start = tile(client, tileObject.getWorldLocation());
+				Tile target = tile(client, locatable.getWorldLocation());
 
-	public static TileObject getReachableObjectAlt(Client client, List<Integer> ids, Locatable locatable)
-	{
-		GameObject gameObject = new GameObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.stream()
-			.filter(tileObject -> ChinManagerPlugin.canReachWorldPointOrSurrounding(client, tileObject.getWorldLocation()))
-			.min(Comparator.comparing(tileObject ->
-				tileObject
-					.getWorldLocation()
-					.distanceTo(locatable.getWorldLocation())
-			))
+				if (start == null)
+				{
+					return Integer.MAX_VALUE;
+				}
+				else if (target == null)
+				{
+					return Integer.MAX_VALUE;
+				}
+
+				List<Tile> path = start.pathTo(target);
+
+				return path.size();
+			}))
 			.orElse(null);
-
-		if (gameObject != null)
-		{
-			return gameObject;
-		}
-
-		DecorativeObject decorativeObject = new DecorativeObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.stream()
-			.filter(tileObject -> ChinManagerPlugin.canReachWorldPointOrSurrounding(client, tileObject.getWorldLocation()))
-			.min(Comparator.comparing(tileObject ->
-				tileObject
-					.getWorldLocation()
-					.distanceTo(locatable.getWorldLocation())
-			))
-			.orElse(null);
-
-		if (decorativeObject != null)
-		{
-			return decorativeObject;
-		}
-
-		GroundObject groundObject = new GroundObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.stream()
-			.filter(tileObject -> ChinManagerPlugin.canReachWorldPointOrSurrounding(client, tileObject.getWorldLocation()))
-			.min(Comparator.comparing(tileObject ->
-				tileObject
-					.getWorldLocation()
-					.distanceTo(locatable.getWorldLocation())
-			))
-			.orElse(null);
-
-		if (groundObject != null)
-		{
-			return groundObject;
-		}
-
-		WallObject wallObject = new WallObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.stream()
-			.filter(tileObject -> ChinManagerPlugin.canReachWorldPointOrSurrounding(client, tileObject.getWorldLocation()))
-			.min(Comparator.comparing(tileObject ->
-				tileObject
-					.getWorldLocation()
-					.distanceTo(locatable.getWorldLocation())
-			))
-			.orElse(null);
-
-		if (wallObject != null)
-		{
-			return wallObject;
-		}
-
-		return null;
-	}
-
-	public static boolean canReachWorldPointOrSurrounding(Client client, WorldPoint worldPoint)
-	{
-		WorldPoint north = new WorldPoint(worldPoint.getX(), worldPoint.getY() + 1, worldPoint.getPlane());
-		WorldPoint east = new WorldPoint(worldPoint.getX() + 1, worldPoint.getY(), worldPoint.getPlane());
-		WorldPoint south = new WorldPoint(worldPoint.getX(), worldPoint.getY() - 1, worldPoint.getPlane());
-		WorldPoint west = new WorldPoint(worldPoint.getX() - 1, worldPoint.getY(), worldPoint.getPlane());
-
-		return Pathfinding.canReachWorldPoint(client, worldPoint) ||
-			Pathfinding.canReachWorldPoint(client, north) ||
-			Pathfinding.canReachWorldPoint(client, east) ||
-			Pathfinding.canReachWorldPoint(client, south) ||
-			Pathfinding.canReachWorldPoint(client, west);
 	}
 
 	private static Collection<TileObject> getAllObjects(Client client)
@@ -2065,5 +1992,27 @@ public class ChinManagerPlugin extends Plugin
 		}
 
 		return -1;
+	}
+
+	private static Tile tile(Client client, WorldPoint position)
+	{
+		int plane = position.getPlane();
+		int x = position.getX() - client.getBaseX();
+		int y = position.getY() - client.getBaseY();
+
+		if (plane < 0 || plane >= 4)
+		{
+			return null;
+		}
+		if (x < 0 || x >= 104)
+		{
+			return null;
+		}
+		if (y < 0 || y >= 104)
+		{
+			return null;
+		}
+
+		return client.getScene().getTiles()[plane][x][y];
 	}
 }

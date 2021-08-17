@@ -6,6 +6,7 @@ import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.Point;
 
 public class ClickTask implements Task<Void>
@@ -23,6 +24,11 @@ public class ClickTask implements Task<Void>
 	@Override
 	public void routine(ObservableEmitter<Void> emitter)
 	{
+		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+
 		chinManagerPlugin.getExecutorService().submit(() ->
 		{
 

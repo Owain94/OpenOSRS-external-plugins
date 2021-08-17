@@ -9,6 +9,7 @@ import static com.owain.automation.ContainerUtils.getBankWidgetItemForItemsPos;
 import static com.owain.automation.ContainerUtils.getInventoryWidgetItemForItemsPos;
 import static com.owain.automation.ContainerUtils.hasBankItem;
 import static com.owain.automation.ContainerUtils.hasItem;
+import com.owain.automation.Pathfinding;
 import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.cookies.PersistentCookieJar;
 import com.owain.chinmanager.cookies.cache.SetCookieCache;
@@ -1883,6 +1884,7 @@ public class ChinManagerPlugin extends Plugin
 			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
 			.sorted(Comparator.comparing(tileObject -> locatable.getWorldLocation().distanceTo(tileObject.getWorldLocation())))
 			.limit(limit)
+			.filter(tileObject -> ChinManagerPlugin.canReachWorldPointOrSurrounding(client, tileObject.getWorldLocation()))
 			.min(Comparator.comparing(tileObject -> {
 				Tile start = tile(client, tileObject.getWorldLocation());
 				Tile target = tile(client, locatable.getWorldLocation());
@@ -1901,6 +1903,20 @@ public class ChinManagerPlugin extends Plugin
 				return path.size();
 			}))
 			.orElse(null);
+	}
+
+	public static boolean canReachWorldPointOrSurrounding(Client client, WorldPoint worldPoint)
+	{
+		WorldPoint north = new WorldPoint(worldPoint.getX(), worldPoint.getY() + 1, worldPoint.getPlane());
+		WorldPoint east = new WorldPoint(worldPoint.getX() + 1, worldPoint.getY(), worldPoint.getPlane());
+		WorldPoint south = new WorldPoint(worldPoint.getX(), worldPoint.getY() - 1, worldPoint.getPlane());
+		WorldPoint west = new WorldPoint(worldPoint.getX() - 1, worldPoint.getY(), worldPoint.getPlane());
+
+		return Pathfinding.canReachWorldPoint(client, worldPoint) ||
+			Pathfinding.canReachWorldPoint(client, north) ||
+			Pathfinding.canReachWorldPoint(client, east) ||
+			Pathfinding.canReachWorldPoint(client, south) ||
+			Pathfinding.canReachWorldPoint(client, west);
 	}
 
 	private static Collection<TileObject> getAllObjects(Client client)

@@ -313,7 +313,7 @@ public class WebsocketManager extends WebSocketListener
 		else
 		{
 			return request
-				.url("ws://chinplugins.xyz/status")
+				.url("wss://chinplugins.xyz/status")
 				.build();
 		}
 	}

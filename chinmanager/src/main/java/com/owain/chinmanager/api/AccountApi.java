@@ -17,6 +17,8 @@ import okhttp3.ResponseBody;
 @Slf4j
 public class AccountApi
 {
+	public static final boolean DEBUG = false;
+
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
 
@@ -31,13 +33,29 @@ public class AccountApi
 	{
 		return Observable.defer(() ->
 		{
-			HttpUrl httpUrl = new HttpUrl.Builder()
-				.scheme("https")
-				.host("chinplugins.xyz")
-				.addPathSegment("api")
-				.addPathSegment("user")
-				.addPathSegment("signin")
-				.build();
+			HttpUrl httpUrl;
+
+			if (DEBUG)
+			{
+				httpUrl = new HttpUrl.Builder()
+					.scheme("http")
+					.host("localhost")
+					.port(4200)
+					.addPathSegment("api")
+					.addPathSegment("user")
+					.addPathSegment("signin")
+					.build();
+			}
+			else
+			{
+				httpUrl = new HttpUrl.Builder()
+					.scheme("https")
+					.host("chinplugins.xyz")
+					.addPathSegment("api")
+					.addPathSegment("user")
+					.addPathSegment("signin")
+					.build();
+			}
 
 			JsonObject json = new JsonObject();
 			json.addProperty("email", username);
@@ -87,13 +105,29 @@ public class AccountApi
 				return Observable.just("");
 			}
 
-			HttpUrl httpUrl = new HttpUrl.Builder()
-				.scheme("https")
-				.host("chinplugins.xyz")
-				.addPathSegment("api")
-				.addPathSegment("user")
-				.addPathSegment("check")
-				.build();
+			HttpUrl httpUrl;
+
+			if (DEBUG)
+			{
+				httpUrl = new HttpUrl.Builder()
+					.scheme("http")
+					.host("localhost")
+					.port(4200)
+					.addPathSegment("api")
+					.addPathSegment("user")
+					.addPathSegment("check")
+					.build();
+			}
+			else
+			{
+				httpUrl = new HttpUrl.Builder()
+					.scheme("https")
+					.host("chinplugins.xyz")
+					.addPathSegment("api")
+					.addPathSegment("user")
+					.addPathSegment("check")
+					.build();
+			}
 
 			RequestBody body = RequestBody.create(JSON, "{}");
 

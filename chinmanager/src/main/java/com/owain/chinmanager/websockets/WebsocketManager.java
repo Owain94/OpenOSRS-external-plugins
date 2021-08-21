@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.openosrs.client.OpenOSRS;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
+import static com.owain.chinmanager.api.AccountApi.DEBUG;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -36,7 +37,6 @@ import okhttp3.WebSocketListener;
 public class WebsocketManager extends WebSocketListener
 {
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-	public static final boolean DEBUG = false;
 
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ChinManager chinManager;
@@ -307,7 +307,7 @@ public class WebsocketManager extends WebSocketListener
 		if (DEBUG)
 		{
 			return request
-				.url("ws://localhost:7000")
+				.url("ws://localhost:5001")
 				.build();
 		}
 		else
@@ -320,9 +320,15 @@ public class WebsocketManager extends WebSocketListener
 
 	private void createSocket()
 	{
+		log.debug("Create socket");
 		if (!isSocketConnected)
 		{
 			socket = chinManagerPlugin.getOkHttpClient().newWebSocket(getWebsocketUrl(), this);
+			log.debug("Socket created");
+		}
+		else
+		{
+			log.debug("Socket did already exist");
 		}
 	}
 
@@ -332,6 +338,8 @@ public class WebsocketManager extends WebSocketListener
 		{
 			return;
 		}
+
+		log.debug("Send message: {}", message.toString());
 
 		socket.send(message.toString());
 	}
@@ -375,6 +383,8 @@ public class WebsocketManager extends WebSocketListener
 	{
 		JsonObject message = GSON.fromJson(text, JsonObject.class);
 
+		log.debug("Msg: {}", message);
+
 		if (message.has("event"))
 		{
 			String event = message.get("event").getAsString();
@@ -384,8 +394,11 @@ public class WebsocketManager extends WebSocketListener
 				case "auth":
 					sendAuth();
 					break;
-				case "looking-for-plugin":
+				case "broadcast":
 					broadcasting = true;
+					break;
+				case "stopbroadcast":
+					broadcasting = false;
 					break;
 			}
 		}

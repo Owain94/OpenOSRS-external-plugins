@@ -89,12 +89,15 @@ import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.DecorativeObjectChanged;
 import net.runelite.api.events.DecorativeObjectDespawned;
 import net.runelite.api.events.DecorativeObjectSpawned;
+import net.runelite.api.events.GameObjectChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GroundObjectChanged;
 import net.runelite.api.events.GroundObjectDespawned;
 import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.ItemDespawned;
@@ -1110,22 +1113,22 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onWallObjectSpawned(WallObjectSpawned event)
+	public void onWallObjectSpawned(WallObjectSpawned wallObjectSpawned)
 	{
-		objects.add(event.getWallObject());
+		objects.add(wallObjectSpawned.getWallObject());
 	}
 
 	@Subscribe
-	public void onWallObjectChanged(WallObjectChanged event)
+	public void onWallObjectChanged(WallObjectChanged wallObjectChanged)
 	{
-		objects.remove(event.getPrevious());
-		objects.add(event.getWallObject());
+		objects.remove(wallObjectChanged.getPrevious());
+		objects.add(wallObjectChanged.getWallObject());
 	}
 
 	@Subscribe
-	public void onWallObjectDespawned(WallObjectDespawned event)
+	public void onWallObjectDespawned(WallObjectDespawned wallObjectDespawned)
 	{
-		TileObject tileObject = event.getWallObject();
+		TileObject tileObject = wallObjectDespawned.getWallObject();
 
 		objects.remove(tileObject);
 
@@ -1136,15 +1139,22 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameObjectSpawned(GameObjectSpawned event)
+	public void onGameObjectSpawned(GameObjectSpawned gameObjectSpawned)
 	{
-		objects.add(event.getGameObject());
+		objects.add(gameObjectSpawned.getGameObject());
 	}
 
 	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned event)
+	public void onGameObjectChanged(GameObjectChanged gameObjectChanged)
 	{
-		TileObject tileObject = event.getGameObject();
+		objects.remove(gameObjectChanged.getPrevious());
+		objects.add(gameObjectChanged.getGameObject());
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned gameObjectDespawned)
+	{
+		TileObject tileObject = gameObjectDespawned.getGameObject();
 
 		objects.remove(tileObject);
 
@@ -1155,15 +1165,22 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onDecorativeObjectSpawned(DecorativeObjectSpawned event)
+	public void onDecorativeObjectSpawned(DecorativeObjectSpawned decorativeObjectSpawned)
 	{
-		objects.add(event.getDecorativeObject());
+		objects.add(decorativeObjectSpawned.getDecorativeObject());
 	}
 
 	@Subscribe
-	public void onDecorativeObjectDespawned(DecorativeObjectDespawned event)
+	public void onDecorativeObjectChanged(DecorativeObjectChanged decorativeObjectChanged)
 	{
-		TileObject tileObject = event.getDecorativeObject();
+		objects.remove(decorativeObjectChanged.getPrevious());
+		objects.add(decorativeObjectChanged.getDecorativeObject());
+	}
+
+	@Subscribe
+	public void onDecorativeObjectDespawned(DecorativeObjectDespawned decorativeObjectDespawned)
+	{
+		TileObject tileObject = decorativeObjectDespawned.getDecorativeObject();
 
 		objects.remove(tileObject);
 
@@ -1174,15 +1191,22 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGroundObjectSpawned(GroundObjectSpawned event)
+	public void onGroundObjectSpawned(GroundObjectSpawned groundObjectSpawned)
 	{
-		objects.add(event.getGroundObject());
+		objects.add(groundObjectSpawned.getGroundObject());
 	}
 
 	@Subscribe
-	public void onGroundObjectDespawned(GroundObjectDespawned event)
+	public void onGroundObjectChanged(GroundObjectChanged groundObjectChanged)
 	{
-		TileObject tileObject = event.getGroundObject();
+		objects.remove(groundObjectChanged.getPrevious());
+		objects.add(groundObjectChanged.getGroundObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectDespawned(GroundObjectDespawned groundObjectDespawned)
+	{
+		TileObject tileObject = groundObjectDespawned.getGroundObject();
 
 		objects.remove(tileObject);
 
@@ -1193,15 +1217,15 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void npcSpawned(NpcSpawned event)
+	public void onNpcSpawned(NpcSpawned npcSpawned)
 	{
-		actors.add(event.getNpc());
+		actors.add(npcSpawned.getNpc());
 	}
 
 	@Subscribe
-	public void npcDespawned(NpcDespawned event)
+	public void onNpcDespawned(NpcDespawned npcDespawned)
 	{
-		NPC npc = event.getNpc();
+		NPC npc = npcDespawned.getNpc();
 
 		actors.remove(npc);
 
@@ -1212,15 +1236,15 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void playerSpawned(PlayerSpawned event)
+	public void onPlayerSpawned(PlayerSpawned playerSpawned)
 	{
-		actors.add(event.getPlayer());
+		actors.add(playerSpawned.getPlayer());
 	}
 
 	@Subscribe
-	public void playerDespawned(PlayerDespawned event)
+	public void onPlayerDespawned(PlayerDespawned playerDespawned)
 	{
-		Player player = event.getPlayer();
+		Player player = playerDespawned.getPlayer();
 
 		actors.remove(player);
 
@@ -1891,7 +1915,15 @@ public class ChinManagerPlugin extends Plugin
 
 		if (object == null)
 		{
-			List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, worldPoint));
+			Tile start = tile(client, client.getLocalPlayer().getWorldLocation());
+			Tile target = tile(client, worldPoint);
+
+			if (start == null || target == null)
+			{
+				return false;
+			}
+
+			List<Tile> path = start.pathTo(target);
 
 			if (path == null)
 			{

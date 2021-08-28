@@ -1881,6 +1881,7 @@ public class ChinManagerPlugin extends Plugin
 	{
 		return objects
 			.stream()
+			.filter(Objects::nonNull)
 			.filter(tileObject -> ids.contains(tileObject.getId()))
 			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
 			.sorted(Comparator.comparing(tileObject -> locatable.getWorldLocation().distanceTo(tileObject.getWorldLocation())))

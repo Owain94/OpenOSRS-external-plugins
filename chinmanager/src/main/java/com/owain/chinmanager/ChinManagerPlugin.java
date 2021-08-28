@@ -1438,7 +1438,7 @@ public class ChinManagerPlugin extends Plugin
 
 	public static TileObject getObject(Client client, List<Integer> ids, Locatable locatable)
 	{
-		return objects
+		return ChinManagerPlugin.getObjects()
 			.stream()
 			.filter(tileObject -> ids.contains(tileObject.getId()))
 			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
@@ -1454,7 +1454,7 @@ public class ChinManagerPlugin extends Plugin
 	{
 		WorldPoint wp = WorldPoint.fromScene(client, x, y, client.getPlane());
 
-		return objects
+		return ChinManagerPlugin.getObjects()
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(tileObject -> tileObject.getId() == id)
@@ -1493,7 +1493,7 @@ public class ChinManagerPlugin extends Plugin
 
 	public static TileObject getObject(Client client, WorldPoint wp)
 	{
-		return objects
+		return ChinManagerPlugin.getObjects()
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(tileObject -> tileObject.getWorldLocation().equals(wp))
@@ -1879,7 +1879,7 @@ public class ChinManagerPlugin extends Plugin
 
 	public static TileObject getReachableObject(Client client, List<Integer> ids, int limit, Locatable locatable)
 	{
-		return objects
+		return ChinManagerPlugin.getObjects()
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(tileObject -> ids.contains(tileObject.getId()))

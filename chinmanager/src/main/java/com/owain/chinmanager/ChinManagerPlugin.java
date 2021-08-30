@@ -13,6 +13,7 @@ import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.cookies.PersistentCookieJar;
 import com.owain.chinmanager.cookies.cache.SetCookieCache;
 import com.owain.chinmanager.cookies.persistence.OpenOSRSCookiePersistor;
+import com.owain.chinmanager.overlay.ManagerClickboxDebugOverlay;
 import com.owain.chinmanager.overlay.ManagerClickboxOverlay;
 import com.owain.chinmanager.overlay.ManagerTileIndicatorsOverlay;
 import com.owain.chinmanager.overlay.ManagerWidgetOverlay;
@@ -148,6 +149,7 @@ import net.runelite.http.api.worlds.WorldResult;
 import net.runelite.http.api.worlds.WorldType;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import org.apache.commons.lang3.tuple.Pair;
 import org.pf4j.Extension;
 
 @Extension
@@ -315,6 +317,9 @@ public class ChinManagerPlugin extends Plugin
 	private ManagerClickboxOverlay managerClickboxOverlay;
 
 	@Inject
+	private ManagerClickboxDebugOverlay managerClickboxDebugOverlay;
+
+	@Inject
 	private ManagerWidgetOverlay managerWidgetOverlay;
 
 	@Inject
@@ -344,12 +349,20 @@ public class ChinManagerPlugin extends Plugin
 	@Getter(AccessLevel.PUBLIC)
 	private static TileObject highlightTileObject = null;
 	@Getter(AccessLevel.PUBLIC)
-	public static final List<WidgetItem> highlightWidgetItem = new ArrayList<>();
+	public static final Set<WidgetItem> highlightWidgetItem = new HashSet<>();
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PUBLIC)
 	private static List<WorldPoint> highlightDaxPath = null;
 	@Getter(AccessLevel.PUBLIC)
 	private static Widget highlightWidget = null;
+
+	// Debug
+	@Getter(AccessLevel.PUBLIC)
+	public static final Map<TileObject, Integer> debugTileObjectMap = new HashMap<>();
+	@Getter(AccessLevel.PUBLIC)
+	public static final Set<WorldPoint> debugReachableWorldAreas = new HashSet<>();
+	@Getter(AccessLevel.PUBLIC)
+	public static final Map<WorldPoint, Integer> debugReachableTiles = new HashMap<>();
 
 	@Provides
 	public NullConfig getConfig()
@@ -400,6 +413,7 @@ public class ChinManagerPlugin extends Plugin
 		clientToolbar.addNavigation(navButton);
 
 		overlayManager.add(managerClickboxOverlay);
+		overlayManager.add(managerClickboxDebugOverlay);
 		overlayManager.add(managerWidgetOverlay);
 		overlayManager.add(managerTileIndicatorsOverlay);
 
@@ -541,6 +555,7 @@ public class ChinManagerPlugin extends Plugin
 		delay = -1;
 
 		overlayManager.remove(managerClickboxOverlay);
+		overlayManager.remove(managerClickboxDebugOverlay);
 		overlayManager.remove(managerWidgetOverlay);
 		overlayManager.remove(managerTileIndicatorsOverlay);
 
@@ -1107,7 +1122,10 @@ public class ChinManagerPlugin extends Plugin
 		highlightActor = null;
 		highlightItemLayer = null;
 		highlightTileObject = null;
+		debugTileObjectMap.clear();
 		highlightWidgetItem.clear();
+		debugReachableWorldAreas.clear();
+		debugReachableTiles.clear();
 		highlightDaxPath = null;
 		highlightWidget = null;
 	}
@@ -1136,6 +1154,8 @@ public class ChinManagerPlugin extends Plugin
 		{
 			highlightTileObject = null;
 		}
+
+		debugTileObjectMap.remove(tileObject);
 	}
 
 	@Subscribe
@@ -1162,6 +1182,8 @@ public class ChinManagerPlugin extends Plugin
 		{
 			highlightTileObject = null;
 		}
+
+		debugTileObjectMap.remove(tileObject);
 	}
 
 	@Subscribe
@@ -1188,6 +1210,8 @@ public class ChinManagerPlugin extends Plugin
 		{
 			highlightTileObject = null;
 		}
+
+		debugTileObjectMap.remove(tileObject);
 	}
 
 	@Subscribe
@@ -1214,6 +1238,8 @@ public class ChinManagerPlugin extends Plugin
 		{
 			highlightTileObject = null;
 		}
+
+		debugTileObjectMap.remove(tileObject);
 	}
 
 	@Subscribe
@@ -1272,7 +1298,7 @@ public class ChinManagerPlugin extends Plugin
 
 		if (highlightItemLayer == item.getTile().getItemLayer())
 		{
-			highlightTileObject = null;
+			highlightItemLayer = null;
 		}
 	}
 
@@ -1290,7 +1316,7 @@ public class ChinManagerPlugin extends Plugin
 			case ITEM_USE_ON_GAME_OBJECT:
 			case SPELL_CAST_ON_GAME_OBJECT:
 			{
-				TileObject tileObject = getObject(client, menuOptionClicked.getId(), menuOptionClicked.getActionParam(), menuOptionClicked.getWidgetId());
+				TileObject tileObject = getObject(client, menuOptionClicked.getId(), menuOptionClicked.getParam0(), menuOptionClicked.getParam1());
 
 				if (tileObject != null)
 				{
@@ -1317,9 +1343,9 @@ public class ChinManagerPlugin extends Plugin
 			case GROUND_ITEM_FOURTH_OPTION:
 			case GROUND_ITEM_FIFTH_OPTION:
 			{
-				LocalPoint localPoint = LocalPoint.fromScene(menuOptionClicked.getActionParam(), menuOptionClicked.getWidgetId());
+				LocalPoint localPoint = LocalPoint.fromScene(menuOptionClicked.getParam0(), menuOptionClicked.getParam1());
 
-				tileItems
+				Map.copyOf(ChinManagerPlugin.getTileItems())
 					.values()
 					.stream()
 					.filter(Objects::nonNull)
@@ -1338,9 +1364,9 @@ public class ChinManagerPlugin extends Plugin
 			case CC_OP:
 			case CC_OP_LOW_PRIORITY:
 			{
-				if (menuOptionClicked.getActionParam() == -1 && !menuOptionClicked.getMenuOption().equals("Toggle Run"))
+				if (menuOptionClicked.getParam0() == -1 && !menuOptionClicked.getMenuOption().equals("Toggle Run"))
 				{
-					Widget widget = client.getWidget(menuOptionClicked.getWidgetId());
+					Widget widget = client.getWidget(menuOptionClicked.getParam1());
 
 					if (widget != null)
 					{
@@ -1354,17 +1380,17 @@ public class ChinManagerPlugin extends Plugin
 				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 				Widget bankInventory = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER);
 
-				if (bankContainer != null && bankContainer.getId() == menuOptionClicked.getWidgetId())
+				if (bankContainer != null && bankContainer.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidgetItem.add(getBankWidgetItemForItemsPos(menuOptionClicked.getActionParam(), client));
+					highlightWidgetItem.add(getBankWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
 				}
-				else if (inventory != null && inventory.getId() == menuOptionClicked.getWidgetId())
+				else if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getActionParam(), client));
+					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
 				}
-				else if (bankInventory != null && bankInventory.getId() == menuOptionClicked.getWidgetId())
+				else if (bankInventory != null && bankInventory.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidgetItem.add(getBankInventoryWidgetItemForItemsPos(menuOptionClicked.getActionParam(), client));
+					highlightWidgetItem.add(getBankInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
 				}
 
 				break;
@@ -1373,9 +1399,9 @@ public class ChinManagerPlugin extends Plugin
 			{
 				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
-				if (inventory != null && inventory.getId() == menuOptionClicked.getWidgetId())
+				if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getActionParam(), client));
+					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
 				}
 			}
 		}
@@ -1387,8 +1413,8 @@ public class ChinManagerPlugin extends Plugin
 		menuOptionClicked.setMenuTarget(target);
 		menuOptionClicked.setId(identifier);
 		menuOptionClicked.setMenuAction(menuAction);
-		menuOptionClicked.setActionParam(actionParam);
-		menuOptionClicked.setWidgetId(widgetId);
+		menuOptionClicked.setParam0(actionParam);
+		menuOptionClicked.setParam1(widgetId);
 
 		log.debug("Chin manager menu action: {}", menuOptionClicked);
 
@@ -1407,7 +1433,9 @@ public class ChinManagerPlugin extends Plugin
 
 	public static NPC getNPC(Client client, List<Integer> ids, Locatable locatable)
 	{
-		return actors
+		return Set.copyOf(
+				ChinManagerPlugin.getActors()
+			)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(npc -> npc instanceof NPC)
@@ -1438,7 +1466,9 @@ public class ChinManagerPlugin extends Plugin
 
 	public static TileObject getObject(Client client, List<Integer> ids, Locatable locatable)
 	{
-		return ChinManagerPlugin.getObjects()
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
 			.stream()
 			.filter(tileObject -> ids.contains(tileObject.getId()))
 			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
@@ -1454,7 +1484,9 @@ public class ChinManagerPlugin extends Plugin
 	{
 		WorldPoint wp = WorldPoint.fromScene(client, x, y, client.getPlane());
 
-		return ChinManagerPlugin.getObjects()
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(tileObject -> tileObject.getId() == id)
@@ -1493,7 +1525,9 @@ public class ChinManagerPlugin extends Plugin
 
 	public static TileObject getObject(Client client, WorldPoint wp)
 	{
-		return ChinManagerPlugin.getObjects()
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(tileObject -> tileObject.getWorldLocation().equals(wp))
@@ -1690,7 +1724,9 @@ public class ChinManagerPlugin extends Plugin
 
 	public static TileObject getBankObject(Client client)
 	{
-		return ChinManagerPlugin.getObjects()
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(tileObject -> {
@@ -1786,7 +1822,9 @@ public class ChinManagerPlugin extends Plugin
 
 	public static NPC getBankNpc(Client client)
 	{
-		return ChinManagerPlugin.getActors()
+		return Set.copyOf(
+				ChinManagerPlugin.getActors()
+			)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(npc -> npc instanceof NPC)
@@ -1879,7 +1917,13 @@ public class ChinManagerPlugin extends Plugin
 
 	public static TileObject getReachableObject(Client client, List<Integer> ids, int limit, Locatable locatable)
 	{
-		return ChinManagerPlugin.getObjects()
+		debugReachableWorldAreas.clear();
+		debugReachableTiles.clear();
+		debugTileObjectMap.clear();
+
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
 			.stream()
 			.filter(Objects::nonNull)
 			.filter(tileObject -> ids.contains(tileObject.getId()))
@@ -1889,29 +1933,88 @@ public class ChinManagerPlugin extends Plugin
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3589, 0)) != 0)
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3599, 0)) != 0)
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(3255, 3463, 0)) != 0)
-			.filter(tileObject -> ChinManagerPlugin.canReachWorldPointOrSurrounding(client, tileObject.getWorldLocation()))
-			.min(Comparator.comparing(tileObject -> {
-				Tile start = tile(client, tileObject.getWorldLocation());
-				Tile target = tile(client, locatable.getWorldLocation());
+			.map(tileObject -> {
+				int width = 1;
+				int height = 1;
 
-				if (start == null)
+				if (tileObject instanceof GameObject)
 				{
-					return Integer.MAX_VALUE;
-				}
-				else if (target == null)
-				{
-					return Integer.MAX_VALUE;
+					width = ((GameObject) tileObject).sizeX();
+					height = ((GameObject) tileObject).sizeY();
 				}
 
-				List<Tile> path = start.pathTo(target);
+				WorldPoint objectWorldPoint;
+				objectWorldPoint = tileObject.getWorldLocation();
 
-				return path.size();
-			}))
+				if (width == 3 || height == 3)
+				{
+					objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
+				}
+
+				List<WorldPoint> originalArea = new WorldArea(objectWorldPoint.getX(), objectWorldPoint.getY(), width, height, objectWorldPoint.getPlane()).toWorldPointList();
+				Set<WorldPoint> possibleWorldPoints = new HashSet<>(originalArea);
+
+				for (WorldPoint worldPoint : new WorldArea(objectWorldPoint.getX(), objectWorldPoint.getY(), width, height, objectWorldPoint.getPlane()).toWorldPointList())
+				{
+					possibleWorldPoints.add(new WorldPoint(worldPoint.getX() + 1, worldPoint.getY(), worldPoint.getPlane()));
+					possibleWorldPoints.add(new WorldPoint(worldPoint.getX(), worldPoint.getY() + 1, worldPoint.getPlane()));
+					possibleWorldPoints.add(new WorldPoint(worldPoint.getX() - 1, worldPoint.getY(), worldPoint.getPlane()));
+					possibleWorldPoints.add(new WorldPoint(worldPoint.getX(), worldPoint.getY() - 1, worldPoint.getPlane()));
+				}
+
+				originalArea.forEach(possibleWorldPoints::remove);
+				debugReachableWorldAreas.addAll(possibleWorldPoints);
+
+				Pair<TileObject, Integer> closest = Pair.of(tileObject, Integer.MAX_VALUE);
+
+				for (WorldPoint wp : possibleWorldPoints)
+				{
+					if (wp.distanceTo(locatable.getWorldLocation()) == 0)
+					{
+						return Pair.of(tileObject, 0);
+					}
+
+					Tile startTile = tile(client, locatable.getWorldLocation());
+					Tile endTile = tile(client, wp);
+
+					if (startTile == null || endTile == null)
+					{
+						continue;
+					}
+
+					List<Tile> path = startTile.pathTo(endTile);
+
+					if (path != null && path.get(path.size() - 1).getWorldLocation().distanceTo(wp) == 0)
+					{
+						debugReachableTiles.put(wp, path.size());
+
+						if (path.size() < closest.getValue())
+						{
+							closest = Pair.of(tileObject, path.size());
+						}
+					}
+				}
+
+				return closest;
+			})
+			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
+			.peek(pair -> debugTileObjectMap.put(pair.getKey(), pair.getValue()))
+			.min(
+				Comparator.comparing(
+					(Pair<TileObject, Integer> pair) ->
+						pair.getKey().getWorldLocation().distanceTo(locatable.getWorldLocation())
+				)
+					.thenComparing(Pair::getValue))
+			.map(Pair::getKey)
 			.orElse(null);
 	}
 
 	public static boolean canReachWorldPointOrSurrounding(Client client, WorldPoint worldPoint)
 	{
+		debugReachableWorldAreas.clear();
+		debugReachableTiles.clear();
+		debugTileObjectMap.clear();
+
 		TileObject object = getObject(client, worldPoint);
 
 		if (object == null)
@@ -1957,7 +2060,11 @@ public class ChinManagerPlugin extends Plugin
 			objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
 		}
 
-		for (WorldPoint wp : new WorldArea(objectWorldPoint.getX() - 1, objectWorldPoint.getY() - 1, width + 2, height + 2, objectWorldPoint.getPlane()).toWorldPointList())
+		List<WorldPoint> area = new WorldArea(objectWorldPoint.getX() - 1, objectWorldPoint.getY() - 1, width + 2, height + 2, objectWorldPoint.getPlane()).toWorldPointList();
+
+		debugReachableWorldAreas.addAll(area);
+
+		for (WorldPoint wp : area)
 		{
 			if ((getObject(client, wp) != null && getObject(client, wp) instanceof GameObject) ||
 				wp.getX() > objectWorldPoint.getX() && wp.getY() > objectWorldPoint.getY() ||
@@ -1980,6 +2087,8 @@ public class ChinManagerPlugin extends Plugin
 
 			if (path != null && path.get(path.size() - 1).getWorldLocation().distanceTo(wp) == 0)
 			{
+
+				debugTileObjectMap.put(object, path.size());
 				return true;
 			}
 		}

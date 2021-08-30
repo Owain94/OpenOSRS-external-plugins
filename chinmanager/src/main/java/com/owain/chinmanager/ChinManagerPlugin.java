@@ -349,7 +349,7 @@ public class ChinManagerPlugin extends Plugin
 	@Getter(AccessLevel.PUBLIC)
 	private static TileObject highlightTileObject = null;
 	@Getter(AccessLevel.PUBLIC)
-	public static final Set<WidgetItem> highlightWidgetItem = new HashSet<>();
+	public static final List<WidgetItem> highlightWidgetItem = new ArrayList<>();
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PUBLIC)
 	private static List<WorldPoint> highlightDaxPath = null;

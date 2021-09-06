@@ -513,12 +513,18 @@ public class ChinManagerPlugin extends Plugin
 				chinManager
 					.getBankingObservable()
 					.subscribe((plugin) -> {
-						stateMachine.accept(ChinManagerStates.BANKING);
+						if (stateMachine.getState() != ChinManagerState.BANKING)
+						{
+							stateMachine.accept(ChinManagerStates.BANKING);
+						}
 					}),
 				chinManager
 					.getTeleportingObservable()
 					.subscribe((plugin) -> {
-						stateMachine.accept(ChinManagerStates.TELEPORTING);
+						if (stateMachine.getState() != ChinManagerState.TELEPORTING)
+						{
+							stateMachine.accept(ChinManagerStates.TELEPORTING);
+						}
 					}),
 				Observable
 					.interval(1, TimeUnit.SECONDS)
@@ -813,6 +819,7 @@ public class ChinManagerPlugin extends Plugin
 					{
 						client.runScript(915, 3);
 					}
+
 					stateMachine.accept(ChinManagerStates.RESUME);
 				}
 			}

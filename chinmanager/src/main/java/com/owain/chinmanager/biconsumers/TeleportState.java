@@ -37,7 +37,10 @@ public class TeleportState
 	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
 	{
 		return (t1, state) -> {
-			teleportTask.unsubscribe();
+			if (teleportTask != null)
+			{
+				teleportTask.unsubscribe();
+			}
 
 			if (!disposable.isDisposed())
 			{

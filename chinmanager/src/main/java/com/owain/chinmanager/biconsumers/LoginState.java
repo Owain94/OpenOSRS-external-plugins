@@ -37,6 +37,11 @@ public class LoginState
 	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
 	{
 		return (t1, state) -> {
+			if (loginTask != null)
+			{
+				loginTask.unsubscribe();
+			}
+
 			if (!disposable.isDisposed())
 			{
 				disposable.dispose();

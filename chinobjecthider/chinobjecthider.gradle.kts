@@ -31,8 +31,6 @@ project.extra["PluginDescription"] = "Object goes poof"
 dependencies {
     annotationProcessor(Libraries.lombok)
     annotationProcessor(Libraries.pf4j)
-
-    compileOnly(group = "com.openosrs.rs", name = "runescape-api", version = "4.9.12")
 }
 
 tasks {

@@ -287,10 +287,11 @@ public final class FileUtil {
 			LOG.warn("Failed to load default configuration");
 		}
 
-        return archProps;
+		return archProps;
     }
 
-    private static boolean readPropertiesFromClassLoader(String propsFilename, Properties archProps, ClassLoader loader) {
+    private static boolean readPropertiesFromClassLoader(String propsFilename, Properties archProps,
+            ClassLoader loader) {
         if (loader == null) {
             return false;
         }

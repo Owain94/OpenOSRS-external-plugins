@@ -47,7 +47,7 @@ public class AixUsbDevice extends AbstractUsbDevice {
     }
 
     /**
-     * Instantiates a list of {@link oshi.hardware.UsbDevice} objects, representing
+     * Instantiates a list of {@link UsbDevice} objects, representing
      * devices connected via a usb port (including internal devices).
      * <p>
      * If the value of {@code tree} is true, the top level devices returned from
@@ -61,7 +61,7 @@ public class AixUsbDevice extends AbstractUsbDevice {
      *            devices excluding controllers.
      * @param lscfg
      *            A memoized lscfg list
-     * @return a list of {@link oshi.hardware.UsbDevice} objects.
+     * @return a list of {@link UsbDevice} objects.
      */
     public static List<UsbDevice> getUsbDevices(boolean tree, Supplier<List<String>> lscfg) {
         List<UsbDevice> deviceList = new ArrayList<>();

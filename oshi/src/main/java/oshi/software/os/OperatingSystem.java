@@ -198,26 +198,26 @@ public interface OperatingSystem {
     OSVersionInfo getVersionInfo();
 
     /**
-     * Instantiates a {@link oshi.software.os.FileSystem} object.
+     * Instantiates a {@link FileSystem} object.
      *
-     * @return A {@link oshi.software.os.FileSystem} object.
+     * @return A {@link FileSystem} object.
      */
     FileSystem getFileSystem();
 
     /**
-     * Instantiates a {@link oshi.software.os.InternetProtocolStats} object.
+     * Instantiates a {@link InternetProtocolStats} object.
      *
-     * @return a {@link oshi.software.os.InternetProtocolStats} object.
+     * @return a {@link InternetProtocolStats} object.
      */
     InternetProtocolStats getInternetProtocolStats();
 
     /**
      * Gets currently running processes. No order is guaranteed.
      *
-     * @return A list of {@link oshi.software.os.OSProcess} objects for the
+     * @return A list of {@link OSProcess} objects for the
      *         specified number (or all) of currently running processes, sorted as
      *         specified. The list may contain null elements or processes with a
-     *         state of {@link OSProcess.State#INVALID} if a process terminates
+     *         state of {@link State#INVALID} if a process terminates
      *         during iteration.
      */
     default List<OSProcess> getProcesses() {
@@ -238,11 +238,11 @@ public interface OperatingSystem {
      *            {@code null} for no sorting.
      * @param limit
      *            Max number of results to return, or 0 to return all results
-     * @return A list of {@link oshi.software.os.OSProcess} objects, optionally
+     * @return A list of {@link OSProcess} objects, optionally
      *         filtered, sorted, and limited to the specified number.
      *         <p>
      *         The list may contain processes with a state of
-     *         {@link OSProcess.State#INVALID} if a process terminates during
+     *         {@link State#INVALID} if a process terminates during
      *         iteration.
      */
     List<OSProcess> getProcesses(Predicate<OSProcess> filter, Comparator<OSProcess> sort, int limit);
@@ -258,10 +258,10 @@ public interface OperatingSystem {
      *            Max number of results to return, or 0 to return all results
      * @param sort
      *            If not null, determines sorting of results
-     * @return A list of {@link oshi.software.os.OSProcess} objects for the
+     * @return A list of {@link OSProcess} objects for the
      *         specified number (or all) of currently running processes, sorted as
      *         specified. The list may contain null elements or processes with a
-     *         state of {@link OSProcess.State#INVALID} if a process terminates
+     *         state of {@link State#INVALID} if a process terminates
      *         during iteration.
      * @deprecated Use {@link #getProcesses(Predicate, Comparator, int)} with
      *             sorting constants from {@link ProcessSorting}.
@@ -277,7 +277,7 @@ public interface OperatingSystem {
      *
      * @param pids
      *            A collection of process IDs
-     * @return A list of {@link oshi.software.os.OSProcess} objects for the
+     * @return A list of {@link OSProcess} objects for the
      *         specified process ids if it is running
      */
     default List<OSProcess> getProcesses(Collection<Integer> pids) {
@@ -290,7 +290,7 @@ public interface OperatingSystem {
      *
      * @param pid
      *            A process ID
-     * @return An {@link oshi.software.os.OSProcess} object for the specified
+     * @return An {@link OSProcess} object for the specified
      *         process id if it is running; null otherwise
      */
     OSProcess getProcess(int pid);
@@ -309,10 +309,10 @@ public interface OperatingSystem {
      *            Max number of results to return, or 0 to return all results
      * @param sort
      *            If not null, determines sorting of results
-     * @return A list of {@link oshi.software.os.OSProcess} objects representing the
+     * @return A list of {@link OSProcess} objects representing the
      *         specified number (or all) of currently running child processes of the
      *         provided PID, sorted as specified. The list may contain null elements
-     *         or processes with a state of {@link OSProcess.State#INVALID} if a
+     *         or processes with a state of {@link State#INVALID} if a
      *         process terminates during iteration.
      * @deprecated Use {@link #getChildProcesses(int, Predicate, Comparator, int)}
      *             with sorting constants from {@link ProcessSorting}.
@@ -338,12 +338,12 @@ public interface OperatingSystem {
      *            {@code null} for no sorting.
      * @param limit
      *            Max number of results to return, or 0 to return all results
-     * @return A list of {@link oshi.software.os.OSProcess} objects representing the
+     * @return A list of {@link OSProcess} objects representing the
      *         currently running child processes of the provided PID, optionally
      *         filtered, sorted, and limited to the specified number.
      *         <p>
      *         The list may contain processes with a state of
-     *         {@link OSProcess.State#INVALID} if a process terminates during
+     *         {@link State#INVALID} if a process terminates during
      *         iteration.
      */
     List<OSProcess> getChildProcesses(int parentPid, Predicate<OSProcess> filter, Comparator<OSProcess> sort,
@@ -366,12 +366,12 @@ public interface OperatingSystem {
      *            {@code null} for no sorting.
      * @param limit
      *            Max number of results to return, or 0 to return all results
-     * @return A list of {@link oshi.software.os.OSProcess} objects representing the
+     * @return A list of {@link OSProcess} objects representing the
      *         currently running descendant processes of the provided PID,
      *         optionally filtered, sorted, and limited to the specified number.
      *         <p>
      *         The list may contain processes with a state of
-     *         {@link OSProcess.State#INVALID} if a process terminates during
+     *         {@link State#INVALID} if a process terminates during
      *         iteration.
      */
     List<OSProcess> getDescendantProcesses(int parentPid, Predicate<OSProcess> filter, Comparator<OSProcess> sort,
@@ -431,9 +431,9 @@ public interface OperatingSystem {
     }
 
     /**
-     * Instantiates a {@link oshi.software.os.NetworkParams} object.
+     * Instantiates a {@link NetworkParams} object.
      *
-     * @return A {@link oshi.software.os.NetworkParams} object.
+     * @return A {@link NetworkParams} object.
      */
     NetworkParams getNetworkParams();
 
@@ -456,13 +456,13 @@ public interface OperatingSystem {
      * introducing any additional conflicts. Users should note, however, that other
      * operating system code may access the same native code.
      * <p>
-     * The {@link oshi.driver.unix.Who#queryWho()} method produces similar output
+     * The {@link Who#queryWho()} method produces similar output
      * parsing the output of the Posix-standard {@code who} command, and may
      * internally employ reentrant code on some platforms. Users may opt to use this
      * command-line variant by default using the {@code oshi.os.unix.whoCommand}
      * configuration property.
      *
-     * @return A list of {@link oshi.software.os.OSSession} objects representing
+     * @return A list of {@link OSSession} objects representing
      *         logged-in users
      */
     default List<OSSession> getSessions() {
@@ -485,7 +485,7 @@ public interface OperatingSystem {
      *            <p>
      *            This is a best effort attempt at a reasonable definition of
      *            visibility. Visible windows may be completely transparent.
-     * @return A list of {@link oshi.software.os.OSDesktopWindow} objects
+     * @return A list of {@link OSDesktopWindow} objects
      *         representing the desktop windows.
      */
     default List<OSDesktopWindow> getDesktopWindows(boolean visibleOnly) {
@@ -505,7 +505,13 @@ public interface OperatingSystem {
         private final String versionStr;
 
         public OSVersionInfo(String version, String codeName, String buildNumber) {
-            this.version = version;
+            // Insider Preview Windows 11 is marked as Windows 10 build 22000
+            // Temporary code until JDK os.name matches up
+            if ("10".equals(version) && buildNumber.compareTo("22000") >= 0) {
+                this.version = "11";
+            } else {
+                this.version = version;
+            }
             this.codeName = codeName;
             this.buildNumber = buildNumber;
 

@@ -132,7 +132,7 @@ public final class WmiUtil {
      * @param index
      *            The index (row) to fetch
      * @return The stored value if non-null, otherwise the constant
-     *         {@link oshi.util.Constants#UNIX_EPOCH}
+     *         {@link Constants#UNIX_EPOCH}
      */
     public static <T extends Enum<T>> OffsetDateTime getDateTime(WmiResult<T> result, T property, int index) {
         if (result.getCIMType(property) == Wbemcli.CIM_DATETIME) {

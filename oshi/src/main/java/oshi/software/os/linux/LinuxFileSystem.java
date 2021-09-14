@@ -50,7 +50,7 @@ import oshi.util.ParseUtil;
 import oshi.util.platform.linux.ProcPath;
 
 /**
- * The Linux File System contains {@link oshi.software.os.OSFileStore}s which
+ * The Linux File System contains {@link OSFileStore}s which
  * are a storage pool, device, partition, volume, concrete file system or other
  * implementation specific means of file storage. In Linux, these are found in
  * the /proc/mount filesystem, excluding temporary and kernel mounts.

@@ -63,7 +63,7 @@ final class LinuxGraphicsCard extends AbstractGraphicsCard {
      * {@link oshi.hardware.common.AbstractHardwareAbstractionLayer} to access the
      * graphics cards.
      *
-     * @return List of {@link oshi.hardware.platform.linux.LinuxGraphicsCard}
+     * @return List of {@link LinuxGraphicsCard}
      *         objects.
      */
     public static List<GraphicsCard> getGraphicsCards() {

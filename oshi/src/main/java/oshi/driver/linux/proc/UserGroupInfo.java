@@ -67,8 +67,8 @@ public final class UserGroupInfo {
      * Gets the group name for a given ID
      *
      * @param groupId
-     *            a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     *            a {@link String} object.
+     * @return a {@link String} object.
      */
     public static String getGroupName(String groupId) {
         return groupsIdMap.get().getOrDefault(groupId, Constants.UNKNOWN);

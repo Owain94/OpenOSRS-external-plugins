@@ -40,10 +40,10 @@ import oshi.annotation.concurrent.ThreadSafe;
 public interface NetworkIF {
 
     /**
-     * Gets the {@link java.net.NetworkInterface} object.
+     * Gets the {@link NetworkInterface} object.
      *
      * @return the network interface, an instance of
-     *         {@link java.net.NetworkInterface}.
+     *         {@link NetworkInterface}.
      */
     NetworkInterface queryNetworkInterface();
 
@@ -108,7 +108,7 @@ public interface NetworkIF {
      *         may return a value of -1 which is equivalent to the maximum unsigned
      *         integer value.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date.
      */
     int getMTU();
@@ -118,7 +118,7 @@ public interface NetworkIF {
      *
      * @return The MAC Address.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date.
      */
     String getMacaddr();
@@ -128,7 +128,7 @@ public interface NetworkIF {
      *
      * @return An array of IPv4 Addresses.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date.
      */
     String[] getIPv4addr();
@@ -139,7 +139,7 @@ public interface NetworkIF {
      * @return An array of IPv4 subnet mask lengths, corresponding to the IPv4
      *         addresses from {@link #getIPv4addr()}. Ranges between 0-32.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date.
      *
      */
@@ -150,7 +150,7 @@ public interface NetworkIF {
      *
      * @return An array of IPv6 Addresses.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date.
      */
     String[] getIPv6addr();
@@ -161,7 +161,7 @@ public interface NetworkIF {
      * @return The IPv6 address prefix lengths, corresponding to the IPv6 addresses
      *         from {@link #getIPv6addr()}. Ranges between 0-128.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date.
      */
     Short[] getPrefixLengths();
@@ -213,7 +213,7 @@ public interface NetworkIF {
      *
      * @return The Bytes Received.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */
@@ -226,7 +226,7 @@ public interface NetworkIF {
      *
      * @return The Bytes Sent.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */
@@ -239,7 +239,7 @@ public interface NetworkIF {
      *
      * @return The Packets Received.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */
@@ -252,7 +252,7 @@ public interface NetworkIF {
      *
      * @return The Packets Sent.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */
@@ -265,7 +265,7 @@ public interface NetworkIF {
      *
      * @return Input Errors.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */
@@ -278,7 +278,7 @@ public interface NetworkIF {
      *
      * @return The Output Errors.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */
@@ -292,7 +292,7 @@ public interface NetworkIF {
      * @return Incoming/Received dropped packets. On Windows, returns discarded
      *         incoming packets.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */
@@ -305,7 +305,7 @@ public interface NetworkIF {
      *
      * @return Packet collisions. On Windows, returns discarded outgoing packets.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */
@@ -318,7 +318,7 @@ public interface NetworkIF {
      *
      * @return The speed of the network interface in bits per second.
      *         <p>
-     *         This value is set when the {@link oshi.hardware.NetworkIF} is
+     *         This value is set when the {@link NetworkIF} is
      *         instantiated and may not be up to date. To update this value, execute
      *         the {@link #updateAttributes()} method
      */

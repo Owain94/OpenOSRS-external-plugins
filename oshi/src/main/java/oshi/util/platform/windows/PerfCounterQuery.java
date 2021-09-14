@@ -78,7 +78,7 @@ public final class PerfCounterQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param perfObject
@@ -111,7 +111,7 @@ public final class PerfCounterQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param perfObject
@@ -154,7 +154,7 @@ public final class PerfCounterQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param wmiClass

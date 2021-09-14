@@ -180,7 +180,7 @@ public final class WindowsPowerSource extends AbstractPowerSource {
                                     WinNT.FILE_ATTRIBUTE_NORMAL, null);
                             if (!WinBase.INVALID_HANDLE_VALUE.equals(hBattery)) {
                                 // Ask the battery for its tag.
-                                BATTERY_QUERY_INFORMATION bqi = new PowrProf.BATTERY_QUERY_INFORMATION();
+                                BATTERY_QUERY_INFORMATION bqi = new BATTERY_QUERY_INFORMATION();
                                 IntByReference dwWait = new IntByReference(0);
                                 IntByReference dwTag = new IntByReference();
                                 IntByReference dwOut = new IntByReference();
@@ -316,7 +316,7 @@ public final class WindowsPowerSource extends AbstractPowerSource {
     }
 
     private static String batteryQueryString(HANDLE hBattery, int tag, int infoLevel) {
-        BATTERY_QUERY_INFORMATION bqi = new PowrProf.BATTERY_QUERY_INFORMATION();
+        BATTERY_QUERY_INFORMATION bqi = new BATTERY_QUERY_INFORMATION();
         bqi.BatteryTag = tag;
         bqi.InformationLevel = infoLevel;
         bqi.write();

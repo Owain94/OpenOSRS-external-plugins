@@ -169,7 +169,7 @@ final class LinuxSoundCard extends AbstractSoundCard {
      * {@link oshi.hardware.common.AbstractHardwareAbstractionLayer} to access the
      * sound cards.
      *
-     * @return List of {@link oshi.hardware.platform.linux.LinuxSoundCard} objects.
+     * @return List of {@link LinuxSoundCard} objects.
      */
     public static List<SoundCard> getSoundCards() {
         List<SoundCard> soundCards = new ArrayList<>();

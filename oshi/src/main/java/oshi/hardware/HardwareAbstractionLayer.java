@@ -36,31 +36,31 @@ import oshi.annotation.concurrent.ThreadSafe;
 public interface HardwareAbstractionLayer {
 
     /**
-     * Instantiates a {@link oshi.hardware.ComputerSystem} object. This represents
+     * Instantiates a {@link ComputerSystem} object. This represents
      * the physical hardware, including components such as BIOS/Firmware and a
      * motherboard, logic board, etc.
      *
-     * @return a {@link oshi.hardware.ComputerSystem} object.
+     * @return a {@link ComputerSystem} object.
      */
     ComputerSystem getComputerSystem();
 
     /**
-     * Instantiates a {@link oshi.hardware.CentralProcessor} object. This represents
+     * Instantiates a {@link CentralProcessor} object. This represents
      * one or more Logical CPUs.
      *
-     * @return A {@link oshi.hardware.CentralProcessor} object.
+     * @return A {@link CentralProcessor} object.
      */
     CentralProcessor getProcessor();
 
     /**
-     * Instantiates a {@link oshi.hardware.GlobalMemory} object.
+     * Instantiates a {@link GlobalMemory} object.
      *
      * @return A memory object.
      */
     GlobalMemory getMemory();
 
     /**
-     * Instantiates a list of {@link oshi.hardware.PowerSource} objects,
+     * Instantiates a list of {@link PowerSource} objects,
      * representing batteries, etc.
      *
      * @return A list of PowerSource objects or an empty list if none are present.
@@ -68,7 +68,7 @@ public interface HardwareAbstractionLayer {
     List<PowerSource> getPowerSources();
 
     /**
-     * Instantiates a list of {@link oshi.hardware.HWDiskStore} objects,
+     * Instantiates a list of {@link HWDiskStore} objects,
      * representing physical hard disks or other similar storage devices.
      *
      * @return A list of HWDiskStore objects or an empty list if none are present.
@@ -112,7 +112,7 @@ public interface HardwareAbstractionLayer {
     List<NetworkIF> getNetworkIFs(boolean includeLocalInterfaces);
 
     /**
-     * Instantiates a list of {@link oshi.hardware.Display} objects, representing
+     * Instantiates a list of {@link Display} objects, representing
      * monitors or other video output devices.
      *
      * @return A list of Display objects or an empty list if none are present.
@@ -120,7 +120,7 @@ public interface HardwareAbstractionLayer {
     List<Display> getDisplays();
 
     /**
-     * Instantiates a {@link oshi.hardware.Sensors} object, representing CPU
+     * Instantiates a {@link Sensors} object, representing CPU
      * temperature and fan speed.
      *
      * @return A Sensors object
@@ -128,7 +128,7 @@ public interface HardwareAbstractionLayer {
     Sensors getSensors();
 
     /**
-     * Instantiates a list of {@link oshi.hardware.UsbDevice} objects, representing
+     * Instantiates a list of {@link UsbDevice} objects, representing
      * devices connected via a usb port (including internal devices).
      * <p>
      * If the value of {@code tree} is true, the top level devices returned from
@@ -148,7 +148,7 @@ public interface HardwareAbstractionLayer {
     List<UsbDevice> getUsbDevices(boolean tree);
 
     /**
-     * Instantiates a list of {@link oshi.hardware.SoundCard} objects, representing
+     * Instantiates a list of {@link SoundCard} objects, representing
      * the Sound cards.
      *
      * @return A list of SoundCard objects or an empty list if none are present.
@@ -156,7 +156,7 @@ public interface HardwareAbstractionLayer {
     List<SoundCard> getSoundCards();
 
     /**
-     * Instantiates a list of {@link oshi.hardware.GraphicsCard} objects,
+     * Instantiates a list of {@link GraphicsCard} objects,
      * representing the Graphics cards.
      *
      * @return A list of objects or an empty list if none are present.

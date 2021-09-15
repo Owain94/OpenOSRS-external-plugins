@@ -42,7 +42,7 @@ import oshi.util.ParseUtil;
 public class SolarisOSThread extends AbstractOSThread {
 
     private int threadId;
-    private State state = State.INVALID;
+    private OSProcess.State state = OSProcess.State.INVALID;
     private long startMemoryAddress;
     private long contextSwitches;
     private long kernelTime;
@@ -62,7 +62,7 @@ public class SolarisOSThread extends AbstractOSThread {
     }
 
     @Override
-    public State getState() {
+    public OSProcess.State getState() {
         return this.state;
     }
 

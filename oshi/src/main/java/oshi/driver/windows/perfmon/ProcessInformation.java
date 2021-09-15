@@ -38,10 +38,9 @@ import oshi.util.tuples.Pair;
 @ThreadSafe
 public final class ProcessInformation {
 
-    private static final String WIN32_PERFPROC_PROCESS = "Win32_PerfRawData_PerfProc_Process";
+    private static final String WIN32_PROCESS = "Win32_Process";
     private static final String PROCESS = "Process";
-    private static final String WIN32_PROCESS_WHERE_NOT_NAME_LIKE_TOTAL = WIN32_PERFPROC_PROCESS
-            + "Win32_Process WHERE NOT Name LIKE\"%_Total\"";
+    private static final String WIN32_PROCESS_WHERE_NOT_NAME_LIKE_TOTAL = "Win32_Process WHERE NOT Name LIKE\"%_Total\"";
 
     /**
      * Process performance counters
@@ -50,13 +49,13 @@ public final class ProcessInformation {
         // First element defines WMI instance name field and PDH instance filter
         NAME(PerfCounterQuery.NOT_TOTAL_INSTANCES),
         // Remaining elements define counters
-        PRIORITYBASE("Priority Base"), //
-        ELAPSEDTIME("Elapsed Time"), //
-        IDPROCESS("ID Process"), //
-        CREATINGPROCESSID("Creating Process ID"), //
-        IOREADBYTESPERSEC("IO Read Bytes/sec"), //
-        IOWRITEBYTESPERSEC("IO Write Bytes/sec"), //
-        PRIVATEBYTES("Working Set - Private"), //
+        PRIORITY("Priority Base"), //
+        CREATIONDATE("Elapsed Time"), //
+        PROCESSID("ID Process"), //
+        PARENTPROCESSID("Creating Process ID"), //
+        READTRANSFERCOUNT("IO Read Bytes/sec"), //
+        WRITETRANSFERCOUNT("IO Write Bytes/sec"), //
+        PRIVATEPAGECOUNT("Working Set - Private"), //
         PAGEFAULTSPERSEC("Page Faults/sec");
 
         private final String counter;
@@ -111,7 +110,6 @@ public final class ProcessInformation {
      * @return Process handle counters for each process.
      */
     public static Pair<List<String>, Map<HandleCountProperty, List<Long>>> queryHandles() {
-        return PerfCounterWildcardQuery.queryInstancesAndValues(HandleCountProperty.class, PROCESS,
-                WIN32_PERFPROC_PROCESS);
+        return PerfCounterWildcardQuery.queryInstancesAndValues(HandleCountProperty.class, PROCESS, WIN32_PROCESS);
     }
 }

@@ -119,7 +119,7 @@ public class WindowsOSThread extends AbstractOSThread {
     public boolean updateAttributes() {
         Set<Integer> pids = Collections.singleton(getOwningProcessId());
         // Get data from the registry if possible
-        Map<Integer, PerfCounterBlock> threads = ThreadPerformanceData
+        Map<Integer, ThreadPerformanceData.PerfCounterBlock> threads = ThreadPerformanceData
                 .buildThreadMapFromRegistry(pids);
         // otherwise performance counters with WMI backup
         if (threads == null) {

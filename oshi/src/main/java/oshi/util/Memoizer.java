@@ -64,7 +64,7 @@ public final class Memoizer {
      * @param <T>
      *            The type of object supplied
      * @param original
-     *            The {@link Supplier} to memoize
+     *            The {@link java.util.function.Supplier} to memoize
      * @param ttlNanos
      *            Time in nanoseconds to retain calculation. If negative, retain
      *            indefinitely.
@@ -103,7 +103,7 @@ public final class Memoizer {
      * @param <T>
      *            The type of object supplied
      * @param original
-     *            The {@link Supplier} to memoize
+     *            The {@link java.util.function.Supplier} to memoize
      * @return A memoized version of the supplier
      */
     public static <T> Supplier<T> memoize(Supplier<T> original) {

@@ -49,6 +49,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.platform.unix.LibCAPI.size_t;
 
 import oshi.annotation.concurrent.ThreadSafe;
+import oshi.jna.platform.unix.NativeSizeTByReference;
 import oshi.jna.platform.unix.freebsd.FreeBsdLibc;
 import oshi.software.common.AbstractOSProcess;
 import oshi.software.os.OSThread;
@@ -146,7 +147,7 @@ public class FreeBsdOSProcess extends AbstractOSProcess {
             mib[3] = getProcessID();
             // Allocate memory for arguments
             Memory m = new Memory(ARGMAX);
-            size_t.ByReference size = new size_t.ByReference(new size_t(ARGMAX));
+            NativeSizeTByReference size = new NativeSizeTByReference(new size_t(ARGMAX));
             // Fetch arguments
             if (FreeBsdLibc.INSTANCE.sysctl(mib, mib.length, m, size, null, size_t.ZERO) == 0) {
                 return Collections.unmodifiableList(
@@ -176,7 +177,7 @@ public class FreeBsdOSProcess extends AbstractOSProcess {
             mib[3] = getProcessID();
             // Allocate memory for environment variables
             Memory m = new Memory(ARGMAX);
-            size_t.ByReference size = new size_t.ByReference(new size_t(ARGMAX));
+            NativeSizeTByReference size = new NativeSizeTByReference(new size_t(ARGMAX));
             // Fetch environment variables
             if (FreeBsdLibc.INSTANCE.sysctl(mib, mib.length, m, size, null, size_t.ZERO) == 0) {
                 return Collections.unmodifiableMap(
@@ -316,7 +317,7 @@ public class FreeBsdOSProcess extends AbstractOSProcess {
         mib[3] = getProcessID();
         // Allocate memory for arguments
         Pointer abi = new Memory(32);
-        size_t.ByReference size = new size_t.ByReference(new size_t(32));
+        NativeSizeTByReference size = new NativeSizeTByReference(new size_t(32));
         // Fetch abi vector
         if (0 == FreeBsdLibc.INSTANCE.sysctl(mib, mib.length, abi, size, null, size_t.ZERO)) {
             String elf = abi.getString(0);

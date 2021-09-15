@@ -136,7 +136,7 @@ public final class PerfDataUtil {
      *            The query to update all counters in
      * @return The update timestamp of the first counter in the query
      */
-    public static long updateQueryTimestamp(HANDLEByReference query) {
+    public static long updateQueryTimestamp(WinNT.HANDLEByReference query) {
         LONGLONGByReference pllTimeStamp = new LONGLONGByReference();
         int ret = IS_VISTA_OR_GREATER ? PDH.PdhCollectQueryDataWithTime(query.getValue(), pllTimeStamp)
                 : PDH.PdhCollectQueryData(query.getValue());
@@ -196,7 +196,7 @@ public final class PerfDataUtil {
      * @return long value of the counter, or negative value representing an error
      *         code
      */
-    public static long queryCounter(HANDLEByReference counter) {
+    public static long queryCounter(WinNT.HANDLEByReference counter) {
         PDH_RAW_COUNTER counterValue = new PDH_RAW_COUNTER();
         int ret = PDH.PdhGetRawCounterValue(counter.getValue(), PDH_FMT_RAW, counterValue);
         if (ret != WinError.ERROR_SUCCESS) {
@@ -220,7 +220,7 @@ public final class PerfDataUtil {
      *            Pointer to the counter
      * @return true if successful
      */
-    public static boolean addCounter(HANDLEByReference query, String path, HANDLEByReference p) {
+    public static boolean addCounter(WinNT.HANDLEByReference query, String path, WinNT.HANDLEByReference p) {
         int ret = IS_VISTA_OR_GREATER ? PDH.PdhAddEnglishCounter(query.getValue(), path, PZERO, p)
                 : PDH.PdhAddCounter(query.getValue(), path, PZERO, p);
         if (ret != WinError.ERROR_SUCCESS) {

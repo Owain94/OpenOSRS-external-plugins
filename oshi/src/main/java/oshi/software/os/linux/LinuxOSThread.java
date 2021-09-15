@@ -39,9 +39,9 @@ import oshi.util.platform.linux.ProcPath;
 @ThreadSafe
 public class LinuxOSThread extends AbstractOSThread {
 
-    private static final int[] PROC_TASK_STAT_ORDERS = new int[ThreadPidStat.values().length];
+    private static final int[] PROC_TASK_STAT_ORDERS = new int[LinuxOSThread.ThreadPidStat.values().length];
     static {
-        for (ThreadPidStat stat : ThreadPidStat.values()) {
+        for (LinuxOSThread.ThreadPidStat stat : LinuxOSThread.ThreadPidStat.values()) {
             // The PROC_PID_STAT enum indices are 1-indexed.
             // Subtract one to get a zero-based index
             PROC_TASK_STAT_ORDERS[stat.ordinal()] = stat.getOrder() - 1;
@@ -147,7 +147,7 @@ public class LinuxOSThread extends AbstractOSThread {
         // Combine units to jiffies and convert to millijiffies before hz division to
         // avoid precision loss without having to cast
         this.startTime = (LinuxOperatingSystem.BOOTTIME * LinuxOperatingSystem.getHz()
-                + statArray[ThreadPidStat.START_TIME.ordinal()]) * 1000L / LinuxOperatingSystem.getHz();
+                + statArray[LinuxOSThread.ThreadPidStat.START_TIME.ordinal()]) * 1000L / LinuxOperatingSystem.getHz();
         // BOOT_TIME could be up to 500ms off and start time up to 5ms off. A process
         // that has started within last 505ms could produce a future start time/negative
         // up time, so insert a sanity check.

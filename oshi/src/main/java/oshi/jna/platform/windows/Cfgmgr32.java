@@ -21,49 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package oshi;
+package oshi.jna.platform.windows;
 
-/**
- * Enum of supported operating systems.
- */
-public enum PlatformEnum {
-    /**
-     * Microsoft Windows
-     */
-    WINDOWS,
-    /**
-     * A flavor of Linux
-     */
-    LINUX,
-    /**
-     * macOS (formerly OS X)
-     */
-    MACOS,
-    /**
-     * Mac OS X
-     *
-     * @deprecated Use {@link #MACOS}
-     */
-    @Deprecated
-    MACOSX,
-    /**
-     * Solaris (SunOS)
-     */
-    SOLARIS,
-    /**
-     * FreeBSD
-     */
-    FREEBSD,
-    /**
-     * IBM AIX
-     */
-    AIX,
-    /**
-     * OpenBSD
-     */
-    OPENBSD,
-    /**
-     * WindowsCE, or an unspecified system
-     */
-    UNKNOWN;
+import com.sun.jna.Native; // NOSONAR squid:S1191
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.win32.W32APIOptions;
+
+public interface Cfgmgr32 extends com.sun.jna.platform.win32.Cfgmgr32 {
+
+    Cfgmgr32 INSTANCE = Native.load("cfgmgr32", Cfgmgr32.class, W32APIOptions.DEFAULT_OPTIONS);
+
+    int CM_DRP_DEVICEDESC = 0x00000001;
+    int CM_DRP_SERVICE = 0x00000005;
+    int CM_DRP_CLASS = 0x00000008;
+    int CM_DRP_MFG = 0x0000000C;
+    int CM_DRP_FRIENDLYNAME = 0x0000000D;
+
+    boolean CM_Get_DevNode_Registry_Property(int dnDevInst, int ulProperty, IntByReference pulRegDataType,
+            Pointer buffer, IntByReference pulLength, int ulFlags);
 }

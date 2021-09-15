@@ -49,7 +49,7 @@ public class SolarisUsbDevice extends AbstractUsbDevice {
     }
 
     /**
-     * Instantiates a list of {@link UsbDevice} objects, representing
+     * Instantiates a list of {@link oshi.hardware.UsbDevice} objects, representing
      * devices connected via a usb port (including internal devices).
      * <p>
      * If the value of {@code tree} is true, the top level devices returned from
@@ -61,7 +61,7 @@ public class SolarisUsbDevice extends AbstractUsbDevice {
      *            If true, returns a list of controllers, which requires recursive
      *            iteration of connected devices. If false, returns a flat list of
      *            devices excluding controllers.
-     * @return a list of {@link UsbDevice} objects.
+     * @return a list of {@link oshi.hardware.UsbDevice} objects.
      */
     public static List<UsbDevice> getUsbDevices(boolean tree) {
         List<UsbDevice> devices = getUsbDevices();

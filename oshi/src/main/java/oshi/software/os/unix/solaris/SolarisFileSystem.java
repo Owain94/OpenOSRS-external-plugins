@@ -42,7 +42,7 @@ import oshi.util.platform.unix.solaris.KstatUtil;
 import oshi.util.platform.unix.solaris.KstatUtil.KstatChain;
 
 /**
- * The Solaris File System contains {@link OSFileStore}s which
+ * The Solaris File System contains {@link oshi.software.os.OSFileStore}s which
  * are a storage pool, device, partition, volume, concrete file system or other
  * implementation specific means of file storage. In Solaris, these are found in
  * the /proc/mount filesystem, excluding temporary and kernel mounts.

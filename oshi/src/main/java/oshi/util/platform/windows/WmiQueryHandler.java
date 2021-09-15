@@ -80,7 +80,7 @@ public class WmiQueryHandler {
     /**
      * Factory method to create an instance of this class. To override this class,
      * use {@link #setInstanceClass(Class)} to define a subclass which extends
-     * {@link WmiQueryHandler}.
+     * {@link oshi.util.platform.windows.WmiQueryHandler}.
      *
      * @return An instance of this class or a class defined by
      *         {@link #setInstanceClass(Class)}
@@ -102,7 +102,7 @@ public class WmiQueryHandler {
 
     /**
      * Define a subclass to be instantiated by {@link #createInstance()}. The class
-     * must extend {@link WmiQueryHandler}.
+     * must extend {@link oshi.util.platform.windows.WmiQueryHandler}.
      *
      * @param instanceClass
      *            The class to instantiate with {@link #createInstance()}.
@@ -187,10 +187,10 @@ public class WmiQueryHandler {
      * COM Exception handler. Logs a warning message.
      *
      * @param query
-     *            a {@link WbemcliUtil.WmiQuery}
+     *            a {@link com.sun.jna.platform.win32.COM.WbemcliUtil.WmiQuery}
      *            object.
      * @param ex
-     *            a {@link COMException} object.
+     *            a {@link com.sun.jna.platform.win32.COM.COMException} object.
      */
     protected void handleComException(WbemcliUtil.WmiQuery<?> query, COMException ex) {
         LOG.warn(

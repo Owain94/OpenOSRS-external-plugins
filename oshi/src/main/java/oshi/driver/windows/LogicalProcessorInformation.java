@@ -58,7 +58,7 @@ public final class LogicalProcessorInformation {
         // Collect a list of logical processors on each physical core and
         // package. These will be 64-bit bitmasks.
         SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX[] procInfo = Kernel32Util
-                .getLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationAll);
+                .getLogicalProcessorInformationEx(WinNT.LOGICAL_PROCESSOR_RELATIONSHIP.RelationAll);
         // Used to cross-reference a processor to package pr core
         List<GROUP_AFFINITY[]> packages = new ArrayList<>();
         List<GROUP_AFFINITY> cores = new ArrayList<>();
@@ -149,11 +149,11 @@ public final class LogicalProcessorInformation {
         // package.
         List<Long> packageMaskList = new ArrayList<>();
         List<Long> coreMaskList = new ArrayList<>();
-        SYSTEM_LOGICAL_PROCESSOR_INFORMATION[] processors = Kernel32Util.getLogicalProcessorInformation();
+        WinNT.SYSTEM_LOGICAL_PROCESSOR_INFORMATION[] processors = Kernel32Util.getLogicalProcessorInformation();
         for (SYSTEM_LOGICAL_PROCESSOR_INFORMATION proc : processors) {
-            if (proc.relationship == LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorPackage) {
+            if (proc.relationship == WinNT.LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorPackage) {
                 packageMaskList.add(proc.processorMask.longValue());
-            } else if (proc.relationship == LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore) {
+            } else if (proc.relationship == WinNT.LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore) {
                 coreMaskList.add(proc.processorMask.longValue());
             }
         }

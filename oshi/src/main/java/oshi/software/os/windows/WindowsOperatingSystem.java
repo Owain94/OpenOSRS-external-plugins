@@ -288,7 +288,7 @@ public class WindowsOperatingSystem extends AbstractOperatingSystem {
         Map<Integer, Integer> parentPidMap = new HashMap<>();
         // Get processes from ToolHelp API for parent PID
         Tlhelp32.PROCESSENTRY32.ByReference processEntry = new Tlhelp32.PROCESSENTRY32.ByReference();
-        HANDLE snapshot = Kernel32.INSTANCE.CreateToolhelp32Snapshot(Tlhelp32.TH32CS_SNAPPROCESS, new DWORD(0));
+        WinNT.HANDLE snapshot = Kernel32.INSTANCE.CreateToolhelp32Snapshot(Tlhelp32.TH32CS_SNAPPROCESS, new DWORD(0));
         try {
             while (Kernel32.INSTANCE.Process32Next(snapshot, processEntry)) {
                 parentPidMap.put(processEntry.th32ProcessID.intValue(), processEntry.th32ParentProcessID.intValue());
@@ -504,7 +504,7 @@ public class WindowsOperatingSystem extends AbstractOperatingSystem {
                         state);
             }
             return svcArray;
-        } catch (Win32Exception ex) {
+        } catch (com.sun.jna.platform.win32.Win32Exception ex) {
             LOG.error("Win32Exception: {}", ex.getMessage());
             return new OSService[0];
         }

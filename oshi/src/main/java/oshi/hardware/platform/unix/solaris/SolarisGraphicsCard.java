@@ -65,7 +65,7 @@ final class SolarisGraphicsCard extends AbstractGraphicsCard {
      * graphics cards.
      *
      * @return List of
-     *         {@link SolarisGraphicsCard}
+     *         {@link oshi.hardware.platform.unix.solaris.SolarisGraphicsCard}
      *         objects.
      */
     public static List<GraphicsCard> getGraphicsCards() {

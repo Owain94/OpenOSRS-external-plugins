@@ -47,7 +47,7 @@ import oshi.util.ParseUtil;
 import oshi.util.platform.windows.WmiUtil;
 
 /**
- * The Windows File System contains {@link OSFileStore}s which
+ * The Windows File System contains {@link oshi.software.os.OSFileStore}s which
  * are a storage pool, device, partition, volume, concrete file system or other
  * implementation specific means of file storage. In Windows, these are
  * represented by a drive letter, e.g., "A:\" and "C:\"

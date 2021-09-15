@@ -58,6 +58,7 @@ import com.sun.jna.platform.unix.LibCAPI.size_t;
 import oshi.annotation.concurrent.ThreadSafe;
 import oshi.driver.mac.ThreadInfo;
 import oshi.driver.mac.ThreadInfo.ThreadStats;
+import oshi.jna.platform.unix.NativeSizeTByReference;
 import oshi.software.common.AbstractOSProcess;
 import oshi.software.os.OSThread;
 import oshi.util.platform.mac.SysctlUtil;
@@ -165,9 +166,9 @@ public class MacOSProcess extends AbstractOSProcess {
         // Allocate memory for arguments
         Memory procargs = new Memory(ARGMAX);
         procargs.clear();
-        size_t.ByReference size = new size_t.ByReference(ARGMAX);
+        NativeSizeTByReference size = new NativeSizeTByReference(new size_t(ARGMAX));
         // Fetch arguments
-        if (0 == SystemB.INSTANCE.sysctl(mib, mib.length, procargs, size, null, size_t.ZERO)) {
+        if (0 == oshi.jna.platform.mac.SystemB.INSTANCE.sysctl(mib, mib.length, procargs, size, null, size_t.ZERO)) {
             // Procargs contains an int representing total # of args, followed by a
             // null-terminated execpath string and then the arguments, each
             // null-terminated (possible multiple consecutive nulls),
@@ -183,10 +184,10 @@ public class MacOSProcess extends AbstractOSProcess {
                 offset += procargs.getString(offset).length();
                 // Iterate character by character using offset
                 // Build each arg and add to list
-                while (offset < size.longValue()) {
+                while (offset < size.getValue().longValue()) {
                     // Advance through additional nulls
                     while (procargs.getByte(offset) == 0) {
-                        if (++offset >= size.longValue()) {
+                        if (++offset >= size.getValue().longValue()) {
                             break;
                         }
                     }

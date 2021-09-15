@@ -23,8 +23,15 @@
  */
 package oshi;
 
+import static oshi.PlatformEnum.AIX;
+import static oshi.PlatformEnum.FREEBSD;
+import static oshi.PlatformEnum.LINUX;
 import static oshi.PlatformEnum.MACOS;
 import static oshi.PlatformEnum.MACOSX;
+import static oshi.PlatformEnum.OPENBSD;
+import static oshi.PlatformEnum.SOLARIS;
+import static oshi.PlatformEnum.UNKNOWN;
+import static oshi.PlatformEnum.WINDOWS;
 import static oshi.util.Memoizer.memoize;
 
 import java.util.function.Supplier;
@@ -52,16 +59,16 @@ import oshi.software.os.windows.WindowsOperatingSystem;
  * System information. This is the main entry point to OSHI.
  * <p>
  * This object provides getters which instantiate the appropriate
- * platform-specific implementations of {@link OperatingSystem}
- * (software) and {@link HardwareAbstractionLayer} (hardware).
+ * platform-specific implementations of {@link oshi.software.os.OperatingSystem}
+ * (software) and {@link oshi.hardware.HardwareAbstractionLayer} (hardware).
  */
 public class SystemInfo {
 
     // The platform isn't going to change, and making this static enables easy
     // access from outside this class
-    private static final PlatformEnum currentPlatform = PlatformEnum.getValue(Platform.getOSType());
+    private static final PlatformEnum currentPlatform = queryCurrentPlatform();
 
-    private static final String NOT_SUPPORTED = "Operating system not supported: ";
+    private static final String NOT_SUPPORTED = "Operating system not supported: JNA Platform type ";
 
     private final Supplier<OperatingSystem> os = memoize(SystemInfo::createOperatingSystem);
 
@@ -79,6 +86,8 @@ public class SystemInfo {
      */
     public SystemInfo() {
         // Intentionally empty, here to enable the constructor javadoc.
+        // Trying to access the static currentPlatform variable for OS check caused
+        // unexplained problems with initialization.
     }
 
     /**
@@ -88,6 +97,26 @@ public class SystemInfo {
      */
     public static PlatformEnum getCurrentPlatform() {
         return currentPlatform;
+    }
+
+    private static PlatformEnum queryCurrentPlatform() {
+        if (Platform.isWindows()) {
+            return WINDOWS;
+        } else if (Platform.isLinux()) {
+            return LINUX;
+        } else if (Platform.isMac()) {
+            return MACOS;
+        } else if (Platform.isSolaris()) {
+            return SOLARIS;
+        } else if (Platform.isFreeBSD()) {
+            return FREEBSD;
+        } else if (Platform.isAIX()) {
+            return AIX;
+        } else if (Platform.isOpenBSD()) {
+            return OPENBSD;
+        } else {
+            return UNKNOWN;
+        }
     }
 
     /**
@@ -104,9 +133,9 @@ public class SystemInfo {
 
     /**
      * Creates a new instance of the appropriate platform-specific
-     * {@link OperatingSystem}.
+     * {@link oshi.software.os.OperatingSystem}.
      *
-     * @return A new instance of {@link OperatingSystem}.
+     * @return A new instance of {@link oshi.software.os.OperatingSystem}.
      */
     public OperatingSystem getOperatingSystem() {
         return os.get();
@@ -129,15 +158,15 @@ public class SystemInfo {
         case OPENBSD:
             return new OpenBsdOperatingSystem();
         default:
-            throw new UnsupportedOperationException(NOT_SUPPORTED + currentPlatform.getName());
+            throw new UnsupportedOperationException(NOT_SUPPORTED + Platform.getOSType());
         }
     }
 
     /**
      * Creates a new instance of the appropriate platform-specific
-     * {@link HardwareAbstractionLayer}.
+     * {@link oshi.hardware.HardwareAbstractionLayer}.
      *
-     * @return A new instance of {@link HardwareAbstractionLayer}.
+     * @return A new instance of {@link oshi.hardware.HardwareAbstractionLayer}.
      */
     public HardwareAbstractionLayer getHardware() {
         return hardware.get();
@@ -160,7 +189,7 @@ public class SystemInfo {
         case OPENBSD:
             return new OpenBsdHardwareAbstractionLayer();
         default:
-            throw new UnsupportedOperationException(NOT_SUPPORTED + currentPlatform.getName());
+            throw new UnsupportedOperationException(NOT_SUPPORTED + Platform.getOSType());
         }
     }
 }

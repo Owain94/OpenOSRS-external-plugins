@@ -51,7 +51,7 @@ public class WindowsOSSystemInfo {
      * Constructor for WindowsOSSystemInfo.
      *
      * @param si
-     *            a {@link SYSTEM_INFO} object.
+     *            a {@link com.sun.jna.platform.win32.WinBase.SYSTEM_INFO} object.
      */
     public WindowsOSSystemInfo(SYSTEM_INFO si) {
         this.systemInfo = si;

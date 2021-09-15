@@ -162,7 +162,7 @@ public final class ParseUtil {
      *
      * @param hertz
      *            Hertz size.
-     * @return {@link Long} Hertz value or -1 if not parseable.
+     * @return {@link java.lang.Long} Hertz value or -1 if not parseable.
      */
     public static long parseHertz(String hertz) {
         Matcher matcher = HERTZ_PATTERN.matcher(hertz.trim());
@@ -930,13 +930,13 @@ public final class ParseUtil {
 
     /**
      * Converts a string in CIM Date Format, as returned by WMI for DateTime types,
-     * into a {@link OffsetDateTime}.
+     * into a {@link java.time.OffsetDateTime}.
      *
      * @param cimDateTime
      *            A non-null DateTime String in CIM date format, e.g.,
      *            <code>20160513072950.782000-420</code>
-     * @return The parsed {@link OffsetDateTime} if the string is
-     *         parsable, otherwise {@link Constants#UNIX_EPOCH}.
+     * @return The parsed {@link java.time.OffsetDateTime} if the string is
+     *         parsable, otherwise {@link oshi.util.Constants#UNIX_EPOCH}.
      */
     public static OffsetDateTime parseCimDateTimeToOffset(String cimDateTime) {
         // Keep first 22 characters: digits, decimal, and + or - sign

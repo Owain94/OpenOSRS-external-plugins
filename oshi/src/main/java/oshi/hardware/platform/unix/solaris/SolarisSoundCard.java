@@ -62,7 +62,7 @@ final class SolarisSoundCard extends AbstractSoundCard {
      * getSoundCards.
      * </p>
      *
-     * @return a {@link List} object.
+     * @return a {@link java.util.List} object.
      */
     public static List<SoundCard> getSoundCards() {
         Map<String, String> vendorMap = new HashMap<>();

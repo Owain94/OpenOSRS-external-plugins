@@ -66,7 +66,7 @@ final class FreeBsdGraphicsCard extends AbstractGraphicsCard {
      * graphics cards.
      *
      * @return List of
-     *         {@link FreeBsdGraphicsCard}
+     *         {@link oshi.hardware.platform.unix.freebsd.FreeBsdGraphicsCard}
      *         objects.
      */
     public static List<GraphicsCard> getGraphicsCards() {

@@ -1783,6 +1783,5 @@ public class BankingTask implements Task<Void>
 		EQUIP_RING,
 		FETCH_EXTRA,
 		DONE,
-		;
 	}
 }

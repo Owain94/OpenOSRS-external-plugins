@@ -55,16 +55,11 @@ public class ChinManager
 	private final PublishSubject<Plugin> bankingSubject = PublishSubject.create();
 	private final PublishSubject<Plugin> teleportingSubject = PublishSubject.create();
 	private final Map<Plugin, Map<String, String>> pluginConfig = new HashMap<>();
-	private final Comparator<Plugin> pluginComparable = new Comparator<>()
-	{
-		@Override
-		public int compare(Plugin plugin1, Plugin plugin2)
-		{
-			Long p1 = (long) Integer.parseInt(pluginConfig.get(plugin1).get("combiningPriority"), 10);
-			Long p2 = (long) Integer.parseInt(pluginConfig.get(plugin2).get("combiningPriority"), 10);
+	private final Comparator<Plugin> pluginComparable = (plugin1, plugin2) -> {
+		Long p1 = (long) Integer.parseInt(pluginConfig.get(plugin1).get("combiningPriority"), 10);
+		Long p2 = (long) Integer.parseInt(pluginConfig.get(plugin2).get("combiningPriority"), 10);
 
-			return p2.compareTo(p1);
-		}
+		return p2.compareTo(p1);
 	};
 	private final Map<Plugin, Location> startLocations = new HashMap<>();
 	private final Map<Plugin, Map<Integer, Map<String, String>>> requiredItems = new HashMap<>();

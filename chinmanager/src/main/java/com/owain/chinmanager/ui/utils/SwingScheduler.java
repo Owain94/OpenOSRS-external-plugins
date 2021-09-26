@@ -60,7 +60,7 @@ public final class SwingScheduler extends Scheduler
 	static final class SwingWorker extends Worker
 	{
 
-		CompositeDisposable tasks;
+		final CompositeDisposable tasks;
 
 		SwingWorker()
 		{

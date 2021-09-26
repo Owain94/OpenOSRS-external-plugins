@@ -62,7 +62,7 @@ public class AccountApi
 			json.addProperty("email", username);
 			json.addProperty("password", password);
 
-			RequestBody body = RequestBody.create(JSON, json.toString());
+			RequestBody body = RequestBody.create(json.toString(), JSON);
 
 			Request request = new Request.Builder()
 				.addHeader("accept", "application/json")
@@ -130,7 +130,7 @@ public class AccountApi
 					.build();
 			}
 
-			RequestBody body = RequestBody.create(JSON, "{}");
+			RequestBody body = RequestBody.create("{}", JSON);
 
 			Request request = new Request.Builder()
 				.addHeader("accept", "application/json")

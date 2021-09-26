@@ -373,7 +373,7 @@ public class WebAccountPanel extends JPanel
 			final String username = usernameField.getText();
 			final String password = String.valueOf(passwordField.getPassword());
 
-			if (!username.equals("") && username.contains("@") && username.contains(".") && !password.equals(""))
+			if (username.contains("@") && username.contains(".") && !password.equals(""))
 			{
 				accountApi
 					.login(usernameField.getText(), String.valueOf(passwordField.getPassword()))

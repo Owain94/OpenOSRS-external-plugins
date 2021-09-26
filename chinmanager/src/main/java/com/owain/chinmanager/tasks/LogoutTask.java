@@ -236,6 +236,5 @@ public class LogoutTask implements Task<Void>
 		LOGOUT_BUTTON,
 		LOGOUT_WAIT,
 
-		;
 	}
 }

@@ -21,15 +21,15 @@ public class ChinManagerState
 	@Nullable
 	public static StateMachine<ChinManagerContext, ChinManagerStates> stateMachine = null;
 
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> IDLE = new StateMachine.State<>(ChinManagerStates.IDLE.toString());
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGIN = new StateMachine.State<>(ChinManagerStates.LOGIN.toString());
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGIN_SCREEN = new StateMachine.State<>(ChinManagerStates.LOGIN_SCREEN.toString());
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> RESUME = new StateMachine.State<>(ChinManagerStates.RESUME.toString());
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> SETUP = new StateMachine.State<>(ChinManagerStates.SETUP.toString());
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> BANKING = new StateMachine.State<>(ChinManagerStates.BANKING.toString());
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> BANK_PIN = new StateMachine.State<>(ChinManagerStates.BANK_PIN.toString());
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> TELEPORTING = new StateMachine.State<>(ChinManagerStates.TELEPORTING.toString());
-	public static StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGOUT = new StateMachine.State<>(ChinManagerStates.LOGOUT.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> IDLE = new StateMachine.State<>(ChinManagerStates.IDLE.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGIN = new StateMachine.State<>(ChinManagerStates.LOGIN.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGIN_SCREEN = new StateMachine.State<>(ChinManagerStates.LOGIN_SCREEN.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> RESUME = new StateMachine.State<>(ChinManagerStates.RESUME.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> SETUP = new StateMachine.State<>(ChinManagerStates.SETUP.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> BANKING = new StateMachine.State<>(ChinManagerStates.BANKING.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> BANK_PIN = new StateMachine.State<>(ChinManagerStates.BANK_PIN.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> TELEPORTING = new StateMachine.State<>(ChinManagerStates.TELEPORTING.toString());
+	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGOUT = new StateMachine.State<>(ChinManagerStates.LOGOUT.toString());
 
 	@Inject
 	public ChinManagerState(@NonNull BankingState bankingState, @NonNull BankPinState bankPinState, @NonNull SetupState setupState,

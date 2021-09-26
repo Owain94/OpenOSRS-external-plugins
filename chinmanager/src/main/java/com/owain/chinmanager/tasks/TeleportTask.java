@@ -2218,6 +2218,5 @@ public class TeleportTask implements Task<Void>
 		POH_WAIT_TELEPORT_MENU,
 		POH_TELEPORT_MENU,
 
-		;
 	}
 }

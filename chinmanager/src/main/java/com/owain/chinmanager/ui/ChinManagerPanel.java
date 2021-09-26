@@ -48,7 +48,7 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 	{
 		final BufferedImage helpIcon =
 			ImageUtil.recolorImage(
-				ImageUtil.getResourceStreamFromClass(ChinManagerPlugin.class, "help.png"), ColorScheme.BRAND_BLUE
+				ImageUtil.loadImageResource(ChinManagerPlugin.class, "help.png"), ColorScheme.BRAND_BLUE
 			);
 		HELP_ICON = new ImageIcon(helpIcon);
 		HELP_HOVER_ICON = new ImageIcon(ImageUtil.alphaOffset(helpIcon, 0.53f));

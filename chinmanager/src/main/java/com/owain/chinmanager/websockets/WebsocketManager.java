@@ -341,7 +341,7 @@ public class WebsocketManager extends WebSocketListener
 			return;
 		}
 
-		log.debug("Send message: {}", message.toString());
+		log.debug("Send message: {}", message);
 
 		socket.send(message.toString());
 	}

@@ -24,6 +24,7 @@
  */
 package com.owain.chinmanager.ui.gear;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -37,13 +38,15 @@ import lombok.Getter;
 import lombok.Setter;
 import net.runelite.client.util.AsyncBufferedImage;
 import net.runelite.client.util.ImageUtil;
+import org.jetbrains.annotations.Nullable;
 
 public class EquipmentSlot extends JPanel
 {
 	@Getter(AccessLevel.PACKAGE)
-	private final JLabel imageLabel;
+	private final @NonNull JLabel imageLabel;
 	@Getter(AccessLevel.PACKAGE)
 	private final int indexInSlot;
+	@Nullable
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
 	private Equipment parentSetup;
@@ -64,7 +67,7 @@ public class EquipmentSlot extends JPanel
 	}
 
 	@Override
-	protected void paintComponent(Graphics g)
+	protected void paintComponent(@NonNull Graphics g)
 	{
 
 		super.paintComponent(g);
@@ -129,12 +132,12 @@ public class EquipmentSlot extends JPanel
 		}
 	}
 
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(42, 42);
 	}
 
-	public void setImageLabel(String toolTip, AsyncBufferedImage itemImage)
+	public void setImageLabel(@Nullable String toolTip, @Nullable AsyncBufferedImage itemImage)
 	{
 		if (itemImage == null || toolTip == null || locked)
 		{

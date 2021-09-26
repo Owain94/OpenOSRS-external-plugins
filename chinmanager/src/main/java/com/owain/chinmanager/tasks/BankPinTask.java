@@ -4,6 +4,7 @@ import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chintasks.Task;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import net.runelite.client.eventbus.Subscribe;
 @Slf4j
 public class BankPinTask implements Task<Void>
 {
-	private final ChinManagerPlugin chinManagerPlugin;
+	private final @NonNull ChinManagerPlugin chinManagerPlugin;
 	private final Client client;
 	private final ConfigManager configManager;
 	private final EventBus eventBus;
@@ -35,7 +36,7 @@ public class BankPinTask implements Task<Void>
 	private boolean fourth = false;
 
 	@Inject
-	BankPinTask(ChinManagerPlugin chinManagerPlugin, EventBus eventBus)
+	BankPinTask(@NonNull ChinManagerPlugin chinManagerPlugin, EventBus eventBus)
 	{
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.client = chinManagerPlugin.getClient();

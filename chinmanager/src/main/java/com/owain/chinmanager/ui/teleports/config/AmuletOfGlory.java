@@ -1,5 +1,6 @@
 package com.owain.chinmanager.ui.teleports.config;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,10 +13,10 @@ public enum AmuletOfGlory
 
 	;
 
-	private final String name;
+	private final @NonNull String name;
 
 	@Override
-	public String toString()
+	public @NonNull String toString()
 	{
 		return name;
 	}

@@ -25,7 +25,7 @@ public class BankingState
 		this.bankingTask = bankingTask;
 	}
 
-	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> bank()
+	public @NonNull BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> bank()
 	{
 		return (t1, state) -> {
 			@NonNull Completable obs = chinManagerPlugin.getTaskExecutor().prepareTask(bankingTask).ignoreElements();
@@ -34,7 +34,7 @@ public class BankingState
 		};
 	}
 
-	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
+	public @NonNull BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
 	{
 		return (t1, state) -> {
 			if (bankingTask != null)

@@ -1,10 +1,11 @@
 package com.owain.chinmanager.ui.utils;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.time.Duration;
 
 public class Time
 {
-	public static String formatDuration(Duration duration)
+	public static String formatDuration(@NonNull Duration duration)
 	{
 		long seconds = duration.getSeconds();
 		long absSeconds = Math.abs(seconds);

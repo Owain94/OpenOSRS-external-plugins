@@ -6,6 +6,7 @@ import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chintasks.Task;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -29,7 +30,7 @@ import net.runelite.client.eventbus.Subscribe;
 public class LoginTask implements Task<Void>
 {
 	private final ChinManager chinManager;
-	private final ChinManagerPlugin chinManagerPlugin;
+	private final @NonNull ChinManagerPlugin chinManagerPlugin;
 	private final Client client;
 	private final ClientThread clientThread;
 	private final ConfigManager configManager;
@@ -38,7 +39,7 @@ public class LoginTask implements Task<Void>
 	private final List<Disposable> disposables = new ArrayList<>();
 
 	@Inject
-	LoginTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin)
+	LoginTask(ChinManager chinManager, @NonNull ChinManagerPlugin chinManagerPlugin)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;

@@ -19,6 +19,7 @@ import com.owain.chinmanager.ui.teleports.config.RingOfWealth;
 import com.owain.chinmanager.ui.teleports.config.SkillsNecklace;
 import com.owain.chinmanager.ui.teleports.config.XericsTalisman;
 import com.owain.chintasks.Task;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class TeleportTask implements Task<Void>
 			Varbits.RUNE_POUCH_RUNE1, Varbits.RUNE_POUCH_RUNE2, Varbits.RUNE_POUCH_RUNE3
 		};
 	private final ChinManager chinManager;
-	private final ChinManagerPlugin chinManagerPlugin;
+	private final @NonNull ChinManagerPlugin chinManagerPlugin;
 	private final TeleportsConfig teleportsConfig;
 	private final Client client;
 	private final EventBus eventBus;
@@ -77,7 +78,7 @@ public class TeleportTask implements Task<Void>
 	private int tikkie = 10;
 
 	@Inject
-	TeleportTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, ItemManager itemManager, ConfigManager configManager)
+	TeleportTask(ChinManager chinManager, @NonNull ChinManagerPlugin chinManagerPlugin, EventBus eventBus, ItemManager itemManager, @NonNull ConfigManager configManager)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
@@ -770,7 +771,7 @@ public class TeleportTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onGameStateChanged(GameStateChanged gameStateChanged)
+	private void onGameStateChanged(@NonNull GameStateChanged gameStateChanged)
 	{
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN && (teleportState == TeleportState.TELEPORT_POH_WAIT || teleportState == TeleportState.MINIGAME_TELEPORT_WAIT || teleportState == TeleportState.TELEPORT_WAIT))
 		{
@@ -787,7 +788,7 @@ public class TeleportTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
+	private void onMenuOptionClicked(@NonNull MenuOptionClicked menuOptionClicked)
 	{
 		if (teleportState == TeleportState.QUANTITY)
 		{
@@ -1491,7 +1492,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private void jewelleryLogic(List<Integer> items)
+	private void jewelleryLogic(@NonNull List<Integer> items)
 	{
 		ArrayList<Integer> equipmentItems = getEquipment();
 
@@ -1609,7 +1610,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needRingOfDueling(Location location)
+	private boolean needRingOfDueling(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1623,7 +1624,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needGamesNecklace(Location location)
+	private boolean needGamesNecklace(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1639,7 +1640,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needCombatBracelet(Location location)
+	private boolean needCombatBracelet(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1654,7 +1655,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needSkillsNecklace(Location location)
+	private boolean needSkillsNecklace(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1671,7 +1672,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needRingOfWealth(Location location)
+	private boolean needRingOfWealth(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1686,7 +1687,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needAmuletOfGlory(Location location)
+	private boolean needAmuletOfGlory(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1701,7 +1702,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needXericsTalisman(Location location)
+	private boolean needXericsTalisman(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1717,7 +1718,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needDigsitePendant(Location location)
+	private boolean needDigsitePendant(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1730,7 +1731,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private List<Integer> getTeleportJewellery(Location location)
+	private List<Integer> getTeleportJewellery(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1788,7 +1789,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean isMinigameTeleport(Location location)
+	private boolean isMinigameTeleport(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1804,7 +1805,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private List<Integer> getPohTeleportObject(Location location)
+	private @NonNull List<Integer> getPohTeleportObject(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1862,7 +1863,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private boolean needPohTeleport(Location location)
+	private boolean needPohTeleport(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1920,7 +1921,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	private Set<Runes> getRunesForTeleport(Location location)
+	private @NonNull Set<Runes> getRunesForTeleport(@NonNull Location location)
 	{
 		Set<Runes> runes = new HashSet<>();
 
@@ -2126,7 +2127,7 @@ public class TeleportTask implements Task<Void>
 		return runes;
 	}
 
-	private int runeOrRunepouch(Runes runes)
+	private int runeOrRunepouch(@NonNull Runes runes)
 	{
 		if (!hasAnyItem(RUNE_POUCHES, client) && !hasAnyBankInventoryItem(RUNE_POUCHES, client) && !hasAnyBankItem(RUNE_POUCHES, client))
 		{
@@ -2166,7 +2167,7 @@ public class TeleportTask implements Task<Void>
 		return runes.getItemId();
 	}
 
-	private ArrayList<Integer> getEquipment()
+	private @NonNull ArrayList<Integer> getEquipment()
 	{
 		ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 		ArrayList<Integer> equipmentItems = new ArrayList<>();

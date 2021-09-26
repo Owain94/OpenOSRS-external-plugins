@@ -8,6 +8,7 @@ import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.ChinManagerPlugin.CONFIG_GROUP;
 import com.owain.chinmanager.ui.ChinManagerPanel;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -62,18 +63,20 @@ import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 import net.runelite.client.ui.components.ComboBoxListRenderer;
 import net.runelite.client.ui.components.ToggleButton;
 import net.runelite.client.util.Text;
+import org.jetbrains.annotations.Nullable;
 
 @Slf4j
 public class ConfigPanel extends FixedWidthPanel
 {
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
 	private static final int SPINNER_FIELD_WIDTH = 6;
-	private final ChinManagerPlugin chinManagerPlugin;
+	private final @NonNull ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
+	@Nullable
 	private ConfigDescriptor pluginConfig = null;
 
 	@Inject
-	ConfigPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager, SwingScheduler swingScheduler)
+	ConfigPanel(@NonNull ChinManagerPlugin chinManagerPlugin, @NonNull ChinManager chinManager, @NonNull SwingScheduler swingScheduler)
 	{
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.configManager = chinManagerPlugin.getConfigManager();
@@ -94,12 +97,12 @@ public class ConfigPanel extends FixedWidthPanel
 	}
 
 	@Override
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
-	public void init(Config config)
+	public void init(@NonNull Config config)
 	{
 		pluginConfig = getConfigDescriptor(config);
 
@@ -312,7 +315,7 @@ public class ConfigPanel extends FixedWidthPanel
 		repaint();
 	}
 
-	private void changeConfiguration(Component component, ConfigDescriptor cd, ConfigItemDescriptor cid)
+	private void changeConfiguration(Component component, @NonNull ConfigDescriptor cd, @NonNull ConfigItemDescriptor cid)
 	{
 		if (component instanceof JCheckBox)
 		{
@@ -333,7 +336,7 @@ public class ConfigPanel extends FixedWidthPanel
 		rebuild();
 	}
 
-	private boolean hideUnhide(ConfigDescriptor cd, ConfigItemDescriptor cid)
+	private boolean hideUnhide(@NonNull ConfigDescriptor cd, @NonNull ConfigItemDescriptor cid)
 	{
 		boolean unhide = cid.getItem().hidden();
 		boolean hide = !cid.getItem().hide().isEmpty();
@@ -399,7 +402,7 @@ public class ConfigPanel extends FixedWidthPanel
 	/**
 	 * Does DFS on a class's interfaces to find all of its implemented fields.
 	 */
-	private Collection<Field> getAllDeclaredInterfaceFields(Class<?> clazz)
+	private @NonNull Collection<Field> getAllDeclaredInterfaceFields(Class<?> clazz)
 	{
 		Collection<Field> methods = new HashSet<>();
 		Stack<Class<?>> interfaces = new Stack<>();
@@ -415,7 +418,7 @@ public class ConfigPanel extends FixedWidthPanel
 		return methods;
 	}
 
-	public ConfigDescriptor getConfigDescriptor(Config configurationProxy)
+	public @NonNull ConfigDescriptor getConfigDescriptor(@NonNull Config configurationProxy)
 	{
 		Class<?> inter = configurationProxy.getClass().getInterfaces()[0];
 		ConfigGroup group = inter.getAnnotation(ConfigGroup.class);

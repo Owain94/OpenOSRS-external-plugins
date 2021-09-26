@@ -35,6 +35,7 @@ import com.owain.chinmanager.ui.teleports.config.RingOfDueling;
 import com.owain.chinmanager.ui.teleports.config.RingOfWealth;
 import com.owain.chinmanager.ui.teleports.config.SkillsNecklace;
 import com.owain.chinmanager.ui.teleports.config.XericsTalisman;
+import io.reactivex.rxjava3.annotations.NonNull;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -105,7 +106,7 @@ public interface TeleportsConfig extends Config
 		position = 1,
 		title = pohTitle
 	)
-	default Poh pohTeleport()
+	default @NonNull Poh pohTeleport()
 	{
 		return Poh.RUNES;
 	}
@@ -117,7 +118,7 @@ public interface TeleportsConfig extends Config
 		position = 3,
 		title = digsitePendant
 	)
-	default DigsitePendant digsitePendantTeleport()
+	default @NonNull DigsitePendant digsitePendantTeleport()
 	{
 		return DigsitePendant.DIGSITE_PENDANT;
 	}
@@ -129,7 +130,7 @@ public interface TeleportsConfig extends Config
 		position = 5,
 		title = xericsTalisman
 	)
-	default XericsTalisman xericsTalismanTeleport()
+	default @NonNull XericsTalisman xericsTalismanTeleport()
 	{
 		return XericsTalisman.XERICS_TALISMAN;
 	}
@@ -141,7 +142,7 @@ public interface TeleportsConfig extends Config
 		position = 7,
 		title = ringOfDueling
 	)
-	default RingOfDueling ringOfDuelingTeleport()
+	default @NonNull RingOfDueling ringOfDuelingTeleport()
 	{
 		return RingOfDueling.RING_OF_DUELING;
 	}
@@ -153,7 +154,7 @@ public interface TeleportsConfig extends Config
 		position = 9,
 		title = gamesNecklace
 	)
-	default GamesNecklace gamesNecklaceTeleport()
+	default @NonNull GamesNecklace gamesNecklaceTeleport()
 	{
 		return GamesNecklace.GAMES_NECKLACE;
 	}
@@ -165,7 +166,7 @@ public interface TeleportsConfig extends Config
 		position = 11,
 		title = combatBracelet
 	)
-	default CombatBracelet combatBraceletTeleport()
+	default @NonNull CombatBracelet combatBraceletTeleport()
 	{
 		return CombatBracelet.COMBAT_BRACELET;
 	}
@@ -177,7 +178,7 @@ public interface TeleportsConfig extends Config
 		position = 13,
 		title = skillsNecklace
 	)
-	default SkillsNecklace skillsNecklaceTeleport()
+	default @NonNull SkillsNecklace skillsNecklaceTeleport()
 	{
 		return SkillsNecklace.SKILLS_NECKLACE;
 	}
@@ -189,7 +190,7 @@ public interface TeleportsConfig extends Config
 		position = 15,
 		title = ringOfWealth
 	)
-	default RingOfWealth ringOfWealthTeleport()
+	default @NonNull RingOfWealth ringOfWealthTeleport()
 	{
 		return RingOfWealth.RING_OF_WEALTH;
 	}
@@ -201,7 +202,7 @@ public interface TeleportsConfig extends Config
 		position = 17,
 		title = amuletOfGlory
 	)
-	default AmuletOfGlory amuletOfGloryTeleport()
+	default @NonNull AmuletOfGlory amuletOfGloryTeleport()
 	{
 		return AmuletOfGlory.AMULET_OF_GLORY;
 	}

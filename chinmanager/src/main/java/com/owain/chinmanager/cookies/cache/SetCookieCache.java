@@ -1,5 +1,6 @@
 package com.owain.chinmanager.cookies.cache;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,7 +11,7 @@ import okhttp3.Cookie;
 @Singleton
 public class SetCookieCache implements CookieCache
 {
-	private final Set<IdentifiableCookie> cookies;
+	private final @NonNull Set<IdentifiableCookie> cookies;
 
 	public SetCookieCache()
 	{
@@ -18,7 +19,7 @@ public class SetCookieCache implements CookieCache
 	}
 
 	@Override
-	public void addAll(Collection<Cookie> newCookies)
+	public void addAll(@NonNull Collection<Cookie> newCookies)
 	{
 		for (IdentifiableCookie cookie : IdentifiableCookie.decorateAll(newCookies))
 		{
@@ -34,14 +35,14 @@ public class SetCookieCache implements CookieCache
 	}
 
 	@Override
-	public Iterator<Cookie> iterator()
+	public @NonNull Iterator<Cookie> iterator()
 	{
 		return new SetCookieCacheIterator();
 	}
 
 	private class SetCookieCacheIterator implements Iterator<Cookie>
 	{
-		private final Iterator<IdentifiableCookie> iterator;
+		private final @NonNull Iterator<IdentifiableCookie> iterator;
 
 		public SetCookieCacheIterator()
 		{

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -23,6 +24,7 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
+import org.jetbrains.annotations.Nullable;
 
 @Slf4j
 public class ManagerClickboxDebugOverlay extends Overlay
@@ -33,7 +35,7 @@ public class ManagerClickboxDebugOverlay extends Overlay
 	private final OptionsConfig optionsConfig;
 
 	@Inject
-	public ManagerClickboxDebugOverlay(Client client, ModelOutlineRenderer modelOutlineRenderer, ChinManager chinManager, ConfigManager configManager)
+	public ManagerClickboxDebugOverlay(Client client, ModelOutlineRenderer modelOutlineRenderer, ChinManager chinManager, @NonNull ConfigManager configManager)
 	{
 		this.client = client;
 		this.modelOutliner = modelOutlineRenderer;
@@ -44,8 +46,9 @@ public class ManagerClickboxDebugOverlay extends Overlay
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
 
+	@Nullable
 	@Override
-	public Dimension render(Graphics2D graphics)
+	public Dimension render(@NonNull Graphics2D graphics)
 	{
 		if (!log.isDebugEnabled())
 		{

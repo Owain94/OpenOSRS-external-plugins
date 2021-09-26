@@ -28,6 +28,7 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.utils.Plugins;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -73,14 +74,14 @@ public class EquipmentPanel extends JPanel
 	private final ClientThread clientThread;
 	private final ChatboxItemSearch chatboxItemSearch;
 	private final ChatboxPanelManager chatboxPanelManager;
-	private final ChinManager chinManager;
-	private final ChinManagerPlugin chinManagerPlugin;
+	private final @NonNull ChinManager chinManager;
+	private final @NonNull ChinManagerPlugin chinManagerPlugin;
 	@Getter(AccessLevel.PROTECTED)
-	private final JPanel containerSlotsPanel;
-	private final JPanel subPanel;
-	private final JLabel noBanking;
-	private final JButton copyEquipmentButton;
-	private final JComboBox<String> pluginList;
+	private final @NonNull JPanel containerSlotsPanel;
+	private final @NonNull JPanel subPanel;
+	private final @NonNull JLabel noBanking;
+	private final @NonNull JButton copyEquipmentButton;
+	private final @NonNull JComboBox<String> pluginList;
 	private HashMap<EquipmentInventorySlot, EquipmentSlot> equipmentSlots;
 
 	@Inject
@@ -90,9 +91,9 @@ public class EquipmentPanel extends JPanel
 		ItemManager itemManager,
 		ChatboxPanelManager chatboxPanelManager,
 		ChatboxItemSearch chatboxItemSearch,
-		ChinManager chinManager,
-		ChinManagerPlugin chinManagerPlugin,
-		SwingScheduler swingScheduler
+		@NonNull ChinManager chinManager,
+		@NonNull ChinManagerPlugin chinManagerPlugin,
+		@NonNull SwingScheduler swingScheduler
 	)
 	{
 		this.client = client;
@@ -150,12 +151,12 @@ public class EquipmentPanel extends JPanel
 	}
 
 	@Override
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
-	private void updatePluginList(Set<Plugin> plugins)
+	private void updatePluginList(@NonNull Set<Plugin> plugins)
 	{
 		pluginList.removeAllItems();
 		plugins.stream().map(Plugin::getName).forEach((pluginName) -> {
@@ -172,7 +173,7 @@ public class EquipmentPanel extends JPanel
 		repaint();
 	}
 
-	protected void addUpdateFromContainerMouseListenerToSlot(final EquipmentSlot slot)
+	protected void addUpdateFromContainerMouseListenerToSlot(final @NonNull EquipmentSlot slot)
 	{
 		setComponentPopupMenuToSlot(slot);
 		JPopupMenu popupMenu = slot.getComponentPopupMenu();
@@ -183,7 +184,7 @@ public class EquipmentPanel extends JPanel
 			updateSlotFromContainer(slot));
 	}
 
-	protected void addUpdateFromSearchMouseListenerToSlot(final EquipmentSlot slot)
+	protected void addUpdateFromSearchMouseListenerToSlot(final @NonNull EquipmentSlot slot)
 	{
 		setComponentPopupMenuToSlot(slot);
 		JPopupMenu popupMenu = slot.getComponentPopupMenu();
@@ -193,7 +194,7 @@ public class EquipmentPanel extends JPanel
 			updateSlotFromSearch(slot));
 	}
 
-	protected void addRemoveMouseListenerToSlot(final EquipmentSlot slot)
+	protected void addRemoveMouseListenerToSlot(final @NonNull EquipmentSlot slot)
 	{
 		setComponentPopupMenuToSlot(slot);
 		JPopupMenu popupMenu = slot.getComponentPopupMenu();
@@ -203,7 +204,7 @@ public class EquipmentPanel extends JPanel
 			removeItemFromSlot(slot));
 	}
 
-	private void setComponentPopupMenuToSlot(final EquipmentSlot slot)
+	private void setComponentPopupMenuToSlot(final @NonNull EquipmentSlot slot)
 	{
 		if (slot.getComponentPopupMenu() == null)
 		{
@@ -213,7 +214,7 @@ public class EquipmentPanel extends JPanel
 		}
 	}
 
-	protected void setContainerSlot(final EquipmentSlot containerSlot, final Equipment setup, final EquipmentItem item, boolean locked)
+	protected void setContainerSlot(final @NonNull EquipmentSlot containerSlot, final Equipment setup, final @NonNull EquipmentItem item, boolean locked)
 	{
 		containerSlot.setParentSetup(setup);
 		containerSlot.setLocked(locked);
@@ -236,7 +237,7 @@ public class EquipmentPanel extends JPanel
 		containerSlot.setImageLabel(toolTip, itemImg);
 	}
 
-	public void setupContainerPanel(final JPanel containerSlotsPanel)
+	public void setupContainerPanel(final @NonNull JPanel containerSlotsPanel)
 	{
 		this.equipmentSlots = new HashMap<>();
 		for (EquipmentInventorySlot slot : EquipmentInventorySlot.values())
@@ -268,7 +269,7 @@ public class EquipmentPanel extends JPanel
 		containerSlotsPanel.add(equipmentSlots.get(EquipmentInventorySlot.RING));
 	}
 
-	public void setSlots(final Equipment setup)
+	public void setSlots(final @NonNull Equipment setup)
 	{
 		for (final EquipmentInventorySlot slot : EquipmentInventorySlot.values())
 		{
@@ -309,7 +310,7 @@ public class EquipmentPanel extends JPanel
 
 	}
 
-	private void updateSlotFromContainer(final EquipmentSlot slot)
+	private void updateSlotFromContainer(final @NonNull EquipmentSlot slot)
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)
 		{
@@ -333,7 +334,7 @@ public class EquipmentPanel extends JPanel
 		});
 	}
 
-	private void updateSlotFromSearch(final EquipmentSlot slot)
+	private void updateSlotFromSearch(final @NonNull EquipmentSlot slot)
 	{
 
 		if (client.getGameState() != GameState.LOGGED_IN)
@@ -397,7 +398,7 @@ public class EquipmentPanel extends JPanel
 			.build();
 	}
 
-	private void removeItemFromSlot(final EquipmentSlot slot)
+	private void removeItemFromSlot(final @NonNull EquipmentSlot slot)
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)
 		{
@@ -485,7 +486,7 @@ public class EquipmentPanel extends JPanel
 		repaint();
 	}
 
-	private ArrayList<EquipmentItem> emptyContainer()
+	private @NonNull ArrayList<EquipmentItem> emptyContainer()
 	{
 		ArrayList<EquipmentItem> newContainer = new ArrayList<>();
 
@@ -497,7 +498,7 @@ public class EquipmentPanel extends JPanel
 		return newContainer;
 	}
 
-	private ArrayList<EquipmentItem> getNormalizedContainer()
+	private @NonNull ArrayList<EquipmentItem> getNormalizedContainer()
 	{
 		final ItemContainer container = client.getItemContainer(InventoryID.EQUIPMENT);
 
@@ -531,7 +532,7 @@ public class EquipmentPanel extends JPanel
 		return newContainer;
 	}
 
-	private ArrayList<EquipmentItem> getContainerFromSlot(final EquipmentSlot slot)
+	private ArrayList<EquipmentItem> getContainerFromSlot(final @NonNull EquipmentSlot slot)
 	{
 		return slot.getParentSetup().getEquipment();
 	}

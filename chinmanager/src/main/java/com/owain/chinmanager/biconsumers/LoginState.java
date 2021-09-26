@@ -25,7 +25,7 @@ public class LoginState
 		this.loginTask = loginTask;
 	}
 
-	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> login()
+	public @NonNull BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> login()
 	{
 		return (t1, state) -> {
 			@NonNull Completable obs = chinManagerPlugin.getTaskExecutor().prepareTask(loginTask).ignoreElements();
@@ -34,7 +34,7 @@ public class LoginState
 		};
 	}
 
-	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
+	public @NonNull BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
 	{
 		return (t1, state) -> {
 			if (loginTask != null)

@@ -5,6 +5,7 @@ import com.owain.chinmanager.ui.plugins.PluginPanel;
 import com.owain.chinmanager.ui.teleports.TeleportsConfig;
 import com.owain.chinmanager.ui.utils.ConfigPanel;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,7 +21,7 @@ import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 public class PluginConfigPanel extends JPanel
 {
 	@Inject
-	PluginConfigPanel(PluginPanel pluginPanel, EquipmentPanel equipmentPanel, ConfigPanel teleportsPanel, ConfigManager configManager)
+	PluginConfigPanel(@NonNull PluginPanel pluginPanel, @NonNull EquipmentPanel equipmentPanel, @NonNull ConfigPanel teleportsPanel, @NonNull ConfigManager configManager)
 	{
 		teleportsPanel.init(configManager.getConfig(TeleportsConfig.class));
 
@@ -66,7 +67,7 @@ public class PluginConfigPanel extends JPanel
 	}
 
 	@Override
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}

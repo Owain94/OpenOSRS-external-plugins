@@ -7,6 +7,7 @@ import static com.owain.chinmanager.ui.ChinManagerPanel.NORMAL_FONT;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
 import static com.owain.chinmanager.ui.ChinManagerPanel.SMALL_FONT;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -28,13 +29,13 @@ import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 
 public class PluginStatusPanel extends JPanel
 {
-	private final ChinManager chinManager;
+	private final @NonNull ChinManager chinManager;
 	private final Plugin plugin;
 	private final JPanel extraDataPanel = new JPanel(new GridBagLayout());
 	private final JLabel status = new JLabel();
 	public PluginStatusPanel(
-		SwingScheduler swingScheduler,
-		ChinManager chinManager,
+		@NonNull SwingScheduler swingScheduler,
+		@NonNull ChinManager chinManager,
 		Plugin plugin
 	)
 	{
@@ -75,7 +76,7 @@ public class PluginStatusPanel extends JPanel
 	}
 
 	@Override
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
@@ -150,7 +151,7 @@ public class PluginStatusPanel extends JPanel
 		extraData(allData);
 	}
 
-	private void extraData(Map<Plugin, Map<String, String>> allData)
+	private void extraData(@NonNull Map<Plugin, Map<String, String>> allData)
 	{
 		Map<String, String> pluginData = allData.get(plugin);
 

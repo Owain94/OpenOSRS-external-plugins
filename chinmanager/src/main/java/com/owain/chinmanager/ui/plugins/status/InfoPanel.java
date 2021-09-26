@@ -7,6 +7,7 @@ import static com.owain.chinmanager.ui.utils.GridBagHelper.addComponent;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
 import static com.owain.chinmanager.ui.utils.Time.formatDuration;
 import com.owain.chinmanager.utils.Plugins;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
@@ -45,8 +46,8 @@ public class InfoPanel extends JPanel
 	public final JLabel breaksLabel = new JLabel("", SwingConstants.CENTER);
 	public final JLabel inGameLabel = new JLabel("", SwingConstants.CENTER);
 	public final JLabel breakTimeLabel = new JLabel("", SwingConstants.CENTER);
-	private final ChinManager chinManager;
-	private final ChinManagerPlugin chinManagerPlugin;
+	private final @NonNull ChinManager chinManager;
+	private final @NonNull ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
 	private final Client client;
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
@@ -54,7 +55,7 @@ public class InfoPanel extends JPanel
 	private long inGameTime = 0;
 	private long breakTime = 0;
 	@Inject
-	InfoPanel(SwingScheduler swingScheduler, ChinManager chinManager, ChinManagerPlugin chinManagerPlugin)
+	InfoPanel(@NonNull SwingScheduler swingScheduler, @NonNull ChinManager chinManager, @NonNull ChinManagerPlugin chinManagerPlugin)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
@@ -95,7 +96,7 @@ public class InfoPanel extends JPanel
 	}
 
 	@Override
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}

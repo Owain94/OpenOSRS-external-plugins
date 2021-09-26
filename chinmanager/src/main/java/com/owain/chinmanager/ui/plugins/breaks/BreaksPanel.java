@@ -8,6 +8,7 @@ import com.owain.chinmanager.ui.utils.OnOffToggleButton;
 import com.owain.chinmanager.ui.utils.UnitFormatterFactory;
 import com.owain.chinmanager.utils.Integers;
 import com.owain.chinmanager.utils.Plugins;
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -41,7 +42,7 @@ public class BreaksPanel extends JPanel
 	private final ConfigManager configManager;
 	private final Plugin plugin;
 
-	BreaksPanel(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, Plugin plugin)
+	BreaksPanel(ChinManager chinManager, @NonNull ChinManagerPlugin chinManagerPlugin, Plugin plugin)
 	{
 		this.chinManager = chinManager;
 		this.configManager = chinManagerPlugin.getConfigManager();
@@ -57,7 +58,7 @@ public class BreaksPanel extends JPanel
 	}
 
 	@Override
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(PluginPanel.PANEL_WIDTH, super.getPreferredSize().height);
 	}
@@ -104,7 +105,7 @@ public class BreaksPanel extends JPanel
 		}
 	}
 
-	private JSpinner createSpinner(int value)
+	private @NonNull JSpinner createSpinner(int value)
 	{
 		SpinnerModel model = new SpinnerNumberModel(value, 0, Integer.MAX_VALUE, 1);
 		JSpinner spinner = new JSpinner(model);
@@ -116,7 +117,7 @@ public class BreaksPanel extends JPanel
 		return spinner;
 	}
 
-	private JPanel breakPanel()
+	private @NonNull JPanel breakPanel()
 	{
 		JPanel contentPanel = new JPanel(new GridBagLayout());
 		contentPanel.setBackground(ChinManagerPanel.BACKGROUND_COLOR);
@@ -221,7 +222,7 @@ public class BreaksPanel extends JPanel
 		return contentPanel;
 	}
 
-	private JPanel typePanel()
+	private @NonNull JPanel typePanel()
 	{
 		JPanel contentPanel = new JPanel(new GridLayout(0, 2));
 		contentPanel.setBackground(ChinManagerPanel.BACKGROUND_COLOR);

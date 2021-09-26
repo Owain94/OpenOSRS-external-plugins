@@ -41,7 +41,7 @@ public class ChinManager
 	private final PublishSubject<Set<Plugin>> managerPluginsSubject = PublishSubject.create();
 	private final Map<Plugin, Boolean> plugins = new TreeMap<>((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 	private final PublishSubject<Map<Plugin, Boolean>> pluginsSubject = PublishSubject.create();
-	private final SortedSet<Plugin> activePlugins;
+	private final @NonNull SortedSet<Plugin> activePlugins;
 	private final PublishSubject<SortedSet<Plugin>> activePluginsSubject = PublishSubject.create();
 	private final Set<Plugin> stoppedPlugins = new HashSet<>();
 	private final PublishSubject<Set<Plugin>> stoppedPluginsSubject = PublishSubject.create();
@@ -76,10 +76,13 @@ public class ChinManager
 	private final Map<Plugin, Map<String, String>> extraData = new HashMap<>();
 	private final PublishSubject<Map<Plugin, Map<String, String>>> extraDataSubject = PublishSubject.create();
 	private final Map<Plugin, Set<Integer>> bankItems = new HashMap<>();
+	@org.jetbrains.annotations.Nullable
 	private Plugin currentlyActive = null;
 	private boolean isBanking = false;
+	@org.jetbrains.annotations.Nullable
 	private Plugin bankingPlugin;
 	private boolean isTeleporting = false;
+	@org.jetbrains.annotations.Nullable
 	private Location teleportingLocation = null;
 	private int amountOfBreaks = 0;
 
@@ -88,7 +91,7 @@ public class ChinManager
 		this.activePlugins = new TreeSet<>(pluginComparable);
 	}
 
-	public Set<Plugin> getManagerPlugins()
+	public @NonNull Set<Plugin> getManagerPlugins()
 	{
 		return managerPlugins;
 	}
@@ -112,7 +115,7 @@ public class ChinManager
 		return managerPluginsSubject.hide();
 	}
 
-	public Map<Plugin, Boolean> getPlugins()
+	public @NonNull Map<Plugin, Boolean> getPlugins()
 	{
 		return plugins;
 	}
@@ -167,7 +170,7 @@ public class ChinManager
 	}
 
 	@Nullable
-	public Plugin getPlugin(String pluginName)
+	public Plugin getPlugin(@NonNull String pluginName)
 	{
 		for (Plugin plugin : managerPlugins)
 		{
@@ -188,7 +191,7 @@ public class ChinManager
 		startTimes.put(plugin, Instant.now());
 	}
 
-	public void startPlugins(List<Plugin> plugins)
+	public void startPlugins(@NonNull List<Plugin> plugins)
 	{
 		for (Plugin plugin : plugins)
 		{
@@ -213,7 +216,7 @@ public class ChinManager
 		stoppedPluginsSubject.onNext(stoppedPlugins);
 	}
 
-	public Set<Plugin> getStoppedPlugins()
+	public @NonNull Set<Plugin> getStoppedPlugins()
 	{
 		return stoppedPlugins;
 	}
@@ -240,7 +243,7 @@ public class ChinManager
 		return activePluginsSubject.hide();
 	}
 
-	public Map<Plugin, Pair<Instant, Integer>> getPlannedBreaks()
+	public @NonNull Map<Plugin, Pair<Instant, Integer>> getPlannedBreaks()
 	{
 		return plannedBreaks;
 	}
@@ -330,7 +333,7 @@ public class ChinManager
 		return !handover.isEmpty();
 	}
 
-	public Set<Plugin> getHandover()
+	public @NonNull Set<Plugin> getHandover()
 	{
 		return handover;
 	}
@@ -379,6 +382,7 @@ public class ChinManager
 		isBanking = false;
 	}
 
+	@org.jetbrains.annotations.Nullable
 	public Plugin bankingPlugin()
 	{
 		return bankingPlugin;
@@ -407,6 +411,7 @@ public class ChinManager
 		isTeleporting = false;
 	}
 
+	@org.jetbrains.annotations.Nullable
 	public Location getTeleportingLocation()
 	{
 		return teleportingLocation;
@@ -417,7 +422,7 @@ public class ChinManager
 		return teleportingSubject.hide();
 	}
 
-	public void setPluginConfig(Plugin plugin, Map<String, String> data)
+	public void setPluginConfig(Plugin plugin, @NonNull Map<String, String> data)
 	{
 		pluginConfig.putIfAbsent(plugin, new LinkedHashMap<>());
 
@@ -426,7 +431,7 @@ public class ChinManager
 		);
 	}
 
-	public Map<Plugin, Map<String, String>> getPluginConfig()
+	public @NonNull Map<Plugin, Map<String, String>> getPluginConfig()
 	{
 		return pluginConfig;
 	}
@@ -436,7 +441,7 @@ public class ChinManager
 		startLocations.put(plugin, location);
 	}
 
-	public Map<Plugin, Location> getStartLocations()
+	public @NonNull Map<Plugin, Location> getStartLocations()
 	{
 		return startLocations;
 	}
@@ -451,12 +456,12 @@ public class ChinManager
 		requiredItems.put(plugin, data);
 	}
 
-	public Map<Plugin, Map<Integer, Map<String, String>>> getRequiredItems()
+	public @NonNull Map<Plugin, Map<Integer, Map<String, String>>> getRequiredItems()
 	{
 		return requiredItems;
 	}
 
-	public Map<Plugin, Instant> getActiveBreaks()
+	public @NonNull Map<Plugin, Instant> getActiveBreaks()
 	{
 		return activeBreaks;
 	}
@@ -483,6 +488,7 @@ public class ChinManager
 		return plugin == currentlyActive;
 	}
 
+	@org.jetbrains.annotations.Nullable
 	public Plugin getCurrentlyActive()
 	{
 		return currentlyActive;
@@ -512,7 +518,7 @@ public class ChinManager
 	}
 
 	@Nullable
-	public Plugin getNextActive(Plugin plugin, Instant instant)
+	public Plugin getNextActive(@org.jetbrains.annotations.Nullable Plugin plugin, @org.jetbrains.annotations.Nullable Instant instant)
 	{
 		SortedSet<Plugin> active = activePlugins.stream().filter((activePlugin) -> activePlugin != currentlyActive).collect(Collectors.toCollection(() -> new TreeSet<>(pluginComparable)));
 
@@ -580,7 +586,7 @@ public class ChinManager
 		activeBreaksSubject.onNext(activeBreaks);
 	}
 
-	public Map<Plugin, Map<String, String>> getExtraData()
+	public @NonNull Map<Plugin, Map<String, String>> getExtraData()
 	{
 		return extraData;
 	}
@@ -593,7 +599,7 @@ public class ChinManager
 		extraDataSubject.onNext(extraData);
 	}
 
-	public void setExtraData(Plugin plugin, Map<String, String> data)
+	public void setExtraData(Plugin plugin, @NonNull Map<String, String> data)
 	{
 		extraData.putIfAbsent(plugin, new LinkedHashMap<>());
 
@@ -642,7 +648,7 @@ public class ChinManager
 		return activeBreaks.get(plugin);
 	}
 
-	public void logoutNow(Plugin plugin)
+	public void logoutNow(@NonNull Plugin plugin)
 	{
 		logoutActionSubject.onNext(plugin);
 	}
@@ -652,7 +658,7 @@ public class ChinManager
 		return logoutActionSubject.hide();
 	}
 
-	public void hopNow(Plugin plugin)
+	public void hopNow(@NonNull Plugin plugin)
 	{
 		hopSubject.onNext(plugin);
 	}
@@ -662,7 +668,7 @@ public class ChinManager
 		return hopSubject.hide();
 	}
 
-	public Map<Plugin, Instant> getStartTimes()
+	public @NonNull Map<Plugin, Instant> getStartTimes()
 	{
 		return startTimes;
 	}
@@ -682,7 +688,7 @@ public class ChinManager
 		amountOfBreaks = breaks;
 	}
 
-	public void addBankItems(Plugin plugin, Set<Integer> items)
+	public void addBankItems(Plugin plugin, @NonNull Set<Integer> items)
 	{
 		if (bankItems.containsKey(plugin))
 		{
@@ -695,7 +701,7 @@ public class ChinManager
 		}
 	}
 
-	public Map<Plugin, Set<Integer>> getBankItems()
+	public @NonNull Map<Plugin, Set<Integer>> getBankItems()
 	{
 		return bankItems;
 	}

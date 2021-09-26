@@ -24,6 +24,7 @@
  */
 package com.owain.chinmanager.ui.utils;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFormattedTextField;
@@ -32,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class UnitFormatterFactory extends JFormattedTextField.AbstractFormatterFactory
 {
-	private final String units;
+	private final @NonNull String units;
 	private final Map<JFormattedTextField, JFormattedTextField.AbstractFormatter> formatters = new HashMap<>();
 
 	@Override

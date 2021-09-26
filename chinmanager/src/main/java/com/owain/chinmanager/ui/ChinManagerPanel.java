@@ -6,6 +6,7 @@ import com.owain.chinmanager.ui.account.OsrsAccountPanel;
 import com.owain.chinmanager.ui.account.WebAccountPanel;
 import com.owain.chinmanager.ui.plugins.StatusPanel;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -39,8 +40,8 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 	public static final Font NORMAL_FONT = FontManager.getRunescapeFont();
 	public static final Font SMALL_FONT = FontManager.getRunescapeSmallFont();
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-	private static final ImageIcon HELP_ICON;
-	private static final ImageIcon HELP_HOVER_ICON;
+	private static final @NonNull ImageIcon HELP_ICON;
+	private static final @NonNull ImageIcon HELP_HOVER_ICON;
 	private static final JTabbedPane MAIN_TABBED_PANE = new JTabbedPane();
 
 	static
@@ -53,7 +54,7 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 		HELP_HOVER_ICON = new ImageIcon(ImageUtil.alphaOffset(helpIcon, 0.53f));
 	}
 
-	private final ChinManager chinManager;
+	private final @NonNull ChinManager chinManager;
 
 	private final StatusPanel statusPanel;
 	private final PluginConfigPanel pluginConfigPanel;
@@ -63,8 +64,8 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 
 	@Inject
 	ChinManagerPanel(
-		SwingScheduler swingScheduler,
-		ChinManager chinManager,
+		@NonNull SwingScheduler swingScheduler,
+		@NonNull ChinManager chinManager,
 		StatusPanel statusPanel,
 		PluginConfigPanel pluginConfigPanel,
 		OsrsAccountPanel osrsAccountPanel,
@@ -92,7 +93,7 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 				.subscribe(this::tabbedPane));
 	}
 
-	public static JScrollPane wrapContainer(final JPanel container)
+	public static @NonNull JScrollPane wrapContainer(final @NonNull JPanel container)
 	{
 		final JPanel wrapped = new JPanel(new BorderLayout());
 		wrapped.add(container, BorderLayout.NORTH);
@@ -125,7 +126,7 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 		tabbedPane(plugins);
 	}
 
-	private void tabbedPane(Set<Plugin> plugins)
+	private void tabbedPane(@NonNull Set<Plugin> plugins)
 	{
 		MAIN_TABBED_PANE.removeAll();
 
@@ -146,7 +147,7 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 		MAIN_TABBED_PANE.setSelectedIndex(0);
 	}
 
-	private JPanel titleBar()
+	private @NonNull JPanel titleBar()
 	{
 		JPanel titlePanel = new JPanel(new BorderLayout());
 		titlePanel.setBorder(new EmptyBorder(10, 10, 10, 10));

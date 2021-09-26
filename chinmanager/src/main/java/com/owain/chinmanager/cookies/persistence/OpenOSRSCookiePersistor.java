@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.owain.chinmanager.ChinManagerPlugin;
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +25,7 @@ public class OpenOSRSCookiePersistor implements CookiePersistor
 		this.configManager = configManager;
 	}
 
-	private static String createCookieKey(Cookie cookie)
+	private static @NonNull String createCookieKey(@NonNull Cookie cookie)
 	{
 		return (cookie.secure() ? "https" : "http") + "://" + cookie.domain() + cookie.path() + "|" + cookie.name();
 	}
@@ -54,7 +55,7 @@ public class OpenOSRSCookiePersistor implements CookiePersistor
 	}
 
 	@Override
-	public void saveAll(Collection<Cookie> cookies)
+	public void saveAll(@NonNull Collection<Cookie> cookies)
 	{
 		JsonObject json = new JsonObject();
 

@@ -1,8 +1,11 @@
 package com.owain.chinmanager.utils;
 
+import io.reactivex.rxjava3.annotations.NonNull;
+import org.jetbrains.annotations.Nullable;
+
 public class Integers
 {
-	public static boolean isNumeric(String strNum)
+	public static boolean isNumeric(@Nullable String strNum)
 	{
 		if (strNum == null)
 		{
@@ -19,7 +22,7 @@ public class Integers
 		return true;
 	}
 
-	public int parseInt(String value, int def)
+	public int parseInt(@NonNull String value, int def)
 	{
 		try
 		{

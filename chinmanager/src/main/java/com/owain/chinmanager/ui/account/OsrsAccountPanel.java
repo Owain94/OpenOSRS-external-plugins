@@ -14,6 +14,7 @@ import com.owain.chinmanager.ui.utils.DeferredDocumentChangedListener;
 import com.owain.chinmanager.ui.utils.GridBagHelper;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
 import com.owain.chinmanager.utils.ProfilesData;
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -50,7 +51,7 @@ public class OsrsAccountPanel extends JPanel
 	private final ChinManager chinManager;
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
 	@Inject
-	OsrsAccountPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager)
+	OsrsAccountPanel(@NonNull ChinManagerPlugin chinManagerPlugin, ChinManager chinManager)
 	{
 		this.configManager = chinManagerPlugin.getConfigManager();
 		this.chinManager = chinManager;
@@ -64,7 +65,7 @@ public class OsrsAccountPanel extends JPanel
 	}
 
 	@Override
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
@@ -225,7 +226,7 @@ public class OsrsAccountPanel extends JPanel
 					ChinManagerPlugin.setProfileData(ProfilesData.getProfileData(configManager, passwordField.getPassword()));
 					contentPanel(false);
 				}
-				catch (InvalidKeySpecException | NoSuchPaddingException | BadPaddingException | InvalidKeyException | IllegalBlockSizeException | NoSuchAlgorithmException ignored)
+				catch (@NonNull InvalidKeySpecException | NoSuchPaddingException | BadPaddingException | InvalidKeyException | IllegalBlockSizeException | NoSuchAlgorithmException ignored)
 				{
 					parsingLabel.setText("Incorrect password!");
 				}

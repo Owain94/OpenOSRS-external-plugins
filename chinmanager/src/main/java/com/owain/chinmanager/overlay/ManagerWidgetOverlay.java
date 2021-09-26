@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -17,6 +18,7 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
+import org.jetbrains.annotations.Nullable;
 
 public class ManagerWidgetOverlay extends Overlay
 {
@@ -25,7 +27,7 @@ public class ManagerWidgetOverlay extends Overlay
 	private final OptionsConfig optionsConfig;
 
 	@Inject
-	public ManagerWidgetOverlay(ItemManager itemManager, ChinManager chinManager, ConfigManager configManager)
+	public ManagerWidgetOverlay(ItemManager itemManager, ChinManager chinManager, @NonNull ConfigManager configManager)
 	{
 		this.itemManager = itemManager;
 		this.chinManager = chinManager;
@@ -35,15 +37,16 @@ public class ManagerWidgetOverlay extends Overlay
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 	}
 
-	public static Polygon rectangleToPolygon(Rectangle rect)
+	public static @NonNull Polygon rectangleToPolygon(@NonNull Rectangle rect)
 	{
 		int[] xpoints = {rect.x, rect.x + rect.width, rect.x + rect.width, rect.x};
 		int[] ypoints = {rect.y, rect.y, rect.y + rect.height, rect.y + rect.height};
 		return new Polygon(xpoints, ypoints, 4);
 	}
 
+	@Nullable
 	@Override
-	public Dimension render(Graphics2D graphics)
+	public Dimension render(@NonNull Graphics2D graphics)
 	{
 		if (chinManager.getActivePlugins().size() == 0 || !optionsConfig.showOverlays())
 		{

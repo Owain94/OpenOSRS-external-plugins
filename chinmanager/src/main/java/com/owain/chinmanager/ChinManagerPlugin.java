@@ -32,6 +32,7 @@ import com.owain.chinmanager.utils.Plugins;
 import static com.owain.chinmanager.utils.Plugins.sanitizedName;
 import com.owain.chinmanager.websockets.WebsocketManager;
 import com.owain.chintasks.TaskExecutor;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.image.BufferedImage;
@@ -149,6 +150,7 @@ import net.runelite.http.api.worlds.WorldType;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.pf4j.Extension;
 
 @Extension
@@ -162,6 +164,7 @@ public class ChinManagerPlugin extends Plugin
 	public static final String PLUGIN_NAME = "Chin manager";
 	public static final String CONFIG_GROUP = "chinmanager";
 	public final static String CONFIG_GROUP_BREAKHANDLER = "chinbreakhandler";
+	@Nullable
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
 	public static final Map<Plugin, List<Disposable>> PLUGIN_DISPOSABLE_MAP = new HashMap<>();
@@ -269,15 +272,20 @@ public class ChinManagerPlugin extends Plugin
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PUBLIC)
 	private static String profileData;
+	@Nullable
 	@Getter(AccessLevel.PUBLIC)
 	private static Actor highlightActor = null;
+	@Nullable
 	@Getter(AccessLevel.PUBLIC)
 	private static ItemLayer highlightItemLayer = null;
+	@Nullable
 	@Getter(AccessLevel.PUBLIC)
 	private static TileObject highlightTileObject = null;
+	@Nullable
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PUBLIC)
 	private static List<WorldPoint> highlightDaxPath = null;
+	@Nullable
 	@Getter(AccessLevel.PUBLIC)
 	private static Widget highlightWidget = null;
 	@Getter(AccessLevel.PUBLIC)
@@ -330,6 +338,7 @@ public class ChinManagerPlugin extends Plugin
 	@Getter(AccessLevel.PUBLIC)
 	private Random random;
 	private int delay = -1;
+	@Nullable
 	private net.runelite.api.World quickHopTargetWorld;
 	private int displaySwitcherAttempts = 0;
 
@@ -346,7 +355,7 @@ public class ChinManagerPlugin extends Plugin
 		highlightWidget = null;
 	}
 
-	public static void highlight(Client client, MenuOptionClicked menuOptionClicked)
+	public static void highlight(@NonNull Client client, @NonNull MenuOptionClicked menuOptionClicked)
 	{
 		resetHighlight();
 
@@ -451,17 +460,17 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	public static NPC getNPC(Client client, int id)
+	public static NPC getNPC(@NonNull Client client, int id)
 	{
 		return getNPC(client, List.of(id));
 	}
 
-	public static NPC getNPC(Client client, List<Integer> ids)
+	public static NPC getNPC(@NonNull Client client, @NonNull List<Integer> ids)
 	{
 		return getNPC(client, ids, client.getLocalPlayer());
 	}
 
-	public static NPC getNPC(Client client, List<Integer> ids, Locatable locatable)
+	public static NPC getNPC(@NonNull Client client, @NonNull List<Integer> ids, @NonNull Locatable locatable)
 	{
 		return Set.copyOf(
 				ChinManagerPlugin.getActors()
@@ -484,17 +493,17 @@ public class ChinManagerPlugin extends Plugin
 			);
 	}
 
-	public static TileObject getObject(Client client, int id)
+	public static TileObject getObject(@NonNull Client client, int id)
 	{
 		return getObject(client, List.of(id));
 	}
 
-	public static TileObject getObject(Client client, List<Integer> ids)
+	public static TileObject getObject(@NonNull Client client, @NonNull List<Integer> ids)
 	{
 		return getObject(client, ids, client.getLocalPlayer());
 	}
 
-	public static TileObject getObject(Client client, List<Integer> ids, Locatable locatable)
+	public static TileObject getObject(@NonNull Client client, @NonNull List<Integer> ids, @NonNull Locatable locatable)
 	{
 		return Set.copyOf(
 				ChinManagerPlugin.getObjects()
@@ -510,7 +519,7 @@ public class ChinManagerPlugin extends Plugin
 			.orElse(getObjectAlt(client, ids, locatable));
 	}
 
-	public static TileObject getObject(Client client, int id, int x, int y)
+	public static TileObject getObject(@NonNull Client client, int id, int x, int y)
 	{
 		WorldPoint wp = WorldPoint.fromScene(client, x, y, client.getPlane());
 
@@ -553,7 +562,7 @@ public class ChinManagerPlugin extends Plugin
 			.orElse(getObjectAlt(client, id, wp));
 	}
 
-	public static TileObject getObject(Client client, WorldPoint wp)
+	public static TileObject getObject(@NonNull Client client, WorldPoint wp)
 	{
 		return Set.copyOf(
 				ChinManagerPlugin.getObjects()
@@ -573,6 +582,7 @@ public class ChinManagerPlugin extends Plugin
 			.orElse(getObjectAlt(client, wp));
 	}
 
+	@Nullable
 	public static TileObject getObjectAlt(Client client, List<Integer> ids, Locatable locatable)
 	{
 		GameObject gameObject = new GameObjectQuery()
@@ -618,7 +628,8 @@ public class ChinManagerPlugin extends Plugin
 		return null;
 	}
 
-	public static TileObject getObjectAlt(Client client, int id, WorldPoint wp)
+	@Nullable
+	public static TileObject getObjectAlt(@NonNull Client client, int id, WorldPoint wp)
 	{
 		GameObject gameObject = new GameObjectQuery()
 			.idEquals(id)
@@ -667,7 +678,8 @@ public class ChinManagerPlugin extends Plugin
 		return null;
 	}
 
-	public static TileObject getObjectAlt(Client client, WorldPoint wp)
+	@Nullable
+	public static TileObject getObjectAlt(@NonNull Client client, WorldPoint wp)
 	{
 		GameObject gameObject = new GameObjectQuery()
 			.atWorldLocation(wp)
@@ -712,7 +724,7 @@ public class ChinManagerPlugin extends Plugin
 		return null;
 	}
 
-	public static TileObject getBankObject(Client client)
+	public static TileObject getBankObject(@NonNull Client client)
 	{
 		return Set.copyOf(
 				ChinManagerPlugin.getObjects()
@@ -763,7 +775,7 @@ public class ChinManagerPlugin extends Plugin
 			);
 	}
 
-	public static TileObject getBankObjectAlt(Client client)
+	public static TileObject getBankObjectAlt(@NonNull Client client)
 	{
 		return getAllObjects(client)
 			.stream()
@@ -810,7 +822,7 @@ public class ChinManagerPlugin extends Plugin
 			.orElse(null);
 	}
 
-	public static NPC getBankNpc(Client client)
+	public static NPC getBankNpc(@NonNull Client client)
 	{
 		return Set.copyOf(
 				ChinManagerPlugin.getActors()
@@ -847,7 +859,7 @@ public class ChinManagerPlugin extends Plugin
 			);
 	}
 
-	public static NPC getBankNpcAlt(Client client)
+	public static NPC getBankNpcAlt(@NonNull Client client)
 	{
 		return client.getNpcs()
 			.stream()
@@ -878,7 +890,7 @@ public class ChinManagerPlugin extends Plugin
 			.orElse(null);
 	}
 
-	public static boolean isAtBank(Client client)
+	public static boolean isAtBank(@NonNull Client client)
 	{
 		return getBankNpc(client) != null || getBankObject(client) != null;
 	}
@@ -895,17 +907,17 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	public static TileObject getReachableObject(Client client, int id, int limit)
+	public static TileObject getReachableObject(@NonNull Client client, int id, int limit)
 	{
 		return getReachableObject(client, List.of(id), limit);
 	}
 
-	public static TileObject getReachableObject(Client client, List<Integer> ids, int limit)
+	public static TileObject getReachableObject(@NonNull Client client, @NonNull List<Integer> ids, int limit)
 	{
 		return getReachableObject(client, ids, limit, client.getLocalPlayer());
 	}
 
-	public static TileObject getReachableObject(Client client, List<Integer> ids, int limit, Locatable locatable)
+	public static TileObject getReachableObject(@NonNull Client client, @NonNull List<Integer> ids, int limit, @NonNull Locatable locatable)
 	{
 		debugReachableWorldAreas.clear();
 		debugReachableTiles.clear();
@@ -1000,7 +1012,7 @@ public class ChinManagerPlugin extends Plugin
 			.orElse(null);
 	}
 
-	public static boolean canReachWorldPointOrSurrounding(Client client, WorldPoint worldPoint)
+	public static boolean canReachWorldPointOrSurrounding(@NonNull Client client, @NonNull WorldPoint worldPoint)
 	{
 		debugReachableWorldAreas.clear();
 		debugReachableTiles.clear();
@@ -1087,7 +1099,7 @@ public class ChinManagerPlugin extends Plugin
 		return false;
 	}
 
-	private static Collection<TileObject> getAllObjects(Client client)
+	private static @NonNull Collection<TileObject> getAllObjects(@NonNull Client client)
 	{
 		Collection<TileObject> objects = new ArrayList<>();
 		for (Tile tile : getTiles(client))
@@ -1119,7 +1131,7 @@ public class ChinManagerPlugin extends Plugin
 		return objects;
 	}
 
-	private static List<Tile> getTiles(Client client)
+	private static @NonNull List<Tile> getTiles(@NonNull Client client)
 	{
 		List<Tile> tilesList = new ArrayList<>();
 		Scene scene = client.getScene();
@@ -1141,7 +1153,8 @@ public class ChinManagerPlugin extends Plugin
 		return tilesList;
 	}
 
-	private static Tile tile(Client client, WorldPoint position)
+	@Nullable
+	private static Tile tile(@NonNull Client client, @NonNull WorldPoint position)
 	{
 		int plane = position.getPlane();
 		int x = position.getX() - client.getBaseX();
@@ -1407,7 +1420,7 @@ public class ChinManagerPlugin extends Plugin
 		Banking.ITEMS = Set.of();
 	}
 
-	private void currentlyActive(String plugin)
+	private void currentlyActive(@NonNull String plugin)
 	{
 		if (chinManager.isCurrentlyActive(this) && stateMachine.getState() == ChinManagerState.IDLE)
 		{
@@ -1531,7 +1544,7 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
+	public void onGameStateChanged(@NonNull GameStateChanged gameStateChanged)
 	{
 		chinManager.gameStateChanged.onNext(gameStateChanged);
 
@@ -1725,7 +1738,7 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onScriptCallbackEvent(final ScriptCallbackEvent scriptCallbackEvent)
+	public void onScriptCallbackEvent(final @NonNull ScriptCallbackEvent scriptCallbackEvent)
 	{
 		if (Banking.ITEMS.isEmpty())
 		{
@@ -1747,12 +1760,13 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged configChanged)
+	public void onConfigChanged(@NonNull ConfigChanged configChanged)
 	{
 		chinManager.configChanged.onNext(configChanged);
 	}
 
-	private World findWorld(List<World> worlds, EnumSet<WorldType> currentWorldTypes, int totalLevel)
+	@Nullable
+	private World findWorld(@NonNull List<World> worlds, @NonNull EnumSet<WorldType> currentWorldTypes, int totalLevel)
 	{
 		World world = worlds.get(new Random().nextInt(worlds.size()));
 
@@ -1928,20 +1942,20 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onWallObjectSpawned(WallObjectSpawned wallObjectSpawned)
+	public void onWallObjectSpawned(@NonNull WallObjectSpawned wallObjectSpawned)
 	{
 		objects.add(wallObjectSpawned.getWallObject());
 	}
 
 	@Subscribe
-	public void onWallObjectChanged(WallObjectChanged wallObjectChanged)
+	public void onWallObjectChanged(@NonNull WallObjectChanged wallObjectChanged)
 	{
 		objects.remove(wallObjectChanged.getPrevious());
 		objects.add(wallObjectChanged.getWallObject());
 	}
 
 	@Subscribe
-	public void onWallObjectDespawned(WallObjectDespawned wallObjectDespawned)
+	public void onWallObjectDespawned(@NonNull WallObjectDespawned wallObjectDespawned)
 	{
 		TileObject tileObject = wallObjectDespawned.getWallObject();
 
@@ -1956,20 +1970,20 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameObjectSpawned(GameObjectSpawned gameObjectSpawned)
+	public void onGameObjectSpawned(@NonNull GameObjectSpawned gameObjectSpawned)
 	{
 		objects.add(gameObjectSpawned.getGameObject());
 	}
 
 	@Subscribe
-	public void onGameObjectChanged(GameObjectChanged gameObjectChanged)
+	public void onGameObjectChanged(@NonNull GameObjectChanged gameObjectChanged)
 	{
 		objects.remove(gameObjectChanged.getPrevious());
 		objects.add(gameObjectChanged.getGameObject());
 	}
 
 	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned gameObjectDespawned)
+	public void onGameObjectDespawned(@NonNull GameObjectDespawned gameObjectDespawned)
 	{
 		TileObject tileObject = gameObjectDespawned.getGameObject();
 
@@ -1984,20 +1998,20 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onDecorativeObjectSpawned(DecorativeObjectSpawned decorativeObjectSpawned)
+	public void onDecorativeObjectSpawned(@NonNull DecorativeObjectSpawned decorativeObjectSpawned)
 	{
 		objects.add(decorativeObjectSpawned.getDecorativeObject());
 	}
 
 	@Subscribe
-	public void onDecorativeObjectChanged(DecorativeObjectChanged decorativeObjectChanged)
+	public void onDecorativeObjectChanged(@NonNull DecorativeObjectChanged decorativeObjectChanged)
 	{
 		objects.remove(decorativeObjectChanged.getPrevious());
 		objects.add(decorativeObjectChanged.getDecorativeObject());
 	}
 
 	@Subscribe
-	public void onDecorativeObjectDespawned(DecorativeObjectDespawned decorativeObjectDespawned)
+	public void onDecorativeObjectDespawned(@NonNull DecorativeObjectDespawned decorativeObjectDespawned)
 	{
 		TileObject tileObject = decorativeObjectDespawned.getDecorativeObject();
 
@@ -2012,20 +2026,20 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGroundObjectSpawned(GroundObjectSpawned groundObjectSpawned)
+	public void onGroundObjectSpawned(@NonNull GroundObjectSpawned groundObjectSpawned)
 	{
 		objects.add(groundObjectSpawned.getGroundObject());
 	}
 
 	@Subscribe
-	public void onGroundObjectChanged(GroundObjectChanged groundObjectChanged)
+	public void onGroundObjectChanged(@NonNull GroundObjectChanged groundObjectChanged)
 	{
 		objects.remove(groundObjectChanged.getPrevious());
 		objects.add(groundObjectChanged.getGroundObject());
 	}
 
 	@Subscribe
-	public void onGroundObjectDespawned(GroundObjectDespawned groundObjectDespawned)
+	public void onGroundObjectDespawned(@NonNull GroundObjectDespawned groundObjectDespawned)
 	{
 		TileObject tileObject = groundObjectDespawned.getGroundObject();
 
@@ -2040,13 +2054,13 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onNpcSpawned(NpcSpawned npcSpawned)
+	public void onNpcSpawned(@NonNull NpcSpawned npcSpawned)
 	{
 		actors.add(npcSpawned.getNpc());
 	}
 
 	@Subscribe
-	public void onNpcDespawned(NpcDespawned npcDespawned)
+	public void onNpcDespawned(@NonNull NpcDespawned npcDespawned)
 	{
 		NPC npc = npcDespawned.getNpc();
 
@@ -2059,13 +2073,13 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onPlayerSpawned(PlayerSpawned playerSpawned)
+	public void onPlayerSpawned(@NonNull PlayerSpawned playerSpawned)
 	{
 		actors.add(playerSpawned.getPlayer());
 	}
 
 	@Subscribe
-	public void onPlayerDespawned(PlayerDespawned playerDespawned)
+	public void onPlayerDespawned(@NonNull PlayerDespawned playerDespawned)
 	{
 		Player player = playerDespawned.getPlayer();
 
@@ -2078,7 +2092,7 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onItemSpawned(ItemSpawned itemSpawned)
+	private void onItemSpawned(@NonNull ItemSpawned itemSpawned)
 	{
 		Tile tile = itemSpawned.getTile();
 		TileItem item = itemSpawned.getItem();
@@ -2087,7 +2101,7 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onItemDespawned(ItemDespawned itemDespawned)
+	private void onItemDespawned(@NonNull ItemDespawned itemDespawned)
 	{
 		TileItem item = itemDespawned.getItem();
 
@@ -2099,7 +2113,7 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	public void menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int actionParam, int widgetId)
+	public void menuAction(@NonNull MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int actionParam, int widgetId)
 	{
 		menuOptionClicked.setMenuOption(option);
 		menuOptionClicked.setMenuTarget(target);
@@ -2118,12 +2132,12 @@ public class ChinManagerPlugin extends Plugin
 		return getNPC(client, List.of(id));
 	}
 
-	public NPC getNPC(List<Integer> ids)
+	public NPC getNPC(@NonNull List<Integer> ids)
 	{
 		return getNPC(client, ids, client.getLocalPlayer());
 	}
 
-	public NPC getNPC(List<Integer> ids, Locatable locatable)
+	public NPC getNPC(@NonNull List<Integer> ids, @NonNull Locatable locatable)
 	{
 		return getNPC(client, ids, locatable);
 	}
@@ -2133,12 +2147,12 @@ public class ChinManagerPlugin extends Plugin
 		return getObject(client, List.of(id));
 	}
 
-	public TileObject getObject(List<Integer> ids)
+	public TileObject getObject(@NonNull List<Integer> ids)
 	{
 		return getObject(client, ids, client.getLocalPlayer());
 	}
 
-	public TileObject getObject(List<Integer> ids, Locatable locatable)
+	public TileObject getObject(@NonNull List<Integer> ids, @NonNull Locatable locatable)
 	{
 		return getObject(client, ids, locatable);
 	}
@@ -2153,7 +2167,7 @@ public class ChinManagerPlugin extends Plugin
 		return getObject(client, wp);
 	}
 
-	public int getLowestItemMatch(List<Integer> items)
+	public int getLowestItemMatch(@NonNull List<Integer> items)
 	{
 		ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 		ArrayList<Integer> equipmentItems = new ArrayList<>();

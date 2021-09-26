@@ -10,6 +10,7 @@ import com.owain.chinmanager.ui.utils.GridBagHelper;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
 import com.owain.chinmanager.ui.utils.Separator;
 import com.owain.chinmanager.utils.Plugins;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -55,14 +56,15 @@ import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.SwingUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 @Slf4j
 public class PluginPanel extends JPanel
 {
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
 	public static final Map<String, Pair<Boolean, Integer>> PLUGIN_CONFIG_MAP = new HashMap<>();
-	private static final ImageIcon CONFIG_ICON;
-	private static final ImageIcon CONFIG_ICON_HOVER;
+	private static final @NonNull ImageIcon CONFIG_ICON;
+	private static final @NonNull ImageIcon CONFIG_ICON_HOVER;
 
 	static
 	{
@@ -71,8 +73,8 @@ public class PluginPanel extends JPanel
 		CONFIG_ICON_HOVER = new ImageIcon(ImageUtil.luminanceOffset(configIcon, -100));
 	}
 
-	private final ChinManager chinManager;
-	private final ChinManagerPlugin chinManagerPlugin;
+	private final @NonNull ChinManager chinManager;
+	private final @NonNull ChinManagerPlugin chinManagerPlugin;
 	private final EventBus eventBus;
 	private final ConfigManager configManager;
 
@@ -81,7 +83,7 @@ public class PluginPanel extends JPanel
 	private final JPanel requiredItemsPanel = new JPanel(new GridBagLayout());
 
 	@Inject
-	PluginPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager)
+	PluginPanel(@NonNull ChinManagerPlugin chinManagerPlugin, @NonNull ChinManager chinManager)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
@@ -108,7 +110,7 @@ public class PluginPanel extends JPanel
 	}
 
 	@Override
-	public Dimension getPreferredSize()
+	public @NonNull Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
@@ -122,7 +124,7 @@ public class PluginPanel extends JPanel
 		{
 			SwingUtil.syncExec(this::pluginsPanel);
 		}
-		catch (InvocationTargetException | InterruptedException ignored)
+		catch (@NonNull InvocationTargetException | InterruptedException ignored)
 		{
 		}
 	}
@@ -269,6 +271,7 @@ public class PluginPanel extends JPanel
 	{
 		Overlay overlay = new Overlay(plugin)
 		{
+			@Nullable
 			@Override
 			public Dimension render(Graphics2D graphics)
 			{
@@ -518,7 +521,7 @@ public class PluginPanel extends JPanel
 		requiredItems();
 	}
 
-	private Optional<JButton> getStartButton()
+	private @NonNull Optional<JButton> getStartButton()
 	{
 		return Components.findComponents(contentPanel, JButton.class)
 			.stream()

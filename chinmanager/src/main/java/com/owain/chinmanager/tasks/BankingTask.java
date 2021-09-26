@@ -34,6 +34,7 @@ import com.owain.chinmanager.ui.teleports.config.SkillsNecklace;
 import com.owain.chinmanager.ui.teleports.config.XericsTalisman;
 import static com.owain.chinmanager.utils.Plugins.sanitizedName;
 import com.owain.chintasks.Task;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import org.jetbrains.annotations.Nullable;
 
 public class BankingTask implements Task<Void>
 {
@@ -134,17 +136,18 @@ public class BankingTask implements Task<Void>
 		put(AGILITY_CAPE_13340, AGILITY_CAPE);
 	}};
 	private final ChinManager chinManager;
-	private final ChinManagerPlugin chinManagerPlugin;
+	private final @NonNull ChinManagerPlugin chinManagerPlugin;
 	private final TeleportsConfig teleportsConfig;
 	private final Client client;
 	private final EventBus eventBus;
 	private final List<Disposable> disposables = new ArrayList<>();
+	@Nullable
 	Equipment equipmentSetup;
 	private BankingState bankingState;
 	private boolean gearDone = false;
 
 	@Inject
-	BankingTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, ConfigManager configManager)
+	BankingTask(ChinManager chinManager, @NonNull ChinManagerPlugin chinManagerPlugin, EventBus eventBus, @NonNull ConfigManager configManager)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
@@ -280,7 +283,7 @@ public class BankingTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
+	private void onMenuOptionClicked(@NonNull MenuOptionClicked menuOptionClicked)
 	{
 		if (bankingState == BankingState.CLICK_BANK)
 		{
@@ -1494,7 +1497,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needRingOfDueling(Location location)
+	private boolean needRingOfDueling(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1508,7 +1511,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needGamesNecklace(Location location)
+	private boolean needGamesNecklace(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1524,7 +1527,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needCombatBracelet(Location location)
+	private boolean needCombatBracelet(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1539,7 +1542,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needSkillsNecklace(Location location)
+	private boolean needSkillsNecklace(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1556,7 +1559,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needRingOfWealth(Location location)
+	private boolean needRingOfWealth(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1571,7 +1574,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needAmuletOfGlory(Location location)
+	private boolean needAmuletOfGlory(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1586,7 +1589,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needXericsTalisman(Location location)
+	private boolean needXericsTalisman(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1602,7 +1605,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needDigsitePendant(Location location)
+	private boolean needDigsitePendant(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1615,7 +1618,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private boolean needPohTeleport(Location location)
+	private boolean needPohTeleport(@NonNull Location location)
 	{
 		switch (location)
 		{
@@ -1673,7 +1676,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	private List<Integer> getTeleportJewellery(Location location)
+	private List<Integer> getTeleportJewellery(@NonNull Location location)
 	{
 		switch (location)
 		{

@@ -1,5 +1,6 @@
 package com.owain.chinmanager.ui.utils;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Timer;
@@ -10,8 +11,8 @@ import javax.swing.event.DocumentListener;
 
 public class DeferredDocumentChangedListener implements DocumentListener
 {
-	private final Timer timer;
-	private final List<ChangeListener> listeners;
+	private final @NonNull Timer timer;
+	private final @NonNull List<ChangeListener> listeners;
 
 	public DeferredDocumentChangedListener()
 	{

@@ -1,11 +1,12 @@
 package com.owain.chinmanager.utils;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.util.PrimitiveIterator;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class IntRandomNumberGenerator
 {
-	private final PrimitiveIterator.OfInt randomIterator;
+	private final PrimitiveIterator.@NonNull OfInt randomIterator;
 
 	/**
 	 * Initialize a new random number generator that generates

@@ -9,6 +9,7 @@ import static com.owain.chinmanager.ui.ChinManagerPanel.wrapContainer;
 import com.owain.chinmanager.ui.plugins.breaks.BreakOptionsPanel;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
 import com.owain.chinmanager.ui.plugins.status.PluginStatusPanel;
+import com.owain.chinmanager.ui.teleports.TeleportsConfig;
 import com.owain.chinmanager.ui.utils.ConfigPanel;
 import com.owain.chinmanager.ui.utils.GridBagHelper;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
@@ -37,42 +38,31 @@ import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 
 public class StatusPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-
 	private final SwingScheduler swingScheduler;
-
 	private final ChinManager chinManager;
 	private final ConfigManager configManager;
-
 	private final InfoPanel infoPanel;
-
 	private final JPanel headerPanel = new JPanel(new GridBagLayout());
 	private final JPanel unlockAccountPanel = new JPanel(new BorderLayout());
 	private final JPanel pluginsPanel = new JPanel(new GridBagLayout());
 	private final JButton stopPluginsButton = new JButton();
-
 	@Inject
 	StatusPanel(
 		SwingScheduler swingScheduler,
 		ChinManager chinManager,
-		ChinManagerPlugin chinManagerPlugin,
 		InfoPanel infoPanel,
 		BreakOptionsPanel breakOptionsPanel,
-		ConfigPanel teleportsPanel)
+		ConfigPanel teleportsPanel,
+		ConfigManager configManager)
 	{
 		this.swingScheduler = swingScheduler;
 		this.chinManager = chinManager;
-		this.configManager = chinManagerPlugin.getConfigManager();
+		this.configManager = configManager;
 
 		this.infoPanel = infoPanel;
 
-		teleportsPanel.init(chinManagerPlugin.getTeleportsConfig());
+		teleportsPanel.init(configManager.getConfig(TeleportsConfig.class));
 
 		setLayout(new BorderLayout());
 		setBackground(PANEL_BACKGROUND_COLOR);
@@ -109,6 +99,12 @@ public class StatusPanel extends JPanel
 						(ignored) -> headerPanel())
 			)
 		);
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	private boolean unlockAccountsPanel()

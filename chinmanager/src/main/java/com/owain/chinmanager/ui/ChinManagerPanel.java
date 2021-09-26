@@ -38,12 +38,9 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 
 	public static final Font NORMAL_FONT = FontManager.getRunescapeFont();
 	public static final Font SMALL_FONT = FontManager.getRunescapeSmallFont();
-
+	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
 	private static final ImageIcon HELP_ICON;
 	private static final ImageIcon HELP_HOVER_ICON;
-
-	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-
 	private static final JTabbedPane MAIN_TABBED_PANE = new JTabbedPane();
 
 	static
@@ -93,6 +90,20 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 				.getActiveObservable()
 				.observeOn(swingScheduler)
 				.subscribe(this::tabbedPane));
+	}
+
+	public static JScrollPane wrapContainer(final JPanel container)
+	{
+		final JPanel wrapped = new JPanel(new BorderLayout());
+		wrapped.add(container, BorderLayout.NORTH);
+		wrapped.setBackground(PANEL_BACKGROUND_COLOR);
+
+		final JScrollPane scroller = new JScrollPane(wrapped);
+		scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroller.getVerticalScrollBar().setPreferredSize(new Dimension(8, 0));
+		scroller.setBackground(PANEL_BACKGROUND_COLOR);
+
+		return scroller;
 	}
 
 	void buildPanel()
@@ -179,19 +190,5 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 		titlePanel.add(help, BorderLayout.EAST);
 
 		return titlePanel;
-	}
-
-	public static JScrollPane wrapContainer(final JPanel container)
-	{
-		final JPanel wrapped = new JPanel(new BorderLayout());
-		wrapped.add(container, BorderLayout.NORTH);
-		wrapped.setBackground(PANEL_BACKGROUND_COLOR);
-
-		final JScrollPane scroller = new JScrollPane(wrapped);
-		scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroller.getVerticalScrollBar().setPreferredSize(new Dimension(8, 0));
-		scroller.setBackground(PANEL_BACKGROUND_COLOR);
-
-		return scroller;
 	}
 }

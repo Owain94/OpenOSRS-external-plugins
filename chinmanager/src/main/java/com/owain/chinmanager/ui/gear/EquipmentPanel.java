@@ -66,15 +66,8 @@ import net.runelite.client.util.AsyncBufferedImage;
 
 public class EquipmentPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
 	private static final int NUM_EQUIPMENT_ITEMS = 14;
-
 	protected final ItemManager itemManager;
 	private final Client client;
 	private final ClientThread clientThread;
@@ -82,16 +75,13 @@ public class EquipmentPanel extends JPanel
 	private final ChatboxPanelManager chatboxPanelManager;
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
-
-	private HashMap<EquipmentInventorySlot, EquipmentSlot> equipmentSlots;
-
 	@Getter(AccessLevel.PROTECTED)
 	private final JPanel containerSlotsPanel;
 	private final JPanel subPanel;
 	private final JLabel noBanking;
 	private final JButton copyEquipmentButton;
-
 	private final JComboBox<String> pluginList;
+	private HashMap<EquipmentInventorySlot, EquipmentSlot> equipmentSlots;
 
 	@Inject
 	EquipmentPanel(
@@ -157,6 +147,12 @@ public class EquipmentPanel extends JPanel
 		);
 
 		updatePluginList(chinManager.getManagerPlugins());
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	private void updatePluginList(Set<Plugin> plugins)

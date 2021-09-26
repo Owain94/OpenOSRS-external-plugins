@@ -11,11 +11,14 @@ import net.runelite.api.Constants;
 import net.runelite.api.DecorativeObject;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.GraphicsObject;
 import net.runelite.api.GroundObject;
+import net.runelite.api.Point;
 import net.runelite.api.Scene;
 import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GraphicsObjectCreated;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -111,6 +114,19 @@ public class ChinObjectHiderPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onGraphicsObjectCreated(GraphicsObjectCreated graphicsObjectCreated)
+	{
+		GraphicsObject graphicsObject = graphicsObjectCreated.getGraphicsObject();
+
+		if (chinObjectHiderConfig.hideAllGraphicsObjects() || objectIds.contains(graphicsObject.getId()) ||
+			(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(graphicsObject.getId()).getName().toLowerCase()))
+		)
+		{
+			graphicsObject.unlink();
+		}
+	}
+
+	@Subscribe
 	public void onConfigChanged(ConfigChanged configChanged)
 	{
 		if (!configChanged.getGroup().equals(CONFIG_GROUP))
@@ -161,63 +177,66 @@ public class ChinObjectHiderPlugin extends Plugin
 	private void hide()
 	{
 		Scene scene = client.getScene();
-		Tile[][] tiles = scene.getTiles()[0];
+		Tile[][][] tiles = scene.getTiles();
 
-		for (int x = 0; x < Constants.SCENE_SIZE; ++x)
+		for (int z = 0; z < 3; ++z)
 		{
-			for (int y = 0; y < Constants.SCENE_SIZE; ++y)
+			for (int x = 0; x < Constants.SCENE_SIZE; ++x)
 			{
-				Tile tile = tiles[x][y];
-				if (tile == null)
+				for (int y = 0; y < Constants.SCENE_SIZE; ++y)
 				{
-					continue;
-				}
-
-				GameObject[] gameObjects = tile.getGameObjects();
-				DecorativeObject decorativeObject = tile.getDecorativeObject();
-				WallObject wallObject = tile.getWallObject();
-				GroundObject groundObject = tile.getGroundObject();
-
-				for (GameObject gameObject : gameObjects)
-				{
-					if (gameObject != null)
+					Tile tile = tiles[z][x][y];
+					if (tile == null)
 					{
-						if (chinObjectHiderConfig.hideAllGameObjects() || objectIds.contains(gameObject.getId()) ||
-							(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(gameObject.getId()).getName().toLowerCase()))
-						)
+						continue;
+					}
+
+					GameObject[] gameObjects = tile.getGameObjects();
+					DecorativeObject decorativeObject = tile.getDecorativeObject();
+					WallObject wallObject = tile.getWallObject();
+					GroundObject groundObject = tile.getGroundObject();
+
+					for (GameObject gameObject : gameObjects)
+					{
+						if (gameObject != null)
 						{
-							scene.removeGameObject(gameObject);
+							if (chinObjectHiderConfig.hideAllGameObjects() || objectIds.contains(gameObject.getId()) ||
+								(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(gameObject.getId()).getName().toLowerCase()))
+							)
+							{
+								// scene.removeGameObject(gameObject);
+							}
 						}
 					}
-				}
 
-				if (decorativeObject != null)
-				{
-					if (chinObjectHiderConfig.hideAllDecorativeObjects() || objectIds.contains(decorativeObject.getId()) ||
-						(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(decorativeObject.getId()).getName().toLowerCase()))
-					)
+					if (decorativeObject != null)
 					{
-						tile.setDecorativeObject(null);
+						if (chinObjectHiderConfig.hideAllDecorativeObjects() || objectIds.contains(decorativeObject.getId()) ||
+							(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(decorativeObject.getId()).getName().toLowerCase()))
+						)
+						{
+							// scene.removeDecorativeObject(client.getPlane(), x, y);
+						}
 					}
-				}
 
-				if (wallObject != null)
-				{
-					if (chinObjectHiderConfig.hideAllWallObjects() || objectIds.contains(wallObject.getId()) ||
-						(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(wallObject.getId()).getName().toLowerCase()))
-					)
+					if (wallObject != null)
 					{
-						tile.setWallObject(null);
+						if (chinObjectHiderConfig.hideAllWallObjects() || objectIds.contains(wallObject.getId()) ||
+							(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(wallObject.getId()).getName().toLowerCase()))
+						)
+						{
+							// scene.removeWallObject(client.getPlane(), x, y);
+						}
 					}
-				}
 
-				if (groundObject != null && chinObjectHiderConfig.hideAllGroundObjects())
-				{
-					if (chinObjectHiderConfig.hideAllGroundObjects() || objectIds.contains(groundObject.getId()) ||
-						(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(groundObject.getId()).getName().toLowerCase()))
-					)
+					if (groundObject != null && chinObjectHiderConfig.hideAllGroundObjects())
 					{
-						tile.setGroundObject(null);
+						if (chinObjectHiderConfig.hideAllGroundObjects() || objectIds.contains(groundObject.getId()) ||
+							(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(groundObject.getId()).getName().toLowerCase()))
+						)
+						{
+							// scene.removeGroundObject(client.getPlane(), x, y);
+						}
 					}
 				}
 			}

@@ -24,7 +24,7 @@
  */
 
 object ProjectVersions {
-    const val openosrsVersion = "4.10.0"
+    const val openosrsVersion = "4.11.0"
     const val apiVersion = "^1.0.0"
 }
 
@@ -35,7 +35,7 @@ object Libraries {
         const val guice = "4.1.0"
         const val lombok = "1.18.4"
         const val pf4j = "3.6.0"
-        const val rxjava = "3.0.10"
+        const val rxjava = "3.1.1"
     }
 
     const val apacheCommonsText = "org.apache.commons:commons-text:${Versions.apacheCommonsText}"

@@ -2,10 +2,10 @@ package com.owain.chinmanager.tasks;
 
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
+import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chintasks.Task;
-import com.owain.chinmanager.ChinManagerState;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;

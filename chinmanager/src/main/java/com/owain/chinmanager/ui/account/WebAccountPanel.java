@@ -42,26 +42,14 @@ import net.runelite.client.util.LinkBrowser;
 @Slf4j
 public class WebAccountPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	private final SwingScheduler swingScheduler;
-
 	private final ConfigManager configManager;
-
 	private final AccountApi accountApi;
 	private final LicenseApi licenseApi;
-
 	private final WebsocketManager websocketManager;
-
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
-
-	private boolean loggedin;
 	private final JMultilineLabel errorLabel = new JMultilineLabel();
-
+	private boolean loggedin;
 	@Inject
 	WebAccountPanel(
 		SwingScheduler swingScheduler,
@@ -95,6 +83,12 @@ public class WebAccountPanel extends JPanel
 		setBackground(PANEL_BACKGROUND_COLOR);
 
 		init();
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	@Subscribe

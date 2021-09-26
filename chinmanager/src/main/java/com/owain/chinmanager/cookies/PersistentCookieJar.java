@@ -21,13 +21,6 @@ public class PersistentCookieJar implements ClearableCookieJar
 		this.cache.addAll(persistor.loadAll());
 	}
 
-	@Override
-	synchronized public void saveFromResponse(HttpUrl url, List<Cookie> cookies)
-	{
-		cache.addAll(cookies);
-		persistor.saveAll(filterPersistentCookies(cookies));
-	}
-
 	private static List<Cookie> filterPersistentCookies(List<Cookie> cookies)
 	{
 		List<Cookie> persistentCookies = new ArrayList<>();
@@ -40,6 +33,11 @@ public class PersistentCookieJar implements ClearableCookieJar
 			}
 		}
 		return persistentCookies;
+	}
+
+	private static boolean isCookieExpired(Cookie cookie)
+	{
+		return cookie.expiresAt() < System.currentTimeMillis();
 	}
 
 	@Override
@@ -66,9 +64,11 @@ public class PersistentCookieJar implements ClearableCookieJar
 		return validCookies;
 	}
 
-	private static boolean isCookieExpired(Cookie cookie)
+	@Override
+	synchronized public void saveFromResponse(HttpUrl url, List<Cookie> cookies)
 	{
-		return cookie.expiresAt() < System.currentTimeMillis();
+		cache.addAll(cookies);
+		persistor.saveAll(filterPersistentCookies(cookies));
 	}
 
 	@Override

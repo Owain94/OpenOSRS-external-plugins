@@ -37,6 +37,7 @@ import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -49,11 +50,11 @@ public class ManagerTileIndicatorsOverlay extends Overlay
 	private final OptionsConfig optionsConfig;
 
 	@Inject
-	public ManagerTileIndicatorsOverlay(Client client, ChinManager chinManager, OptionsConfig optionsConfig)
+	public ManagerTileIndicatorsOverlay(Client client, ChinManager chinManager, ConfigManager configManager)
 	{
 		this.client = client;
 		this.chinManager = chinManager;
-		this.optionsConfig = optionsConfig;
+		this.optionsConfig = configManager.getConfig(OptionsConfig.class);
 
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);

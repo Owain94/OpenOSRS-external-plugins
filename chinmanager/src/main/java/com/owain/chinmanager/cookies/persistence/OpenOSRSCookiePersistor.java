@@ -24,6 +24,11 @@ public class OpenOSRSCookiePersistor implements CookiePersistor
 		this.configManager = configManager;
 	}
 
+	private static String createCookieKey(Cookie cookie)
+	{
+		return (cookie.secure() ? "https" : "http") + "://" + cookie.domain() + cookie.path() + "|" + cookie.name();
+	}
+
 	@Override
 	public List<Cookie> loadAll()
 	{
@@ -59,11 +64,6 @@ public class OpenOSRSCookiePersistor implements CookiePersistor
 		}
 
 		configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "cookies", json.toString());
-	}
-
-	private static String createCookieKey(Cookie cookie)
-	{
-		return (cookie.secure() ? "https" : "http") + "://" + cookie.domain() + cookie.path() + "|" + cookie.name();
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -21,11 +22,11 @@ public class ManagerClickboxOverlay extends Overlay
 	private final OptionsConfig optionsConfig;
 
 	@Inject
-	public ManagerClickboxOverlay(ModelOutlineRenderer modelOutlineRenderer, ChinManager chinManager, OptionsConfig optionsConfig)
+	public ManagerClickboxOverlay(ModelOutlineRenderer modelOutlineRenderer, ChinManager chinManager, ConfigManager configManager)
 	{
 		this.modelOutliner = modelOutlineRenderer;
 		this.chinManager = chinManager;
-		this.optionsConfig = optionsConfig;
+		this.optionsConfig = configManager.getConfig(OptionsConfig.class);
 
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);

@@ -40,14 +40,10 @@ import net.runelite.client.util.ImageUtil;
 
 public class EquipmentSlot extends JPanel
 {
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(42, 42);
-	}
-
 	@Getter(AccessLevel.PACKAGE)
 	private final JLabel imageLabel;
-
+	@Getter(AccessLevel.PACKAGE)
+	private final int indexInSlot;
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
 	private Equipment parentSetup;
@@ -55,8 +51,17 @@ public class EquipmentSlot extends JPanel
 	@Setter(AccessLevel.PACKAGE)
 	private boolean locked;
 
-	@Getter(AccessLevel.PACKAGE)
-	private final int indexInSlot;
+	public EquipmentSlot(int indexInSlot)
+	{
+		this.imageLabel = new JLabel();
+		this.parentSetup = null;
+		this.indexInSlot = indexInSlot;
+		imageLabel.setVerticalAlignment(SwingConstants.CENTER);
+		imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(42, 42));
+		add(imageLabel, BorderLayout.CENTER);
+	}
 
 	@Override
 	protected void paintComponent(Graphics g)
@@ -124,16 +129,9 @@ public class EquipmentSlot extends JPanel
 		}
 	}
 
-	public EquipmentSlot(int indexInSlot)
+	public Dimension getPreferredSize()
 	{
-		this.imageLabel = new JLabel();
-		this.parentSetup = null;
-		this.indexInSlot = indexInSlot;
-		imageLabel.setVerticalAlignment(SwingConstants.CENTER);
-		imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(42, 42));
-		add(imageLabel, BorderLayout.CENTER);
+		return new Dimension(42, 42);
 	}
 
 	public void setImageLabel(String toolTip, AsyncBufferedImage itemImage)

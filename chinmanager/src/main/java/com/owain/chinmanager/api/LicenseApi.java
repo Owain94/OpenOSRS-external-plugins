@@ -128,9 +128,9 @@ public class LicenseApi
 			}
 
 			Instant activatedInstant = LocalDateTime.parse(
-				jsonObject.get("activatedAt").getAsString(),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-			)
+					jsonObject.get("activatedAt").getAsString(),
+					DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+				)
 				.atZone(
 					ZoneId.of("UTC")
 				)

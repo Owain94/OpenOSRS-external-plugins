@@ -34,6 +34,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.ui.PluginPanel;
 import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
+import net.runelite.client.ui.components.ToggleButton;
 
 public class ChinBreakHandlerAccountPanel extends JPanel
 {
@@ -76,8 +77,8 @@ public class ChinBreakHandlerAccountPanel extends JPanel
 		accountSelection.setBorder(new EmptyBorder(5, 0, 0, 0));
 		ButtonGroup buttonGroup = new ButtonGroup();
 
-		JCheckBox manualButton = new JCheckBox("Manual");
-		JCheckBox profilesButton = new JCheckBox("Profiles plugin");
+		JCheckBox manualButton = new ToggleButton("Manual");
+		JCheckBox profilesButton = new ToggleButton("Profiles plugin");
 
 		String profilesSalt = configManager.getConfiguration("betterProfiles", "salt");
 		boolean profilesSavePasswords = Boolean.parseBoolean(configManager.getConfiguration("betterProfiles", "rememberPassword"));

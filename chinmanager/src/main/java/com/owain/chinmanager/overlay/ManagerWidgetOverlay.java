@@ -11,6 +11,7 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -24,14 +25,21 @@ public class ManagerWidgetOverlay extends Overlay
 	private final OptionsConfig optionsConfig;
 
 	@Inject
-	public ManagerWidgetOverlay(ItemManager itemManager, ChinManager chinManager, OptionsConfig optionsConfig)
+	public ManagerWidgetOverlay(ItemManager itemManager, ChinManager chinManager, ConfigManager configManager)
 	{
 		this.itemManager = itemManager;
 		this.chinManager = chinManager;
-		this.optionsConfig = optionsConfig;
+		this.optionsConfig = configManager.getConfig(OptionsConfig.class);
 
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
+	}
+
+	public static Polygon rectangleToPolygon(Rectangle rect)
+	{
+		int[] xpoints = {rect.x, rect.x + rect.width, rect.x + rect.width, rect.x};
+		int[] ypoints = {rect.y, rect.y, rect.y + rect.height, rect.y + rect.height};
+		return new Polygon(xpoints, ypoints, 4);
 	}
 
 	@Override
@@ -67,12 +75,5 @@ public class ManagerWidgetOverlay extends Overlay
 		}
 
 		return null;
-	}
-
-	public static Polygon rectangleToPolygon(Rectangle rect)
-	{
-		int[] xpoints = {rect.x, rect.x + rect.width, rect.x + rect.width, rect.x};
-		int[] ypoints = {rect.y, rect.y, rect.y + rect.height, rect.y + rect.height};
-		return new Polygon(xpoints, ypoints, 4);
 	}
 }

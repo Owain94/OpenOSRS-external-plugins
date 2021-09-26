@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.10.0"
+version = "2.10.1"
 
 project.extra["PluginName"] = "Chin manager"
 project.extra["PluginDescription"] = "Configure and manage chin plugins"
@@ -38,7 +38,7 @@ dependencies {
     api(project(":chinautomation"))
 
     compileOnly(group = "com.google.code.gson", name = "gson", version = "2.8.5")
-    compileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "3.7.0")
+    compileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1")
 
 //    implementation(group = "com.github.HayateLaTech", name = "OAuth2Discord", version = "-SNAPSHOT") {
 //        exclude(group = "com.squareup.okhttp3")

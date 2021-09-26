@@ -49,6 +49,54 @@ public interface TeleportsConfig extends Config
 		position = 0
 	)
 	String pohTitle = "pohTitle";
+	@ConfigTitle(
+		name = "Digsite pendant",
+		description = "",
+		position = 2
+	)
+	String digsitePendant = "digsitePendant";
+	@ConfigTitle(
+		name = "Xeric's talisman",
+		description = "",
+		position = 4
+	)
+	String xericsTalisman = "xericsTalisman";
+	@ConfigTitle(
+		name = "Ring of dueling",
+		description = "",
+		position = 6
+	)
+	String ringOfDueling = "ringOfDueling";
+	@ConfigTitle(
+		name = "Games necklace",
+		description = "",
+		position = 8
+	)
+	String gamesNecklace = "gamesNecklace";
+	@ConfigTitle(
+		name = "Combat bracelet",
+		description = "",
+		position = 10
+	)
+	String combatBracelet = "combatBracelet";
+	@ConfigTitle(
+		name = "Skills necklace",
+		description = "",
+		position = 12
+	)
+	String skillsNecklace = "skillsNecklace";
+	@ConfigTitle(
+		name = "Ring of wealth",
+		description = "",
+		position = 14
+	)
+	String ringOfWealth = "ringOfWealth";
+	@ConfigTitle(
+		name = "Amulet of glory",
+		description = "",
+		position = 16
+	)
+	String amuletOfGlory = "amuletOfGlory";
 
 	@ConfigItem(
 		keyName = "pohTeleport",
@@ -62,13 +110,6 @@ public interface TeleportsConfig extends Config
 		return Poh.RUNES;
 	}
 
-	@ConfigTitle(
-		name = "Digsite pendant",
-		description = "",
-		position = 2
-	)
-	String digsitePendant = "digsitePendant";
-
 	@ConfigItem(
 		keyName = "digsitePendantTeleport",
 		name = "",
@@ -80,13 +121,6 @@ public interface TeleportsConfig extends Config
 	{
 		return DigsitePendant.DIGSITE_PENDANT;
 	}
-
-	@ConfigTitle(
-		name = "Xeric's talisman",
-		description = "",
-		position = 4
-	)
-	String xericsTalisman = "xericsTalisman";
 
 	@ConfigItem(
 		keyName = "xericsTalismanTeleport",
@@ -100,13 +134,6 @@ public interface TeleportsConfig extends Config
 		return XericsTalisman.XERICS_TALISMAN;
 	}
 
-	@ConfigTitle(
-		name = "Ring of dueling",
-		description = "",
-		position = 6
-	)
-	String ringOfDueling = "ringOfDueling";
-
 	@ConfigItem(
 		keyName = "ringOfDuelingTeleport",
 		name = "",
@@ -118,13 +145,6 @@ public interface TeleportsConfig extends Config
 	{
 		return RingOfDueling.RING_OF_DUELING;
 	}
-
-	@ConfigTitle(
-		name = "Games necklace",
-		description = "",
-		position = 8
-	)
-	String gamesNecklace = "gamesNecklace";
 
 	@ConfigItem(
 		keyName = "gamesNecklaceTeleport",
@@ -138,13 +158,6 @@ public interface TeleportsConfig extends Config
 		return GamesNecklace.GAMES_NECKLACE;
 	}
 
-	@ConfigTitle(
-		name = "Combat bracelet",
-		description = "",
-		position = 10
-	)
-	String combatBracelet = "combatBracelet";
-
 	@ConfigItem(
 		keyName = "combatBraceletTeleport",
 		name = "",
@@ -156,13 +169,6 @@ public interface TeleportsConfig extends Config
 	{
 		return CombatBracelet.COMBAT_BRACELET;
 	}
-
-	@ConfigTitle(
-		name = "Skills necklace",
-		description = "",
-		position = 12
-	)
-	String skillsNecklace = "skillsNecklace";
 
 	@ConfigItem(
 		keyName = "skillsNecklaceTeleport",
@@ -176,13 +182,6 @@ public interface TeleportsConfig extends Config
 		return SkillsNecklace.SKILLS_NECKLACE;
 	}
 
-	@ConfigTitle(
-		name = "Ring of wealth",
-		description = "",
-		position = 14
-	)
-	String ringOfWealth = "ringOfWealth";
-
 	@ConfigItem(
 		keyName = "ringOfWealthTeleport",
 		name = "",
@@ -194,13 +193,6 @@ public interface TeleportsConfig extends Config
 	{
 		return RingOfWealth.RING_OF_WEALTH;
 	}
-
-	@ConfigTitle(
-		name = "Amulet of glory",
-		description = "",
-		position = 16
-	)
-	String amuletOfGlory = "amuletOfGlory";
 
 	@ConfigItem(
 		keyName = "amuletOfGloryTeleport",

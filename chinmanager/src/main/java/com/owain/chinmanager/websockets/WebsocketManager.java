@@ -41,10 +41,8 @@ public class WebsocketManager extends WebSocketListener
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ChinManager chinManager;
 	private final InfoPanel infoPanel;
-
-	private int ticksWithoutFriend = 0;
-
 	public String token = null;
+	private int ticksWithoutFriend = 0;
 	private Boolean isSocketConnected = false;
 	private Boolean broadcasting = false;
 
@@ -68,6 +66,24 @@ public class WebsocketManager extends WebSocketListener
 					.subscribe(this::milliseconds)
 			)
 		);
+	}
+
+	private static Request getWebsocketUrl()
+	{
+		Request.Builder request = new Request.Builder();
+
+		if (DEBUG)
+		{
+			return request
+				.url("ws://localhost:5001")
+				.build();
+		}
+		else
+		{
+			return request
+				.url("wss://chinplugins.xyz/status")
+				.build();
+		}
 	}
 
 	private void milliseconds(Long aLong)
@@ -300,24 +316,6 @@ public class WebsocketManager extends WebSocketListener
 		}
 	}
 
-	private static Request getWebsocketUrl()
-	{
-		Request.Builder request = new Request.Builder();
-
-		if (DEBUG)
-		{
-			return request
-				.url("ws://localhost:5001")
-				.build();
-		}
-		else
-		{
-			return request
-				.url("wss://chinplugins.xyz/status")
-				.build();
-		}
-	}
-
 	private void createSocket()
 	{
 		log.debug("Create socket");
@@ -372,10 +370,20 @@ public class WebsocketManager extends WebSocketListener
 	}
 
 	@Override
-	public void onOpen(WebSocket webSocket, Response response)
+	public void onClosed(WebSocket webSocket, int code, String reason)
 	{
-		isSocketConnected = true;
+		isSocketConnected = false;
+		socket = null;
 		broadcasting = false;
+	}
+
+	@Override
+	public void onFailure(WebSocket webSocket, Throwable t, Response response)
+	{
+		isSocketConnected = false;
+		socket = null;
+		broadcasting = false;
+		createSocket();
 	}
 
 	@Override
@@ -405,19 +413,9 @@ public class WebsocketManager extends WebSocketListener
 	}
 
 	@Override
-	public void onClosed(WebSocket webSocket, int code, String reason)
+	public void onOpen(WebSocket webSocket, Response response)
 	{
-		isSocketConnected = false;
-		socket = null;
+		isSocketConnected = true;
 		broadcasting = false;
-	}
-
-	@Override
-	public void onFailure(WebSocket webSocket, Throwable t, Response response)
-	{
-		isSocketConnected = false;
-		socket = null;
-		broadcasting = false;
-		createSocket();
 	}
 }

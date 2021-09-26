@@ -59,63 +59,12 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 
 public class BankingTask implements Task<Void>
 {
-	enum BankingState
-	{
-		NONE,
-		CLICK_BANK,
-		WAIT_BANK,
-		QUANTITY,
-		BANK_TAB,
-		SETTINGS,
-		ITEM_OPTIONS,
-		DEPOSIT_ALL,
-		DEPOSIT_ALL_CLICK,
-		SHOW_WORN_ITEMS,
-		DETERMINE_STATE,
-		BANK_HEAD,
-		BANK_CAPE,
-		BANK_AMULET,
-		BANK_AMMO,
-		BANK_WEAPON,
-		BANK_BODY,
-		BANK_SHIELD,
-		BANK_LEGS,
-		BANK_GLOVES,
-		BANK_BOOTS,
-		BANK_RING,
-		HIDE_WORN_ITEMS,
-		GET_HEAD,
-		GET_CAPE,
-		GET_AMULET,
-		GET_AMMO,
-		GET_WEAPON,
-		GET_BODY,
-		GET_SHIELD,
-		GET_LEGS,
-		GET_GLOVES,
-		GET_BOOTS,
-		GET_RING,
-		EQUIP_HEAD,
-		EQUIP_CAPE,
-		EQUIP_AMULET,
-		EQUIP_AMMO,
-		EQUIP_WEAPON,
-		EQUIP_BODY,
-		EQUIP_SHIELD,
-		EQUIP_LEGS,
-		EQUIP_GLOVES,
-		EQUIP_BOOTS,
-		EQUIP_RING,
-		FETCH_EXTRA,
-		DONE,
-		;
-	}
-
 	private static final Map<Integer, Integer> WORN_ITEMS = new HashMap<>()
 	{{
 		put(BOOTS_OF_LIGHTNESS_89, BOOTS_OF_LIGHTNESS);
@@ -184,26 +133,22 @@ public class BankingTask implements Task<Void>
 		put(AGILITY_CAPET_13341, AGILITY_CAPET);
 		put(AGILITY_CAPE_13340, AGILITY_CAPE);
 	}};
-
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final TeleportsConfig teleportsConfig;
 	private final Client client;
 	private final EventBus eventBus;
-
 	private final List<Disposable> disposables = new ArrayList<>();
-
-	private BankingState bankingState;
 	Equipment equipmentSetup;
-
+	private BankingState bankingState;
 	private boolean gearDone = false;
 
 	@Inject
-	BankingTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, TeleportsConfig teleportsConfig, EventBus eventBus)
+	BankingTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, ConfigManager configManager)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
-		this.teleportsConfig = teleportsConfig;
+		this.teleportsConfig = configManager.getConfig(TeleportsConfig.class);
 		this.client = chinManagerPlugin.getClient();
 		this.eventBus = eventBus;
 	}
@@ -225,7 +170,7 @@ public class BankingTask implements Task<Void>
 		{
 			bankingState = BankingState.DONE;
 		}
-		
+
 		eventBus.register(this);
 	}
 
@@ -1784,5 +1729,57 @@ public class BankingTask implements Task<Void>
 			default:
 				return Collections.emptyList();
 		}
+	}
+
+	enum BankingState
+	{
+		NONE,
+		CLICK_BANK,
+		WAIT_BANK,
+		QUANTITY,
+		BANK_TAB,
+		SETTINGS,
+		ITEM_OPTIONS,
+		DEPOSIT_ALL,
+		DEPOSIT_ALL_CLICK,
+		SHOW_WORN_ITEMS,
+		DETERMINE_STATE,
+		BANK_HEAD,
+		BANK_CAPE,
+		BANK_AMULET,
+		BANK_AMMO,
+		BANK_WEAPON,
+		BANK_BODY,
+		BANK_SHIELD,
+		BANK_LEGS,
+		BANK_GLOVES,
+		BANK_BOOTS,
+		BANK_RING,
+		HIDE_WORN_ITEMS,
+		GET_HEAD,
+		GET_CAPE,
+		GET_AMULET,
+		GET_AMMO,
+		GET_WEAPON,
+		GET_BODY,
+		GET_SHIELD,
+		GET_LEGS,
+		GET_GLOVES,
+		GET_BOOTS,
+		GET_RING,
+		EQUIP_HEAD,
+		EQUIP_CAPE,
+		EQUIP_AMULET,
+		EQUIP_AMMO,
+		EQUIP_WEAPON,
+		EQUIP_BODY,
+		EQUIP_SHIELD,
+		EQUIP_LEGS,
+		EQUIP_GLOVES,
+		EQUIP_BOOTS,
+		EQUIP_RING,
+		FETCH_EXTRA,
+		DONE,
+		;
 	}
 }

@@ -59,11 +59,6 @@ public enum Runes
 
 	;
 
-	@Getter
-	private final int id;
-	@Getter
-	private final int itemId;
-
 	private static final Map<Integer, Runes> runes = new HashMap<>();
 
 	static
@@ -73,6 +68,11 @@ public enum Runes
 			runes.put(rune.getId(), rune);
 		}
 	}
+
+	@Getter
+	private final int id;
+	@Getter
+	private final int itemId;
 
 	Runes(int id, int itemId)
 	{

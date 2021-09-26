@@ -40,6 +40,18 @@ public interface OptionsConfig extends Config
 		position = 0
 	)
 	String miscellaneousTitle = "Miscellaneous";
+	@ConfigTitle(
+		name = "Hopping",
+		description = "",
+		position = 2
+	)
+	String hoppingTitle = "Hopping";
+	@ConfigTitle(
+		name = "Overlays",
+		description = "",
+		position = 8
+	)
+	String overlaysTitle = "Overlays";
 
 	@ConfigItem(
 		keyName = "stopAfterBreaks",
@@ -52,13 +64,6 @@ public interface OptionsConfig extends Config
 	{
 		return 0;
 	}
-
-	@ConfigTitle(
-		name = "Hopping",
-		description = "",
-		position = 2
-	)
-	String hoppingTitle = "Hopping";
 
 	@ConfigItem(
 		keyName = "hop-after-break",
@@ -127,13 +132,6 @@ public interface OptionsConfig extends Config
 	{
 		return false;
 	}
-
-	@ConfigTitle(
-		name = "Overlays",
-		description = "",
-		position = 8
-	)
-	String overlaysTitle = "Overlays";
 
 	@ConfigItem(
 		keyName = "showOverlays",

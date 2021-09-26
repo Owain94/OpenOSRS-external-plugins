@@ -28,18 +28,10 @@ import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 
 public class PluginStatusPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	private final ChinManager chinManager;
 	private final Plugin plugin;
-
 	private final JPanel extraDataPanel = new JPanel(new GridBagLayout());
 	private final JLabel status = new JLabel();
-
 	public PluginStatusPanel(
 		SwingScheduler swingScheduler,
 		ChinManager chinManager,
@@ -80,6 +72,12 @@ public class PluginStatusPanel extends JPanel
 
 		init();
 		extraData();
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	private void pluginStatus()

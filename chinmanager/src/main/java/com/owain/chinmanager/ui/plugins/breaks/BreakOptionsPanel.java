@@ -3,6 +3,7 @@ package com.owain.chinmanager.ui.plugins.breaks;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
+import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
 import com.owain.chinmanager.ui.utils.ConfigPanel;
 import com.owain.chinmanager.ui.utils.Separator;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
@@ -13,6 +14,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -23,19 +25,11 @@ import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 
 public class BreakOptionsPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
 	private final JPanel optionsPanel;
-
 	private final JPanel contentPanel = new JPanel(new BorderLayout());
 
 	@Inject
@@ -46,7 +40,7 @@ public class BreakOptionsPanel extends JPanel
 		this.configManager = chinManagerPlugin.getConfigManager();
 		this.optionsPanel = optionsPanel;
 
-		optionsPanel.init(chinManagerPlugin.getOptionsConfig());
+		optionsPanel.init(chinManagerPlugin.getConfigManager().getConfig(OptionsConfig.class));
 
 		setLayout(new BorderLayout());
 		setBackground(PANEL_BACKGROUND_COLOR);
@@ -69,13 +63,26 @@ public class BreakOptionsPanel extends JPanel
 		);
 	}
 
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
+	}
+
 	private void breakOptionsPanel()
 	{
 		contentPanel.removeAll();
 
 		for (Plugin plugin : chinManager.getActivePlugins())
 		{
-			if (!chinManager.getPlugins().get(plugin))
+			Map<Plugin, Boolean> plugins = chinManager.getPlugins();
+
+			if (!plugins.containsKey(plugin))
+			{
+				continue;
+			}
+
+			if (!plugins.get(plugin))
 			{
 				continue;
 			}

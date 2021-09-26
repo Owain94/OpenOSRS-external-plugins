@@ -60,23 +60,16 @@ import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.FontManager;
 import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 import net.runelite.client.ui.components.ComboBoxListRenderer;
+import net.runelite.client.ui.components.ToggleButton;
 import net.runelite.client.util.Text;
 
 @Slf4j
 public class ConfigPanel extends FixedWidthPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
-	private static final int SPINNER_FIELD_WIDTH = 6;
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-
+	private static final int SPINNER_FIELD_WIDTH = 6;
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
-
 	private ConfigDescriptor pluginConfig = null;
 
 	@Inject
@@ -98,6 +91,12 @@ public class ConfigPanel extends FixedWidthPanel
 		setBackground(PANEL_BACKGROUND_COLOR);
 		setBorder(new EmptyBorder(5, 10, 0, 10));
 		setLayout(new DynamicGridLayout(0, 1, 0, 5));
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	public void init(Config config)
@@ -195,8 +194,7 @@ public class ConfigPanel extends FixedWidthPanel
 
 			if (cid.getType() == boolean.class)
 			{
-				JCheckBox checkbox = new JCheckBox();
-				checkbox.setBackground(ColorScheme.LIGHT_GRAY_COLOR);
+				JCheckBox checkbox = new ToggleButton();
 				checkbox.setSelected(Boolean.parseBoolean(configManager.getConfiguration(pluginConfig.getGroup().value(), cid.getItem().keyName())));
 				checkbox.addActionListener(ae -> changeConfiguration(checkbox, pluginConfig, cid));
 

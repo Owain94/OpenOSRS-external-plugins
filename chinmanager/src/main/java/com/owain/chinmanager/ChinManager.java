@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -34,6 +35,26 @@ import org.apache.commons.lang3.tuple.Pair;
 @Slf4j
 public class ChinManager
 {
+	public final PublishSubject<ConfigChanged> configChanged = PublishSubject.create();
+	public final PublishSubject<GameStateChanged> gameStateChanged = PublishSubject.create();
+	private final Set<Plugin> managerPlugins = new TreeSet<>((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+	private final PublishSubject<Set<Plugin>> managerPluginsSubject = PublishSubject.create();
+	private final Map<Plugin, Boolean> plugins = new TreeMap<>((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+	private final PublishSubject<Map<Plugin, Boolean>> pluginsSubject = PublishSubject.create();
+	private final SortedSet<Plugin> activePlugins;
+	private final PublishSubject<SortedSet<Plugin>> activePluginsSubject = PublishSubject.create();
+	private final Set<Plugin> stoppedPlugins = new HashSet<>();
+	private final PublishSubject<Set<Plugin>> stoppedPluginsSubject = PublishSubject.create();
+	private final PublishSubject<String> currentlyActiveSubject = PublishSubject.create();
+
+	private final Map<Plugin, Pair<Instant, Integer>> plannedBreaks = new HashMap<>();
+	private final PublishSubject<Map<Plugin, Pair<Instant, Integer>>> plannedBreaksSubject = PublishSubject.create();
+
+	private final Set<Plugin> handover = new HashSet<>();
+	private final PublishSubject<Set<Plugin>> handoverSubject = PublishSubject.create();
+	private final PublishSubject<Plugin> bankingSubject = PublishSubject.create();
+	private final PublishSubject<Plugin> teleportingSubject = PublishSubject.create();
+	private final Map<Plugin, Map<String, String>> pluginConfig = new HashMap<>();
 	private final Comparator<Plugin> pluginComparable = new Comparator<>()
 	{
 		@Override
@@ -45,57 +66,22 @@ public class ChinManager
 			return p2.compareTo(p1);
 		}
 	};
-
-	private final Set<Plugin> managerPlugins = new TreeSet<>((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
-	private final PublishSubject<Set<Plugin>> managerPluginsSubject = PublishSubject.create();
-
-	private final Map<Plugin, Boolean> plugins = new TreeMap<>((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
-	private final PublishSubject<Map<Plugin, Boolean>> pluginsSubject = PublishSubject.create();
-
-	private final SortedSet<Plugin> activePlugins;
-	private final PublishSubject<SortedSet<Plugin>> activePluginsSubject = PublishSubject.create();
-
-	private final Set<Plugin> stoppedPlugins = new HashSet<>();
-	private final PublishSubject<Set<Plugin>> stoppedPluginsSubject = PublishSubject.create();
-
-	private Plugin currentlyActive = null;
-	private final PublishSubject<String> currentlyActiveSubject = PublishSubject.create();
-
-	private final Map<Plugin, Pair<Instant, Integer>> plannedBreaks = new HashMap<>();
-	private final PublishSubject<Map<Plugin, Pair<Instant, Integer>>> plannedBreaksSubject = PublishSubject.create();
-
-	private final Set<Plugin> handover = new HashSet<>();
-	private final PublishSubject<Set<Plugin>> handoverSubject = PublishSubject.create();
-
-	private boolean isBanking = false;
-	private Plugin bankingPlugin;
-	private final PublishSubject<Plugin> bankingSubject = PublishSubject.create();
-
-	private boolean isTeleporting = false;
-	private Location teleportingLocation = null;
-	private final PublishSubject<Plugin> teleportingSubject = PublishSubject.create();
-
-	private final Map<Plugin, Map<String, String>> pluginConfig = new HashMap<>();
 	private final Map<Plugin, Location> startLocations = new HashMap<>();
-
 	private final Map<Plugin, Map<Integer, Map<String, String>>> requiredItems = new HashMap<>();
-
 	private final Map<Plugin, Instant> activeBreaks = new HashMap<>();
 	private final PublishSubject<Map<Plugin, Instant>> activeBreaksSubject = PublishSubject.create();
-
 	private final Map<Plugin, Instant> startTimes = new HashMap<>();
-	private int amountOfBreaks = 0;
-
 	private final PublishSubject<Plugin> logoutActionSubject = PublishSubject.create();
 	private final PublishSubject<Plugin> hopSubject = PublishSubject.create();
-
-	public final PublishSubject<ConfigChanged> configChanged = PublishSubject.create();
-	public final PublishSubject<GameStateChanged> gameStateChanged = PublishSubject.create();
-
 	private final Map<Plugin, Map<String, String>> extraData = new HashMap<>();
 	private final PublishSubject<Map<Plugin, Map<String, String>>> extraDataSubject = PublishSubject.create();
-
 	private final Map<Plugin, Set<Integer>> bankItems = new HashMap<>();
+	private Plugin currentlyActive = null;
+	private boolean isBanking = false;
+	private Plugin bankingPlugin;
+	private boolean isTeleporting = false;
+	private Location teleportingLocation = null;
+	private int amountOfBreaks = 0;
 
 	ChinManager()
 	{
@@ -174,7 +160,10 @@ public class ChinManager
 
 	public Set<Plugin> getActivePlugins()
 	{
-		return activePlugins;
+		return activePlugins
+			.stream()
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
 	}
 
 	@Nullable
@@ -489,16 +478,6 @@ public class ChinManager
 		activeBreaksSubject.onNext(activeBreaks);
 	}
 
-	public void setCurrentlyActive(Plugin plugin)
-	{
-		currentlyActive = plugin;
-		currentlyActiveSubject.onNext(Plugins.sanitizedName(plugin));
-
-		handover.remove(plugin);
-
-		activeBreaks.remove(plugin);
-	}
-
 	public boolean isCurrentlyActive(Plugin plugin)
 	{
 		return plugin == currentlyActive;
@@ -507,6 +486,16 @@ public class ChinManager
 	public Plugin getCurrentlyActive()
 	{
 		return currentlyActive;
+	}
+
+	public void setCurrentlyActive(Plugin plugin)
+	{
+		currentlyActive = plugin;
+		currentlyActiveSubject.onNext(Plugins.sanitizedName(plugin));
+
+		handover.remove(plugin);
+
+		activeBreaks.remove(plugin);
 	}
 
 	public boolean isNextSelf(Plugin plugin, Instant instant)
@@ -683,14 +672,14 @@ public class ChinManager
 		amountOfBreaks++;
 	}
 
-	public void setAmountOfBreaks(int breaks)
-	{
-		amountOfBreaks = breaks;
-	}
-
 	public int getAmountOfBreaks()
 	{
 		return amountOfBreaks;
+	}
+
+	public void setAmountOfBreaks(int breaks)
+	{
+		amountOfBreaks = breaks;
 	}
 
 	public void addBankItems(Plugin plugin, Set<Integer> items)

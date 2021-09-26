@@ -49,6 +49,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
@@ -56,47 +57,6 @@ import net.runelite.client.game.ItemManager;
 @Slf4j
 public class TeleportTask implements Task<Void>
 {
-	enum TeleportState
-	{
-		NONE,
-		OPEN_BANK,
-		OPENING_BANK,
-		QUANTITY,
-		SETTINGS,
-		ITEM_OPTIONS,
-		CLOSE_BANK,
-		FETCH_POH,
-		FETCH_TELEPORT,
-		SELECT_MINIGAME,
-		MINIGAME_TELEPORT,
-		MINIGAME_TELEPORT_WAIT,
-		TELEPORT_POH,
-		TELEPORT_POH_WAIT,
-		TELEPORT_MENU,
-		TELEPORT_MENU_CLICK,
-		TELEPORT_DIALOG,
-		TELEPORT_WAIT,
-		EQUIPMENT,
-		TELEPORT_EQUIPMENT,
-		TELEPORT_EQUIPMENT_CLICK,
-		TELEPORTING,
-		HANDLE_POH,
-		CLICK_POH_TELEPORT,
-		POH_WAIT_TELEPORT_MENU,
-		POH_TELEPORT_MENU,
-
-		;
-	}
-
-	private final ChinManager chinManager;
-	private final ChinManagerPlugin chinManagerPlugin;
-	private final TeleportsConfig teleportsConfig;
-	private final Client client;
-	private final EventBus eventBus;
-	private final ItemManager itemManager;
-
-	private final List<Disposable> disposables = new ArrayList<>();
-
 	private static final Varbits[] AMOUNT_VARBITS =
 		{
 			Varbits.RUNE_POUCH_AMOUNT1, Varbits.RUNE_POUCH_AMOUNT2, Varbits.RUNE_POUCH_AMOUNT3
@@ -105,18 +65,23 @@ public class TeleportTask implements Task<Void>
 		{
 			Varbits.RUNE_POUCH_RUNE1, Varbits.RUNE_POUCH_RUNE2, Varbits.RUNE_POUCH_RUNE3
 		};
-
+	private final ChinManager chinManager;
+	private final ChinManagerPlugin chinManagerPlugin;
+	private final TeleportsConfig teleportsConfig;
+	private final Client client;
+	private final EventBus eventBus;
+	private final ItemManager itemManager;
+	private final List<Disposable> disposables = new ArrayList<>();
 	private TeleportState teleportState;
 	private TeleportState cachedTeleportState;
-
 	private int tikkie = 10;
 
 	@Inject
-	TeleportTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, TeleportsConfig teleportsConfig, EventBus eventBus, ItemManager itemManager)
+	TeleportTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, ItemManager itemManager, ConfigManager configManager)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
-		this.teleportsConfig = teleportsConfig;
+		this.teleportsConfig = configManager.getConfig(TeleportsConfig.class);
 		this.client = chinManagerPlugin.getClient();
 		this.eventBus = eventBus;
 		this.itemManager = itemManager;
@@ -2221,5 +2186,37 @@ public class TeleportTask implements Task<Void>
 		}
 
 		return equipmentItems;
+	}
+
+	enum TeleportState
+	{
+		NONE,
+		OPEN_BANK,
+		OPENING_BANK,
+		QUANTITY,
+		SETTINGS,
+		ITEM_OPTIONS,
+		CLOSE_BANK,
+		FETCH_POH,
+		FETCH_TELEPORT,
+		SELECT_MINIGAME,
+		MINIGAME_TELEPORT,
+		MINIGAME_TELEPORT_WAIT,
+		TELEPORT_POH,
+		TELEPORT_POH_WAIT,
+		TELEPORT_MENU,
+		TELEPORT_MENU_CLICK,
+		TELEPORT_DIALOG,
+		TELEPORT_WAIT,
+		EQUIPMENT,
+		TELEPORT_EQUIPMENT,
+		TELEPORT_EQUIPMENT_CLICK,
+		TELEPORTING,
+		HANDLE_POH,
+		CLICK_POH_TELEPORT,
+		POH_WAIT_TELEPORT_MENU,
+		POH_TELEPORT_MENU,
+
+		;
 	}
 }

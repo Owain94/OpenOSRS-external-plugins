@@ -42,19 +42,13 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.ui.PluginPanel;
 import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
+import net.runelite.client.ui.components.ToggleButton;
 
 public class OsrsAccountPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	private final ConfigManager configManager;
 	private final ChinManager chinManager;
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
-
 	@Inject
 	OsrsAccountPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager)
 	{
@@ -67,6 +61,12 @@ public class OsrsAccountPanel extends JPanel
 		setBackground(PANEL_BACKGROUND_COLOR);
 
 		init();
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	private boolean getConfigValue()
@@ -84,8 +84,8 @@ public class OsrsAccountPanel extends JPanel
 		accountSelection.setBorder(new EmptyBorder(5, 5, 0, 5));
 		ButtonGroup buttonGroup = new ButtonGroup();
 
-		JCheckBox manualButton = new JCheckBox("Manual");
-		JCheckBox profilesButton = new JCheckBox("Profiles plugin");
+		JCheckBox manualButton = new ToggleButton("Manual");
+		JCheckBox profilesButton = new ToggleButton("Profiles plugin");
 
 		String profilesSalt = configManager.getConfiguration("betterProfiles", "salt");
 		boolean profilesSavePasswords = Boolean.parseBoolean(configManager.getConfiguration("betterProfiles", "rememberPassword"));

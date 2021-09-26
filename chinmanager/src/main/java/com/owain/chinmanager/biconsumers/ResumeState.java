@@ -2,9 +2,9 @@ package com.owain.chinmanager.biconsumers;
 
 import com.owain.chinmanager.ChinManagerContext;
 import com.owain.chinmanager.ChinManagerPlugin;
+import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinstatemachine.StateMachine;
-import com.owain.chinmanager.ChinManagerState;
 import io.reactivex.rxjava3.functions.BiConsumer;
 
 public class ResumeState

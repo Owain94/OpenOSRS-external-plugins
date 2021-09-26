@@ -54,7 +54,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import static java.util.stream.Collectors.toList;
 import java.util.stream.Stream;
 import javax.inject.Inject;
 import lombok.AccessLevel;
@@ -166,8 +165,6 @@ public class ChinManagerPlugin extends Plugin
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
 	public static final Map<Plugin, List<Disposable>> PLUGIN_DISPOSABLE_MAP = new HashMap<>();
-	private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
-
 	public static final List<Integer> DIGSIDE_PENDANTS = List.of(
 		ItemID.DIGSITE_PENDANT_1,
 		ItemID.DIGSITE_PENDANT_2,
@@ -249,113 +246,8 @@ public class ChinManagerPlugin extends Plugin
 		ItemID.RUNE_POUCH,
 		ItemID.RUNE_POUCH_L
 	);
-
-	@Getter(AccessLevel.PUBLIC)
-	public OkHttpClient okHttpClient;
-
-	@Inject
-	private ClientToolbar clientToolbar;
-
-	@Inject
-	@Getter(AccessLevel.PUBLIC)
-	private ConfigManager configManager;
-
-	@Inject
-	@Getter(AccessLevel.PUBLIC)
-	private EventBus eventBus;
-
-	@Inject
-	private ChinManager chinManager;
-
-	@Inject
-	private OpenOSRSCookiePersistor openOSRSCookiePersistor;
-
-	@Inject
-	@Getter(AccessLevel.PUBLIC)
-	private Client client;
-
-	@Inject
-	@Getter(AccessLevel.PUBLIC)
-	private ClientThread clientThread;
-
-	@Inject
-	private ItemManager itemManager;
-
-	@Inject
-	private WorldService worldService;
-
-	@Inject
-	@Getter(AccessLevel.PUBLIC)
-	private TaskExecutor taskExecutor;
-
-	@Inject
-	private OptionsConfig optionsConfig;
-
-	private NavigationButton navButton;
-
-	@Getter(AccessLevel.PUBLIC)
-	private static ArrayList<Equipment> equipmentList;
-
-	@Getter(AccessLevel.PUBLIC)
-	@Setter(AccessLevel.PUBLIC)
-	private static String profileData;
-
-	@Getter(AccessLevel.PUBLIC)
-	private ExecutorService executorService;
-
-	@Inject
-	@SuppressWarnings("unused")
-	private ChinManagerState chinManagerState;
-
-	@Inject
-	private ChatMessageManager chatMessageManager;
-
-	@Inject
-	private OverlayManager overlayManager;
-
-	@Inject
-	private ManagerClickboxOverlay managerClickboxOverlay;
-
-	@Inject
-	private ManagerClickboxDebugOverlay managerClickboxDebugOverlay;
-
-	@Inject
-	private ManagerWidgetOverlay managerWidgetOverlay;
-
-	@Inject
-	private ManagerTileIndicatorsOverlay managerTileIndicatorsOverlay;
-
-	@Getter(AccessLevel.PUBLIC)
-	private Random random;
-
-	private int delay = -1;
-	public static boolean logout;
-	public static boolean shouldSetup;
-
-	private net.runelite.api.World quickHopTargetWorld;
-	private int displaySwitcherAttempts = 0;
-
-	@Getter(AccessLevel.PUBLIC)
-	private final static Map<TileItem, Tile> tileItems = new HashMap<>();
-	@Getter(AccessLevel.PUBLIC)
-	private final static Set<TileObject> objects = new HashSet<>();
-	@Getter(AccessLevel.PUBLIC)
-	private final static Set<Actor> actors = new HashSet<>();
-
-	@Getter(AccessLevel.PUBLIC)
-	private static Actor highlightActor = null;
-	@Getter(AccessLevel.PUBLIC)
-	private static ItemLayer highlightItemLayer = null;
-	@Getter(AccessLevel.PUBLIC)
-	private static TileObject highlightTileObject = null;
 	@Getter(AccessLevel.PUBLIC)
 	public static final List<WidgetItem> highlightWidgetItem = new ArrayList<>();
-	@Getter(AccessLevel.PUBLIC)
-	@Setter(AccessLevel.PUBLIC)
-	private static List<WorldPoint> highlightDaxPath = null;
-	@Getter(AccessLevel.PUBLIC)
-	private static Widget highlightWidget = null;
-
 	// Debug
 	@Getter(AccessLevel.PUBLIC)
 	public static final Map<TileObject, Integer> debugTileObjectMap = new HashMap<>();
@@ -363,6 +255,913 @@ public class ChinManagerPlugin extends Plugin
 	public static final Set<WorldPoint> debugReachableWorldAreas = new HashSet<>();
 	@Getter(AccessLevel.PUBLIC)
 	public static final Map<WorldPoint, Integer> debugReachableTiles = new HashMap<>();
+	private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
+	@Getter(AccessLevel.PUBLIC)
+	private final static Map<TileItem, Tile> tileItems = new HashMap<>();
+	@Getter(AccessLevel.PUBLIC)
+	private final static Set<TileObject> objects = new HashSet<>();
+	@Getter(AccessLevel.PUBLIC)
+	private final static Set<Actor> actors = new HashSet<>();
+	public static boolean logout;
+	public static boolean shouldSetup;
+	@Getter(AccessLevel.PUBLIC)
+	private static ArrayList<Equipment> equipmentList;
+	@Getter(AccessLevel.PUBLIC)
+	@Setter(AccessLevel.PUBLIC)
+	private static String profileData;
+	@Getter(AccessLevel.PUBLIC)
+	private static Actor highlightActor = null;
+	@Getter(AccessLevel.PUBLIC)
+	private static ItemLayer highlightItemLayer = null;
+	@Getter(AccessLevel.PUBLIC)
+	private static TileObject highlightTileObject = null;
+	@Getter(AccessLevel.PUBLIC)
+	@Setter(AccessLevel.PUBLIC)
+	private static List<WorldPoint> highlightDaxPath = null;
+	@Getter(AccessLevel.PUBLIC)
+	private static Widget highlightWidget = null;
+	@Getter(AccessLevel.PUBLIC)
+	public OkHttpClient okHttpClient;
+	@Inject
+	private ClientToolbar clientToolbar;
+	@Inject
+	@Getter(AccessLevel.PUBLIC)
+	private ConfigManager configManager;
+	@Inject
+	@Getter(AccessLevel.PUBLIC)
+	private EventBus eventBus;
+	@Inject
+	private ChinManager chinManager;
+	@Inject
+	private OpenOSRSCookiePersistor openOSRSCookiePersistor;
+	@Inject
+	@Getter(AccessLevel.PUBLIC)
+	private Client client;
+	@Inject
+	@Getter(AccessLevel.PUBLIC)
+	private ClientThread clientThread;
+	@Inject
+	private ItemManager itemManager;
+	@Inject
+	private WorldService worldService;
+	@Inject
+	@Getter(AccessLevel.PUBLIC)
+	private TaskExecutor taskExecutor;
+	@Inject
+	private OptionsConfig optionsConfig;
+	private NavigationButton navButton;
+	@Getter(AccessLevel.PUBLIC)
+	private ExecutorService executorService;
+	@Inject
+	@SuppressWarnings("unused")
+	private ChinManagerState chinManagerState;
+	@Inject
+	private ChatMessageManager chatMessageManager;
+	@Inject
+	private OverlayManager overlayManager;
+	@Inject
+	private ManagerClickboxOverlay managerClickboxOverlay;
+	@Inject
+	private ManagerClickboxDebugOverlay managerClickboxDebugOverlay;
+	@Inject
+	private ManagerWidgetOverlay managerWidgetOverlay;
+	@Inject
+	private ManagerTileIndicatorsOverlay managerTileIndicatorsOverlay;
+	@Getter(AccessLevel.PUBLIC)
+	private Random random;
+	private int delay = -1;
+	private net.runelite.api.World quickHopTargetWorld;
+	private int displaySwitcherAttempts = 0;
+
+	public static void resetHighlight()
+	{
+		highlightActor = null;
+		highlightItemLayer = null;
+		highlightTileObject = null;
+		debugTileObjectMap.clear();
+		highlightWidgetItem.clear();
+		debugReachableWorldAreas.clear();
+		debugReachableTiles.clear();
+		highlightDaxPath = null;
+		highlightWidget = null;
+	}
+
+	public static void highlight(Client client, MenuOptionClicked menuOptionClicked)
+	{
+		resetHighlight();
+
+		switch (menuOptionClicked.getMenuAction())
+		{
+			case GAME_OBJECT_FIRST_OPTION:
+			case GAME_OBJECT_SECOND_OPTION:
+			case GAME_OBJECT_THIRD_OPTION:
+			case GAME_OBJECT_FOURTH_OPTION:
+			case GAME_OBJECT_FIFTH_OPTION:
+			case ITEM_USE_ON_GAME_OBJECT:
+			case SPELL_CAST_ON_GAME_OBJECT:
+			{
+				TileObject tileObject = getObject(client, menuOptionClicked.getId(), menuOptionClicked.getParam0(), menuOptionClicked.getParam1());
+
+				if (tileObject != null)
+				{
+					highlightTileObject = tileObject;
+				}
+
+				break;
+			}
+			case NPC_FIRST_OPTION:
+			case NPC_SECOND_OPTION:
+			case NPC_THIRD_OPTION:
+			case NPC_FOURTH_OPTION:
+			case NPC_FIFTH_OPTION:
+			case ITEM_USE_ON_NPC:
+			case SPELL_CAST_ON_NPC:
+			{
+				client.getNpcs().stream().filter((npc) -> npc.getIndex() == menuOptionClicked.getId()).findFirst().ifPresent(value -> highlightActor = value);
+
+				break;
+			}
+			case GROUND_ITEM_FIRST_OPTION:
+			case GROUND_ITEM_SECOND_OPTION:
+			case GROUND_ITEM_THIRD_OPTION:
+			case GROUND_ITEM_FOURTH_OPTION:
+			case GROUND_ITEM_FIFTH_OPTION:
+			{
+				LocalPoint localPoint = LocalPoint.fromScene(menuOptionClicked.getParam0(), menuOptionClicked.getParam1());
+
+				Map.copyOf(ChinManagerPlugin.getTileItems())
+					.values()
+					.stream()
+					.filter(Objects::nonNull)
+					.filter(nonNullTile -> nonNullTile.getLocalLocation().equals(localPoint))
+					.findFirst()
+					.flatMap(tile -> tile
+						.getGroundItems()
+						.stream()
+						.filter((tileItem) -> tileItem.getId() == menuOptionClicked.getId())
+						.findFirst()
+					)
+					.ifPresent(value -> highlightItemLayer = value.getTile().getItemLayer());
+
+				break;
+			}
+			case CC_OP:
+			case CC_OP_LOW_PRIORITY:
+			{
+				if (menuOptionClicked.getParam0() == -1 && !menuOptionClicked.getMenuOption().equals("Toggle Run"))
+				{
+					Widget widget = client.getWidget(menuOptionClicked.getParam1());
+
+					if (widget != null)
+					{
+						highlightWidget = widget;
+
+						return;
+					}
+				}
+
+				Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+				Widget bankInventory = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER);
+
+				if (bankContainer != null && bankContainer.getId() == menuOptionClicked.getParam1())
+				{
+					highlightWidgetItem.add(getBankWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
+				}
+				else if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
+				{
+					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
+				}
+				else if (bankInventory != null && bankInventory.getId() == menuOptionClicked.getParam1())
+				{
+					highlightWidgetItem.add(getBankInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
+				}
+
+				break;
+			}
+			case ITEM_USE_ON_WIDGET_ITEM:
+			{
+				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+
+				if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
+				{
+					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
+				}
+			}
+		}
+	}
+
+	public static NPC getNPC(Client client, int id)
+	{
+		return getNPC(client, List.of(id));
+	}
+
+	public static NPC getNPC(Client client, List<Integer> ids)
+	{
+		return getNPC(client, ids, client.getLocalPlayer());
+	}
+
+	public static NPC getNPC(Client client, List<Integer> ids, Locatable locatable)
+	{
+		return Set.copyOf(
+				ChinManagerPlugin.getActors()
+			)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(npc -> npc instanceof NPC)
+			.map(npc -> (NPC) npc)
+			.filter(npc -> ids.contains(npc.getId()))
+			.min(Comparator.comparing(npc ->
+				npc
+					.getWorldLocation()
+					.distanceTo(locatable.getWorldLocation())
+			))
+			.orElse(
+				new NPCQuery()
+					.idEquals(ids)
+					.result(client)
+					.nearestTo(client.getLocalPlayer())
+			);
+	}
+
+	public static TileObject getObject(Client client, int id)
+	{
+		return getObject(client, List.of(id));
+	}
+
+	public static TileObject getObject(Client client, List<Integer> ids)
+	{
+		return getObject(client, ids, client.getLocalPlayer());
+	}
+
+	public static TileObject getObject(Client client, List<Integer> ids, Locatable locatable)
+	{
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
+			.stream()
+			.filter(tileObject -> ids.contains(tileObject.getId()))
+			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
+			.min(Comparator.comparing(tileObject ->
+				tileObject
+					.getWorldLocation()
+					.distanceTo(locatable.getWorldLocation())
+			))
+			.orElse(getObjectAlt(client, ids, locatable));
+	}
+
+	public static TileObject getObject(Client client, int id, int x, int y)
+	{
+		WorldPoint wp = WorldPoint.fromScene(client, x, y, client.getPlane());
+
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(tileObject -> tileObject.getId() == id)
+			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
+			.filter(tileObject -> {
+				if (tileObject instanceof GameObject)
+				{
+					GameObject gameObject = (GameObject) tileObject;
+
+					Point sceneLocation = gameObject.getSceneMinLocation();
+
+					if (sceneLocation.getX() == x && sceneLocation.getY() == y)
+					{
+						return true;
+					}
+				}
+
+				if (tileObject.getWorldLocation().equals(wp))
+				{
+					return true;
+				}
+
+				return false;
+			})
+			.min(Comparator.comparing(tileObject ->
+				tileObject
+					.getWorldLocation()
+					.distanceTo(
+						client
+							.getLocalPlayer()
+							.getWorldLocation()
+					)
+			))
+			.orElse(getObjectAlt(client, id, wp));
+	}
+
+	public static TileObject getObject(Client client, WorldPoint wp)
+	{
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(tileObject -> tileObject.getWorldLocation().equals(wp))
+			.min(Comparator.comparing(tileObject ->
+				tileObject
+					.getWorldLocation()
+					.distanceTo(
+						client
+							.getLocalPlayer()
+							.getWorldLocation()
+					)
+			))
+			.orElse(getObjectAlt(client, wp));
+	}
+
+	public static TileObject getObjectAlt(Client client, List<Integer> ids, Locatable locatable)
+	{
+		GameObject gameObject = new GameObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(locatable);
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		DecorativeObject decorativeObject = new DecorativeObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(locatable);
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		GroundObject groundObject = new GroundObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(locatable);
+
+		if (groundObject != null)
+		{
+			return groundObject;
+		}
+
+		WallObject wallObject = new WallObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(locatable);
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+
+		return null;
+	}
+
+	public static TileObject getObjectAlt(Client client, int id, WorldPoint wp)
+	{
+		GameObject gameObject = new GameObjectQuery()
+			.idEquals(id)
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		DecorativeObject decorativeObject = new DecorativeObjectQuery()
+			.idEquals(id)
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		GroundObject groundObject = new GroundObjectQuery()
+			.idEquals(id)
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (groundObject != null)
+		{
+			return groundObject;
+		}
+
+		WallObject wallObject = new WallObjectQuery()
+			.idEquals(id)
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+
+		return null;
+	}
+
+	public static TileObject getObjectAlt(Client client, WorldPoint wp)
+	{
+		GameObject gameObject = new GameObjectQuery()
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		DecorativeObject decorativeObject = new DecorativeObjectQuery()
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		GroundObject groundObject = new GroundObjectQuery()
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (groundObject != null)
+		{
+			return groundObject;
+		}
+
+		WallObject wallObject = new WallObjectQuery()
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+
+		return null;
+	}
+
+	public static TileObject getBankObject(Client client)
+	{
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(tileObject -> {
+				List<String> actions = Arrays.asList(
+					client.getObjectDefinition(
+							tileObject.getId()
+						)
+						.getActions()
+				);
+
+				List<String> imposterActions = new ArrayList<>();
+
+				ObjectComposition objectComposition = client.getObjectDefinition(tileObject.getId());
+				int[] ids = objectComposition.getImpostorIds();
+
+				if (ids != null && ids.length > 0)
+				{
+					ObjectComposition imposter = objectComposition.getImpostor();
+
+					if (imposter != null)
+					{
+						imposterActions.addAll(Arrays.asList(imposter.getActions()));
+					}
+				}
+
+				return actions.contains("Bank") || actions.contains("Collect") ||
+					imposterActions.contains("Bank") || imposterActions.contains("Collect");
+			})
+			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
+			.min(Comparator.comparing(npc -> {
+					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
+					if (path == null)
+					{
+						return Integer.MAX_VALUE;
+					}
+					else
+					{
+						return path.size();
+					}
+				}
+			))
+			.orElse(
+				getBankObjectAlt(client)
+			);
+	}
+
+	public static TileObject getBankObjectAlt(Client client)
+	{
+		return getAllObjects(client)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(tileObject -> {
+				List<String> actions = Arrays.asList(
+					client.getObjectDefinition(
+							tileObject.getId()
+						)
+						.getActions()
+				);
+
+				List<String> imposterActions = new ArrayList<>();
+
+				ObjectComposition objectComposition = client.getObjectDefinition(tileObject.getId());
+				int[] ids = objectComposition.getImpostorIds();
+
+				if (ids != null && ids.length > 0)
+				{
+					ObjectComposition imposter = objectComposition.getImpostor();
+
+					if (imposter != null)
+					{
+						imposterActions.addAll(Arrays.asList(imposter.getActions()));
+					}
+				}
+
+				return actions.contains("Bank") || actions.contains("Collect") ||
+					imposterActions.contains("Bank") || imposterActions.contains("Collect");
+			})
+			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
+			.min(Comparator.comparing(npc -> {
+					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
+					if (path == null)
+					{
+						return Integer.MAX_VALUE;
+					}
+					else
+					{
+						return path.size();
+					}
+				}
+			))
+			.orElse(null);
+	}
+
+	public static NPC getBankNpc(Client client)
+	{
+		return Set.copyOf(
+				ChinManagerPlugin.getActors()
+			)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(npc -> npc instanceof NPC)
+			.map(npc -> (NPC) npc)
+			.filter(npc -> {
+				List<String> actions = Arrays.asList(
+					client.getNpcDefinition(
+							npc.getId()
+						)
+						.getActions()
+				);
+
+				return actions.contains("Bank");
+			})
+			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
+			.min(Comparator.comparing(npc -> {
+					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
+					if (path == null)
+					{
+						return Integer.MAX_VALUE;
+					}
+					else
+					{
+						return path.size();
+					}
+				}
+			))
+			.orElse(
+				getBankNpcAlt(client)
+			);
+	}
+
+	public static NPC getBankNpcAlt(Client client)
+	{
+		return client.getNpcs()
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(npc -> {
+				List<String> actions = Arrays.asList(
+					client.getNpcDefinition(
+							npc.getId()
+						)
+						.getActions()
+				);
+
+				return actions.contains("Bank");
+			})
+			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
+			.min(Comparator.comparing(npc -> {
+					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
+					if (path == null)
+					{
+						return Integer.MAX_VALUE;
+					}
+					else
+					{
+						return path.size();
+					}
+				}
+			))
+			.orElse(null);
+	}
+
+	public static boolean isAtBank(Client client)
+	{
+		return getBankNpc(client) != null || getBankObject(client) != null;
+	}
+
+	public static Point getLocation(TileObject tileObject)
+	{
+		if (tileObject instanceof GameObject)
+		{
+			return ((GameObject) tileObject).getSceneMinLocation();
+		}
+		else
+		{
+			return new Point(tileObject.getLocalLocation().getSceneX(), tileObject.getLocalLocation().getSceneY());
+		}
+	}
+
+	public static TileObject getReachableObject(Client client, int id, int limit)
+	{
+		return getReachableObject(client, List.of(id), limit);
+	}
+
+	public static TileObject getReachableObject(Client client, List<Integer> ids, int limit)
+	{
+		return getReachableObject(client, ids, limit, client.getLocalPlayer());
+	}
+
+	public static TileObject getReachableObject(Client client, List<Integer> ids, int limit, Locatable locatable)
+	{
+		debugReachableWorldAreas.clear();
+		debugReachableTiles.clear();
+		debugTileObjectMap.clear();
+
+		return Set.copyOf(
+				ChinManagerPlugin.getObjects()
+			)
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(tileObject -> ids.contains(tileObject.getId()))
+			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
+			.sorted(Comparator.comparing(tileObject -> locatable.getWorldLocation().distanceTo(tileObject.getWorldLocation())))
+			.limit(limit)
+			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3589, 0)) != 0)
+			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3599, 0)) != 0)
+			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(3255, 3463, 0)) != 0)
+			.parallel()
+			.map(tileObject -> {
+				int width = 1;
+				int height = 1;
+
+				if (tileObject instanceof GameObject)
+				{
+					width = ((GameObject) tileObject).sizeX();
+					height = ((GameObject) tileObject).sizeY();
+				}
+
+				WorldPoint objectWorldPoint;
+				objectWorldPoint = tileObject.getWorldLocation();
+
+				if (width == 3 || height == 3)
+				{
+					objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
+				}
+
+				List<WorldPoint> originalArea = new WorldArea(objectWorldPoint.getX(), objectWorldPoint.getY(), width, height, objectWorldPoint.getPlane()).toWorldPointList();
+				Set<WorldPoint> possibleWorldPoints = new HashSet<>(originalArea);
+
+				for (WorldPoint worldPoint : new WorldArea(objectWorldPoint.getX(), objectWorldPoint.getY(), width, height, objectWorldPoint.getPlane()).toWorldPointList())
+				{
+					possibleWorldPoints.add(new WorldPoint(worldPoint.getX() + 1, worldPoint.getY(), worldPoint.getPlane()));
+					possibleWorldPoints.add(new WorldPoint(worldPoint.getX(), worldPoint.getY() + 1, worldPoint.getPlane()));
+					possibleWorldPoints.add(new WorldPoint(worldPoint.getX() - 1, worldPoint.getY(), worldPoint.getPlane()));
+					possibleWorldPoints.add(new WorldPoint(worldPoint.getX(), worldPoint.getY() - 1, worldPoint.getPlane()));
+				}
+
+				originalArea.forEach(possibleWorldPoints::remove);
+				debugReachableWorldAreas.addAll(possibleWorldPoints);
+
+				Pair<TileObject, Integer> closest = Pair.of(tileObject, Integer.MAX_VALUE);
+
+				for (WorldPoint wp : possibleWorldPoints)
+				{
+					if (wp.distanceTo(locatable.getWorldLocation()) == 0)
+					{
+						return Pair.of(tileObject, 0);
+					}
+
+					Tile startTile = tile(client, locatable.getWorldLocation());
+					Tile endTile = tile(client, wp);
+
+					if (startTile == null || endTile == null)
+					{
+						continue;
+					}
+
+					List<Tile> path = startTile.pathTo(endTile);
+
+					if (path != null && path.get(path.size() - 1).getWorldLocation().distanceTo(wp) == 0)
+					{
+						debugReachableTiles.put(wp, path.size());
+
+						if (path.size() < closest.getValue())
+						{
+							closest = Pair.of(tileObject, path.size());
+						}
+					}
+				}
+
+				return closest;
+			})
+			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
+			.peek(pair -> debugTileObjectMap.put(pair.getKey(), pair.getValue()))
+			.min(
+				Comparator.comparing(
+						(Pair<TileObject, Integer> pair) ->
+							pair.getKey().getWorldLocation().distanceTo(locatable.getWorldLocation())
+					)
+					.thenComparing(Pair::getValue))
+			.map(Pair::getKey)
+			.orElse(null);
+	}
+
+	public static boolean canReachWorldPointOrSurrounding(Client client, WorldPoint worldPoint)
+	{
+		debugReachableWorldAreas.clear();
+		debugReachableTiles.clear();
+		debugTileObjectMap.clear();
+
+		TileObject object = getObject(client, worldPoint);
+
+		if (object == null)
+		{
+			Tile start = tile(client, client.getLocalPlayer().getWorldLocation());
+			Tile target = tile(client, worldPoint);
+
+			if (start == null || target == null)
+			{
+				return false;
+			}
+
+			List<Tile> path = start.pathTo(target);
+
+			if (path == null)
+			{
+				return false;
+			}
+			else if (path.get(path.size() - 1).getWorldLocation().distanceTo(worldPoint) == 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		int width = 1;
+		int height = 1;
+
+		if (object instanceof GameObject)
+		{
+			width = ((GameObject) object).sizeX();
+			height = ((GameObject) object).sizeY();
+		}
+
+		WorldPoint objectWorldPoint;
+		objectWorldPoint = object.getWorldLocation();
+
+		if (width == 3 || height == 3)
+		{
+			objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
+		}
+
+		List<WorldPoint> area = new WorldArea(objectWorldPoint.getX() - 1, objectWorldPoint.getY() - 1, width + 2, height + 2, objectWorldPoint.getPlane()).toWorldPointList();
+
+		debugReachableWorldAreas.addAll(area);
+
+		for (WorldPoint wp : area)
+		{
+			if ((getObject(client, wp) != null && getObject(client, wp) instanceof GameObject) ||
+				wp.getX() > objectWorldPoint.getX() && wp.getY() > objectWorldPoint.getY() ||
+				wp.getX() > objectWorldPoint.getX() && wp.getY() < objectWorldPoint.getY() ||
+				wp.getX() < objectWorldPoint.getX() && wp.getY() > objectWorldPoint.getY() ||
+				wp.getX() < objectWorldPoint.getX() && wp.getY() < objectWorldPoint.getY())
+			{
+				continue;
+			}
+
+			Tile startTile = tile(client, client.getLocalPlayer().getWorldLocation());
+			Tile endTile = tile(client, wp);
+
+			if (startTile == null || endTile == null)
+			{
+				continue;
+			}
+
+			List<Tile> path = startTile.pathTo(endTile);
+
+			if (path != null && path.get(path.size() - 1).getWorldLocation().distanceTo(wp) == 0)
+			{
+
+				debugTileObjectMap.put(object, path.size());
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static Collection<TileObject> getAllObjects(Client client)
+	{
+		Collection<TileObject> objects = new ArrayList<>();
+		for (Tile tile : getTiles(client))
+		{
+			GameObject[] gameObjects = tile.getGameObjects();
+			if (gameObjects != null)
+			{
+				objects.addAll(Arrays.asList(gameObjects));
+			}
+
+			DecorativeObject decorativeObject = tile.getDecorativeObject();
+			if (decorativeObject != null)
+			{
+				objects.add(decorativeObject);
+			}
+
+			GroundObject groundobject = tile.getGroundObject();
+			if (groundobject != null)
+			{
+				objects.add(groundobject);
+			}
+
+			WallObject wallObject = tile.getWallObject();
+			if (wallObject != null)
+			{
+				objects.add(wallObject);
+			}
+		}
+		return objects;
+	}
+
+	private static List<Tile> getTiles(Client client)
+	{
+		List<Tile> tilesList = new ArrayList<>();
+		Scene scene = client.getScene();
+		Tile[][] tiles = scene.getTiles()[client.getPlane()];
+
+		for (int x = 0; x < Constants.SCENE_SIZE; ++x)
+		{
+			for (int y = 0; y < Constants.SCENE_SIZE; ++y)
+			{
+				Tile tile = tiles[x][y];
+				if (tile == null)
+				{
+					continue;
+				}
+				tilesList.add(tile);
+			}
+		}
+
+		return tilesList;
+	}
+
+	private static Tile tile(Client client, WorldPoint position)
+	{
+		int plane = position.getPlane();
+		int x = position.getX() - client.getBaseX();
+		int y = position.getY() - client.getBaseY();
+
+		if (plane < 0 || plane >= 4)
+		{
+			return null;
+		}
+		if (x < 0 || x >= 104)
+		{
+			return null;
+		}
+		if (y < 0 || y >= 104)
+		{
+			return null;
+		}
+
+		return client.getScene().getTiles()[plane][x][y];
+	}
 
 	@Provides
 	public NullConfig getConfig()
@@ -579,28 +1378,30 @@ public class ChinManagerPlugin extends Plugin
 		{
 		}
 
-		for (Disposable disposable : Stream.of(
-			WebsocketManager.DISPOSABLES,
-			ChinManagerPanel.DISPOSABLES,
-			PluginPanel.DISPOSABLES,
-			StatusPanel.DISPOSABLES,
-			InfoPanel.DISPOSABLES,
-			BreakOptionsPanel.DISPOSABLES,
-			EquipmentPanel.DISPOSABLES,
-			DISPOSABLES,
-			PLUGIN_DISPOSABLE_MAP.values().stream().flatMap(Collection::stream).collect(Collectors.toList())
-		).flatMap(Collection::stream).collect(toList()))
-		{
-			if (disposable != null && !disposable.isDisposed())
-			{
-				disposable.dispose();
-			}
-		}
+		Stream.of(
+				WebsocketManager.DISPOSABLES,
+				ChinManagerPanel.DISPOSABLES,
+				PluginPanel.DISPOSABLES,
+				StatusPanel.DISPOSABLES,
+				InfoPanel.DISPOSABLES,
+				BreakOptionsPanel.DISPOSABLES,
+				EquipmentPanel.DISPOSABLES,
+				DISPOSABLES,
+				PLUGIN_DISPOSABLE_MAP.values()
+					.stream()
+					.flatMap(Collection::stream)
+					.collect(Collectors.toList())
+			).flatMap(Collection::stream)
+			.forEach(disposable -> {
+				if (disposable != null && !disposable.isDisposed())
+				{
+					disposable.dispose();
+				}
+			});
 
-		for (Plugin plugin : Set.copyOf(chinManager.getManagerPlugins()))
-		{
-			chinManager.unregisterManagerPlugin(plugin);
-		}
+		Set.copyOf(chinManager.getManagerPlugins()).forEach((plugin) ->
+			chinManager.unregisterManagerPlugin(plugin)
+		);
 
 		clientToolbar.removeNavigation(navButton);
 		Banking.ITEMS = Set.of();
@@ -667,7 +1468,9 @@ public class ChinManagerPlugin extends Plugin
 					return;
 				}
 
-				if (chinManager.getPlugins().get(plugin))
+				Map<Plugin, Boolean> plugins = chinManager.getPlugins();
+
+				if (plugins.containsKey(plugin) && plugins.get(plugin))
 				{
 					if (Boolean.parseBoolean(configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP_BREAKHANDLER, Plugins.sanitizedName(plugin) + "-logout")))
 					{
@@ -1124,19 +1927,6 @@ public class ChinManagerPlugin extends Plugin
 		configManager.setConfiguration(CONFIG_GROUP, "gsongear", json);
 	}
 
-	public static void resetHighlight()
-	{
-		highlightActor = null;
-		highlightItemLayer = null;
-		highlightTileObject = null;
-		debugTileObjectMap.clear();
-		highlightWidgetItem.clear();
-		debugReachableWorldAreas.clear();
-		debugReachableTiles.clear();
-		highlightDaxPath = null;
-		highlightWidget = null;
-	}
-
 	@Subscribe
 	public void onWallObjectSpawned(WallObjectSpawned wallObjectSpawned)
 	{
@@ -1309,111 +2099,6 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	public static void highlight(Client client, MenuOptionClicked menuOptionClicked)
-	{
-		resetHighlight();
-
-		switch (menuOptionClicked.getMenuAction())
-		{
-			case GAME_OBJECT_FIRST_OPTION:
-			case GAME_OBJECT_SECOND_OPTION:
-			case GAME_OBJECT_THIRD_OPTION:
-			case GAME_OBJECT_FOURTH_OPTION:
-			case GAME_OBJECT_FIFTH_OPTION:
-			case ITEM_USE_ON_GAME_OBJECT:
-			case SPELL_CAST_ON_GAME_OBJECT:
-			{
-				TileObject tileObject = getObject(client, menuOptionClicked.getId(), menuOptionClicked.getParam0(), menuOptionClicked.getParam1());
-
-				if (tileObject != null)
-				{
-					highlightTileObject = tileObject;
-				}
-
-				break;
-			}
-			case NPC_FIRST_OPTION:
-			case NPC_SECOND_OPTION:
-			case NPC_THIRD_OPTION:
-			case NPC_FOURTH_OPTION:
-			case NPC_FIFTH_OPTION:
-			case ITEM_USE_ON_NPC:
-			case SPELL_CAST_ON_NPC:
-			{
-				client.getNpcs().stream().filter((npc) -> npc.getIndex() == menuOptionClicked.getId()).findFirst().ifPresent(value -> highlightActor = value);
-
-				break;
-			}
-			case GROUND_ITEM_FIRST_OPTION:
-			case GROUND_ITEM_SECOND_OPTION:
-			case GROUND_ITEM_THIRD_OPTION:
-			case GROUND_ITEM_FOURTH_OPTION:
-			case GROUND_ITEM_FIFTH_OPTION:
-			{
-				LocalPoint localPoint = LocalPoint.fromScene(menuOptionClicked.getParam0(), menuOptionClicked.getParam1());
-
-				Map.copyOf(ChinManagerPlugin.getTileItems())
-					.values()
-					.stream()
-					.filter(Objects::nonNull)
-					.filter(nonNullTile -> nonNullTile.getLocalLocation().equals(localPoint))
-					.findFirst()
-					.flatMap(tile -> tile
-						.getGroundItems()
-						.stream()
-						.filter((tileItem) -> tileItem.getId() == menuOptionClicked.getId())
-						.findFirst()
-					)
-					.ifPresent(value -> highlightItemLayer = value.getTile().getItemLayer());
-
-				break;
-			}
-			case CC_OP:
-			case CC_OP_LOW_PRIORITY:
-			{
-				if (menuOptionClicked.getParam0() == -1 && !menuOptionClicked.getMenuOption().equals("Toggle Run"))
-				{
-					Widget widget = client.getWidget(menuOptionClicked.getParam1());
-
-					if (widget != null)
-					{
-						highlightWidget = widget;
-
-						return;
-					}
-				}
-
-				Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
-				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
-				Widget bankInventory = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER);
-
-				if (bankContainer != null && bankContainer.getId() == menuOptionClicked.getParam1())
-				{
-					highlightWidgetItem.add(getBankWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
-				}
-				else if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
-				{
-					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
-				}
-				else if (bankInventory != null && bankInventory.getId() == menuOptionClicked.getParam1())
-				{
-					highlightWidgetItem.add(getBankInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
-				}
-
-				break;
-			}
-			case ITEM_USE_ON_WIDGET_ITEM:
-			{
-				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
-
-				if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
-				{
-					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
-				}
-			}
-		}
-	}
-
 	public void menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int actionParam, int widgetId)
 	{
 		menuOptionClicked.setMenuOption(option);
@@ -1426,267 +2111,6 @@ public class ChinManagerPlugin extends Plugin
 		log.debug("Chin manager menu action: {}", menuOptionClicked);
 
 		highlight(client, menuOptionClicked);
-	}
-
-	public static NPC getNPC(Client client, int id)
-	{
-		return getNPC(client, List.of(id));
-	}
-
-	public static NPC getNPC(Client client, List<Integer> ids)
-	{
-		return getNPC(client, ids, client.getLocalPlayer());
-	}
-
-	public static NPC getNPC(Client client, List<Integer> ids, Locatable locatable)
-	{
-		return Set.copyOf(
-				ChinManagerPlugin.getActors()
-			)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(npc -> npc instanceof NPC)
-			.map(npc -> (NPC) npc)
-			.filter(npc -> ids.contains(npc.getId()))
-			.min(Comparator.comparing(npc ->
-				npc
-					.getWorldLocation()
-					.distanceTo(locatable.getWorldLocation())
-			))
-			.orElse(
-				new NPCQuery()
-					.idEquals(ids)
-					.result(client)
-					.nearestTo(client.getLocalPlayer())
-			);
-	}
-
-	public static TileObject getObject(Client client, int id)
-	{
-		return getObject(client, List.of(id));
-	}
-
-	public static TileObject getObject(Client client, List<Integer> ids)
-	{
-		return getObject(client, ids, client.getLocalPlayer());
-	}
-
-	public static TileObject getObject(Client client, List<Integer> ids, Locatable locatable)
-	{
-		return Set.copyOf(
-				ChinManagerPlugin.getObjects()
-			)
-			.stream()
-			.filter(tileObject -> ids.contains(tileObject.getId()))
-			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
-			.min(Comparator.comparing(tileObject ->
-				tileObject
-					.getWorldLocation()
-					.distanceTo(locatable.getWorldLocation())
-			))
-			.orElse(getObjectAlt(client, ids, locatable));
-	}
-
-	public static TileObject getObject(Client client, int id, int x, int y)
-	{
-		WorldPoint wp = WorldPoint.fromScene(client, x, y, client.getPlane());
-
-		return Set.copyOf(
-				ChinManagerPlugin.getObjects()
-			)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(tileObject -> tileObject.getId() == id)
-			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
-			.filter(tileObject -> {
-				if (tileObject instanceof GameObject)
-				{
-					GameObject gameObject = (GameObject) tileObject;
-
-					Point sceneLocation = gameObject.getSceneMinLocation();
-
-					if (sceneLocation.getX() == x && sceneLocation.getY() == y)
-					{
-						return true;
-					}
-				}
-
-				if (tileObject.getWorldLocation().equals(wp))
-				{
-					return true;
-				}
-
-				return false;
-			})
-			.min(Comparator.comparing(tileObject ->
-				tileObject
-					.getWorldLocation()
-					.distanceTo(
-						client
-							.getLocalPlayer()
-							.getWorldLocation()
-					)
-			))
-			.orElse(getObjectAlt(client, id, wp));
-	}
-
-	public static TileObject getObject(Client client, WorldPoint wp)
-	{
-		return Set.copyOf(
-				ChinManagerPlugin.getObjects()
-			)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(tileObject -> tileObject.getWorldLocation().equals(wp))
-			.min(Comparator.comparing(tileObject ->
-				tileObject
-					.getWorldLocation()
-					.distanceTo(
-						client
-							.getLocalPlayer()
-							.getWorldLocation()
-					)
-			))
-			.orElse(getObjectAlt(client, wp));
-	}
-
-	public static TileObject getObjectAlt(Client client, List<Integer> ids, Locatable locatable)
-	{
-		GameObject gameObject = new GameObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(locatable);
-
-		if (gameObject != null)
-		{
-			return gameObject;
-		}
-
-		DecorativeObject decorativeObject = new DecorativeObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(locatable);
-
-		if (decorativeObject != null)
-		{
-			return decorativeObject;
-		}
-
-		GroundObject groundObject = new GroundObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(locatable);
-
-		if (groundObject != null)
-		{
-			return groundObject;
-		}
-
-		WallObject wallObject = new WallObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(locatable);
-
-		if (wallObject != null)
-		{
-			return wallObject;
-		}
-
-		return null;
-	}
-
-	public static TileObject getObjectAlt(Client client, int id, WorldPoint wp)
-	{
-		GameObject gameObject = new GameObjectQuery()
-			.idEquals(id)
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (gameObject != null)
-		{
-			return gameObject;
-		}
-
-		DecorativeObject decorativeObject = new DecorativeObjectQuery()
-			.idEquals(id)
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (decorativeObject != null)
-		{
-			return decorativeObject;
-		}
-
-		GroundObject groundObject = new GroundObjectQuery()
-			.idEquals(id)
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (groundObject != null)
-		{
-			return groundObject;
-		}
-
-		WallObject wallObject = new WallObjectQuery()
-			.idEquals(id)
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (wallObject != null)
-		{
-			return wallObject;
-		}
-
-		return null;
-	}
-
-	public static TileObject getObjectAlt(Client client, WorldPoint wp)
-	{
-		GameObject gameObject = new GameObjectQuery()
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (gameObject != null)
-		{
-			return gameObject;
-		}
-
-		DecorativeObject decorativeObject = new DecorativeObjectQuery()
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (decorativeObject != null)
-		{
-			return decorativeObject;
-		}
-
-		GroundObject groundObject = new GroundObjectQuery()
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (groundObject != null)
-		{
-			return groundObject;
-		}
-
-		WallObject wallObject = new WallObjectQuery()
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (wallObject != null)
-		{
-			return wallObject;
-		}
-
-		return null;
 	}
 
 	public NPC getNPC(int id)
@@ -1729,433 +2153,6 @@ public class ChinManagerPlugin extends Plugin
 		return getObject(client, wp);
 	}
 
-	public static TileObject getBankObject(Client client)
-	{
-		return Set.copyOf(
-				ChinManagerPlugin.getObjects()
-			)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(tileObject -> {
-				List<String> actions = Arrays.asList(
-					client.getObjectDefinition(
-							tileObject.getId()
-						)
-						.getActions()
-				);
-
-				List<String> imposterActions = new ArrayList<>();
-
-				ObjectComposition objectComposition = client.getObjectDefinition(tileObject.getId());
-				int[] ids = objectComposition.getImpostorIds();
-
-				if (ids != null && ids.length > 0)
-				{
-					ObjectComposition imposter = objectComposition.getImpostor();
-
-					if (imposter != null)
-					{
-						imposterActions.addAll(Arrays.asList(imposter.getActions()));
-					}
-				}
-
-				return actions.contains("Bank") || actions.contains("Collect") ||
-					imposterActions.contains("Bank") || imposterActions.contains("Collect");
-			})
-			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
-			.min(Comparator.comparing(npc -> {
-					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
-					if (path == null)
-					{
-						return Integer.MAX_VALUE;
-					}
-					else
-					{
-						return path.size();
-					}
-				}
-			))
-			.orElse(
-				getBankObjectAlt(client)
-			);
-	}
-
-	public static TileObject getBankObjectAlt(Client client)
-	{
-		return getAllObjects(client)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(tileObject -> {
-				List<String> actions = Arrays.asList(
-					client.getObjectDefinition(
-							tileObject.getId()
-						)
-						.getActions()
-				);
-
-				List<String> imposterActions = new ArrayList<>();
-
-				ObjectComposition objectComposition = client.getObjectDefinition(tileObject.getId());
-				int[] ids = objectComposition.getImpostorIds();
-
-				if (ids != null && ids.length > 0)
-				{
-					ObjectComposition imposter = objectComposition.getImpostor();
-
-					if (imposter != null)
-					{
-						imposterActions.addAll(Arrays.asList(imposter.getActions()));
-					}
-				}
-
-				return actions.contains("Bank") || actions.contains("Collect") ||
-					imposterActions.contains("Bank") || imposterActions.contains("Collect");
-			})
-			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
-			.min(Comparator.comparing(npc -> {
-					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
-					if (path == null)
-					{
-						return Integer.MAX_VALUE;
-					}
-					else
-					{
-						return path.size();
-					}
-				}
-			))
-			.orElse(null);
-	}
-
-	public static NPC getBankNpc(Client client)
-	{
-		return Set.copyOf(
-				ChinManagerPlugin.getActors()
-			)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(npc -> npc instanceof NPC)
-			.map(npc -> (NPC) npc)
-			.filter(npc -> {
-				List<String> actions = Arrays.asList(
-					client.getNpcDefinition(
-							npc.getId()
-						)
-						.getActions()
-				);
-
-				return actions.contains("Bank");
-			})
-			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
-			.min(Comparator.comparing(npc -> {
-					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
-					if (path == null)
-					{
-						return Integer.MAX_VALUE;
-					}
-					else
-					{
-						return path.size();
-					}
-				}
-			))
-			.orElse(
-				getBankNpcAlt(client)
-			);
-	}
-
-	public static NPC getBankNpcAlt(Client client)
-	{
-		return client.getNpcs()
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(npc -> {
-				List<String> actions = Arrays.asList(
-					client.getNpcDefinition(
-							npc.getId()
-						)
-						.getActions()
-				);
-
-				return actions.contains("Bank");
-			})
-			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
-			.min(Comparator.comparing(npc -> {
-					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
-					if (path == null)
-					{
-						return Integer.MAX_VALUE;
-					}
-					else
-					{
-						return path.size();
-					}
-				}
-			))
-			.orElse(null);
-	}
-
-	public static boolean isAtBank(Client client)
-	{
-		return getBankNpc(client) != null || getBankObject(client) != null;
-	}
-
-	public static Point getLocation(TileObject tileObject)
-	{
-		if (tileObject instanceof GameObject)
-		{
-			return ((GameObject) tileObject).getSceneMinLocation();
-		}
-		else
-		{
-			return new Point(tileObject.getLocalLocation().getSceneX(), tileObject.getLocalLocation().getSceneY());
-		}
-	}
-
-	public static TileObject getReachableObject(Client client, int id, int limit)
-	{
-		return getReachableObject(client, List.of(id), limit);
-	}
-
-	public static TileObject getReachableObject(Client client, List<Integer> ids, int limit)
-	{
-		return getReachableObject(client, ids, limit, client.getLocalPlayer());
-	}
-
-	public static TileObject getReachableObject(Client client, List<Integer> ids, int limit, Locatable locatable)
-	{
-		debugReachableWorldAreas.clear();
-		debugReachableTiles.clear();
-		debugTileObjectMap.clear();
-
-		return Set.copyOf(
-				ChinManagerPlugin.getObjects()
-			)
-			.stream()
-			.filter(Objects::nonNull)
-			.filter(tileObject -> ids.contains(tileObject.getId()))
-			.filter(tileObject -> tileObject.getPlane() == client.getPlane())
-			.sorted(Comparator.comparing(tileObject -> locatable.getWorldLocation().distanceTo(tileObject.getWorldLocation())))
-			.limit(limit)
-			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3589, 0)) != 0)
-			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3599, 0)) != 0)
-			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(3255, 3463, 0)) != 0)
-			.map(tileObject -> {
-				int width = 1;
-				int height = 1;
-
-				if (tileObject instanceof GameObject)
-				{
-					width = ((GameObject) tileObject).sizeX();
-					height = ((GameObject) tileObject).sizeY();
-				}
-
-				WorldPoint objectWorldPoint;
-				objectWorldPoint = tileObject.getWorldLocation();
-
-				if (width == 3 || height == 3)
-				{
-					objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
-				}
-
-				List<WorldPoint> originalArea = new WorldArea(objectWorldPoint.getX(), objectWorldPoint.getY(), width, height, objectWorldPoint.getPlane()).toWorldPointList();
-				Set<WorldPoint> possibleWorldPoints = new HashSet<>(originalArea);
-
-				for (WorldPoint worldPoint : new WorldArea(objectWorldPoint.getX(), objectWorldPoint.getY(), width, height, objectWorldPoint.getPlane()).toWorldPointList())
-				{
-					possibleWorldPoints.add(new WorldPoint(worldPoint.getX() + 1, worldPoint.getY(), worldPoint.getPlane()));
-					possibleWorldPoints.add(new WorldPoint(worldPoint.getX(), worldPoint.getY() + 1, worldPoint.getPlane()));
-					possibleWorldPoints.add(new WorldPoint(worldPoint.getX() - 1, worldPoint.getY(), worldPoint.getPlane()));
-					possibleWorldPoints.add(new WorldPoint(worldPoint.getX(), worldPoint.getY() - 1, worldPoint.getPlane()));
-				}
-
-				originalArea.forEach(possibleWorldPoints::remove);
-				debugReachableWorldAreas.addAll(possibleWorldPoints);
-
-				Pair<TileObject, Integer> closest = Pair.of(tileObject, Integer.MAX_VALUE);
-
-				for (WorldPoint wp : possibleWorldPoints)
-				{
-					if (wp.distanceTo(locatable.getWorldLocation()) == 0)
-					{
-						return Pair.of(tileObject, 0);
-					}
-
-					Tile startTile = tile(client, locatable.getWorldLocation());
-					Tile endTile = tile(client, wp);
-
-					if (startTile == null || endTile == null)
-					{
-						continue;
-					}
-
-					List<Tile> path = startTile.pathTo(endTile);
-
-					if (path != null && path.get(path.size() - 1).getWorldLocation().distanceTo(wp) == 0)
-					{
-						debugReachableTiles.put(wp, path.size());
-
-						if (path.size() < closest.getValue())
-						{
-							closest = Pair.of(tileObject, path.size());
-						}
-					}
-				}
-
-				return closest;
-			})
-			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
-			.peek(pair -> debugTileObjectMap.put(pair.getKey(), pair.getValue()))
-			.min(
-				Comparator.comparing(
-					(Pair<TileObject, Integer> pair) ->
-						pair.getKey().getWorldLocation().distanceTo(locatable.getWorldLocation())
-				)
-					.thenComparing(Pair::getValue))
-			.map(Pair::getKey)
-			.orElse(null);
-	}
-
-	public static boolean canReachWorldPointOrSurrounding(Client client, WorldPoint worldPoint)
-	{
-		debugReachableWorldAreas.clear();
-		debugReachableTiles.clear();
-		debugTileObjectMap.clear();
-
-		TileObject object = getObject(client, worldPoint);
-
-		if (object == null)
-		{
-			Tile start = tile(client, client.getLocalPlayer().getWorldLocation());
-			Tile target = tile(client, worldPoint);
-
-			if (start == null || target == null)
-			{
-				return false;
-			}
-
-			List<Tile> path = start.pathTo(target);
-
-			if (path == null)
-			{
-				return false;
-			}
-			else if (path.get(path.size() - 1).getWorldLocation().distanceTo(worldPoint) == 0)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		int width = 1;
-		int height = 1;
-
-		if (object instanceof GameObject)
-		{
-			width = ((GameObject) object).sizeX();
-			height = ((GameObject) object).sizeY();
-		}
-
-		WorldPoint objectWorldPoint;
-		objectWorldPoint = object.getWorldLocation();
-
-		if (width == 3 || height == 3)
-		{
-			objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
-		}
-
-		List<WorldPoint> area = new WorldArea(objectWorldPoint.getX() - 1, objectWorldPoint.getY() - 1, width + 2, height + 2, objectWorldPoint.getPlane()).toWorldPointList();
-
-		debugReachableWorldAreas.addAll(area);
-
-		for (WorldPoint wp : area)
-		{
-			if ((getObject(client, wp) != null && getObject(client, wp) instanceof GameObject) ||
-				wp.getX() > objectWorldPoint.getX() && wp.getY() > objectWorldPoint.getY() ||
-				wp.getX() > objectWorldPoint.getX() && wp.getY() < objectWorldPoint.getY() ||
-				wp.getX() < objectWorldPoint.getX() && wp.getY() > objectWorldPoint.getY() ||
-				wp.getX() < objectWorldPoint.getX() && wp.getY() < objectWorldPoint.getY())
-			{
-				continue;
-			}
-
-			Tile startTile = tile(client, client.getLocalPlayer().getWorldLocation());
-			Tile endTile = tile(client, wp);
-
-			if (startTile == null || endTile == null)
-			{
-				continue;
-			}
-
-			List<Tile> path = startTile.pathTo(endTile);
-
-			if (path != null && path.get(path.size() - 1).getWorldLocation().distanceTo(wp) == 0)
-			{
-
-				debugTileObjectMap.put(object, path.size());
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private static Collection<TileObject> getAllObjects(Client client)
-	{
-		Collection<TileObject> objects = new ArrayList<>();
-		for (Tile tile : getTiles(client))
-		{
-			GameObject[] gameObjects = tile.getGameObjects();
-			if (gameObjects != null)
-			{
-				objects.addAll(Arrays.asList(gameObjects));
-			}
-
-			DecorativeObject decorativeObject = tile.getDecorativeObject();
-			if (decorativeObject != null)
-			{
-				objects.add(decorativeObject);
-			}
-
-			GroundObject groundobject = tile.getGroundObject();
-			if (groundobject != null)
-			{
-				objects.add(groundobject);
-			}
-
-			WallObject wallObject = tile.getWallObject();
-			if (wallObject != null)
-			{
-				objects.add(wallObject);
-			}
-		}
-		return objects;
-	}
-
-	private static List<Tile> getTiles(Client client)
-	{
-		List<Tile> tilesList = new ArrayList<>();
-		Scene scene = client.getScene();
-		Tile[][][] tiles = scene.getTiles();
-		int z = client.getPlane();
-		for (int x = 0; x < Constants.SCENE_SIZE; ++x)
-		{
-			for (int y = 0; y < Constants.SCENE_SIZE; ++y)
-			{
-				Tile tile = tiles[z][x][y];
-				if (tile == null)
-				{
-					continue;
-				}
-				tilesList.add(tile);
-			}
-		}
-		return tilesList;
-	}
-
 	public int getLowestItemMatch(List<Integer> items)
 	{
 		ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
@@ -2192,27 +2189,5 @@ public class ChinManagerPlugin extends Plugin
 		}
 
 		return -1;
-	}
-
-	private static Tile tile(Client client, WorldPoint position)
-	{
-		int plane = position.getPlane();
-		int x = position.getX() - client.getBaseX();
-		int y = position.getY() - client.getBaseY();
-
-		if (plane < 0 || plane >= 4)
-		{
-			return null;
-		}
-		if (x < 0 || x >= 104)
-		{
-			return null;
-		}
-		if (y < 0 || y >= 104)
-		{
-			return null;
-		}
-
-		return client.getScene().getTiles()[plane][x][y];
 	}
 }

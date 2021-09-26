@@ -33,18 +33,13 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.Units;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.PluginPanel;
+import net.runelite.client.ui.components.ToggleButton;
 
 public class BreaksPanel extends JPanel
 {
 	private final ChinManager chinManager;
 	private final ConfigManager configManager;
 	private final Plugin plugin;
-
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PluginPanel.PANEL_WIDTH, super.getPreferredSize().height);
-	}
 
 	BreaksPanel(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, Plugin plugin)
 	{
@@ -59,6 +54,12 @@ public class BreaksPanel extends JPanel
 		setBackground(PANEL_BACKGROUND_COLOR);
 
 		init();
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PluginPanel.PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	private void init()
@@ -228,8 +229,8 @@ public class BreaksPanel extends JPanel
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 
-		JCheckBox logoutButton = new JCheckBox("Logout");
-		JCheckBox afkButton = new JCheckBox("AFK");
+		JCheckBox logoutButton = new ToggleButton("Logout");
+		JCheckBox afkButton = new ToggleButton("AFK");
 
 		String pluginName = Plugins.sanitizedName(plugin);
 

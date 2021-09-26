@@ -1,8 +1,8 @@
 package com.owain.chinmanager.ui;
 
-import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.gear.EquipmentPanel;
 import com.owain.chinmanager.ui.plugins.PluginPanel;
+import com.owain.chinmanager.ui.teleports.TeleportsConfig;
 import com.owain.chinmanager.ui.utils.ConfigPanel;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
 import java.awt.BorderLayout;
@@ -13,21 +13,16 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.config.ConfigManager;
 import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 
 @Slf4j
 public class PluginConfigPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	@Inject
-	PluginConfigPanel(ChinManagerPlugin chinManagerPlugin, PluginPanel pluginPanel, EquipmentPanel equipmentPanel, ConfigPanel teleportsPanel)
+	PluginConfigPanel(PluginPanel pluginPanel, EquipmentPanel equipmentPanel, ConfigPanel teleportsPanel, ConfigManager configManager)
 	{
-		teleportsPanel.init(chinManagerPlugin.getTeleportsConfig());
+		teleportsPanel.init(configManager.getConfig(TeleportsConfig.class));
 
 		setLayout(new BorderLayout());
 		setBackground(ChinManagerPanel.PANEL_BACKGROUND_COLOR);
@@ -68,5 +63,11 @@ public class PluginConfigPanel extends JPanel
 
 		add(description, BorderLayout.NORTH);
 		add(tabbedPane, BorderLayout.CENTER);
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 }

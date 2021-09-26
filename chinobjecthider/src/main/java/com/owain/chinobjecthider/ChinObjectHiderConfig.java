@@ -127,4 +127,16 @@ public interface ChinObjectHiderConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		keyName = "hideAllGraphicsObjects",
+		name = "Hide all graphics objects",
+		description = "",
+		position = 9,
+		section = hideAllObjects
+	)
+	default boolean hideAllGraphicsObjects()
+	{
+		return false;
+	}
 }

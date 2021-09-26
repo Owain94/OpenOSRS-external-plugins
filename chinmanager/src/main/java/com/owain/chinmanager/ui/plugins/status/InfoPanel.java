@@ -37,33 +37,22 @@ import org.apache.commons.lang3.tuple.Pair;
 @Slf4j
 public class InfoPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-
-	private final ChinManager chinManager;
-	private final ChinManagerPlugin chinManagerPlugin;
-	private final ConfigManager configManager;
-	private final Client client;
-
-	private long inGameTime = 0;
-	private long breakTime = 0;
-
-	private final JPanel contentPanel = new JPanel(new GridBagLayout());
+	public static boolean breakShowing;
 	public final JLabel breakingTimeLabel = new JLabel("", SwingConstants.CENTER);
 	public final JLabel scheduledTimeLabel = new JLabel("", SwingConstants.CENTER);
 	public final JLabel runtimeLabel = new JLabel("", SwingConstants.CENTER);
 	public final JLabel breaksLabel = new JLabel("", SwingConstants.CENTER);
 	public final JLabel inGameLabel = new JLabel("", SwingConstants.CENTER);
 	public final JLabel breakTimeLabel = new JLabel("", SwingConstants.CENTER);
-
+	private final ChinManager chinManager;
+	private final ChinManagerPlugin chinManagerPlugin;
+	private final ConfigManager configManager;
+	private final Client client;
+	private final JPanel contentPanel = new JPanel(new GridBagLayout());
 	public boolean breaking;
-	public static boolean breakShowing;
-
+	private long inGameTime = 0;
+	private long breakTime = 0;
 	@Inject
 	InfoPanel(SwingScheduler swingScheduler, ChinManager chinManager, ChinManagerPlugin chinManagerPlugin)
 	{
@@ -105,11 +94,17 @@ public class InfoPanel extends JPanel
 		);
 	}
 
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
+	}
+
 	private void milliseconds(Long aLong)
 	{
-		Set<Plugin> plugins = chinManager.getActivePlugins();
+		Set<Plugin> activePlugins = chinManager.getActivePlugins();
 
-		if (plugins.size() == 0)
+		if (activePlugins.size() == 0)
 		{
 			breakingTimeLabel.setText("00:00:00");
 			scheduledTimeLabel.setText("00:00:00");
@@ -132,7 +127,7 @@ public class InfoPanel extends JPanel
 		Instant startTime = startTimes
 			.entrySet()
 			.stream()
-			.filter((pluginInstantEntry) -> plugins.contains(pluginInstantEntry.getKey()))
+			.filter((pluginInstantEntry) -> activePlugins.contains(pluginInstantEntry.getKey()))
 			.map(Map.Entry::getValue)
 			.min(Comparator.comparing(Instant::getEpochSecond))
 			.orElse(null);
@@ -211,7 +206,14 @@ public class InfoPanel extends JPanel
 
 		for (Plugin plugin : chinManager.getActivePlugins())
 		{
-			if (!chinManager.getPlugins().get(plugin))
+			Map<Plugin, Boolean> plugins = chinManager.getPlugins();
+
+			if (!plugins.containsKey(plugin))
+			{
+				continue;
+			}
+
+			if (!plugins.get(plugin))
 			{
 				continue;
 			}

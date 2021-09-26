@@ -18,6 +18,12 @@ import javax.swing.Timer;
 public final class SwingScheduler extends Scheduler
 {
 	@Override
+	public Worker createWorker()
+	{
+		return new SwingWorker();
+	}
+
+	@Override
 	public Disposable scheduleDirect(Runnable run)
 	{
 		DirectTask dt = new DirectTask(run);
@@ -47,12 +53,6 @@ public final class SwingScheduler extends Scheduler
 		);
 		dtt.start();
 		return dtt;
-	}
-
-	@Override
-	public Worker createWorker()
-	{
-		return new SwingWorker();
 	}
 
 	static final class SwingWorker extends Worker

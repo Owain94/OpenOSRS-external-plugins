@@ -47,6 +47,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
+import net.runelite.client.ui.components.ToggleButton;
 import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
@@ -58,17 +59,17 @@ import org.apache.commons.lang3.tuple.Pair;
 @Slf4j
 public class PluginPanel extends JPanel
 {
-	@Override
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
-	}
-
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
 	public static final Map<String, Pair<Boolean, Integer>> PLUGIN_CONFIG_MAP = new HashMap<>();
-
 	private static final ImageIcon CONFIG_ICON;
 	private static final ImageIcon CONFIG_ICON_HOVER;
+
+	static
+	{
+		BufferedImage configIcon = ImageUtil.loadImageResource(PluginPanel.class, "config_edit_icon.png");
+		CONFIG_ICON = new ImageIcon(configIcon);
+		CONFIG_ICON_HOVER = new ImageIcon(ImageUtil.luminanceOffset(configIcon, -100));
+	}
 
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
@@ -78,13 +79,6 @@ public class PluginPanel extends JPanel
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
 	private final JPanel pluginOrderPanel = new JPanel(new GridBagLayout());
 	private final JPanel requiredItemsPanel = new JPanel(new GridBagLayout());
-
-	static
-	{
-		BufferedImage configIcon = ImageUtil.loadImageResource(PluginPanel.class, "config_edit_icon.png");
-		CONFIG_ICON = new ImageIcon(configIcon);
-		CONFIG_ICON_HOVER = new ImageIcon(ImageUtil.luminanceOffset(configIcon, -100));
-	}
 
 	@Inject
 	PluginPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager)
@@ -111,6 +105,12 @@ public class PluginPanel extends JPanel
 		add(contentPanel, BorderLayout.CENTER);
 
 		pluginsPanel();
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	@Subscribe
@@ -170,8 +170,7 @@ public class PluginPanel extends JPanel
 				item.setLayout(new BorderLayout());
 				item.setMinimumSize(new Dimension(PANEL_WIDTH, 0));
 
-				JCheckBox checkbox = new JCheckBox(plugin.getName());
-				checkbox.setBackground(ColorScheme.LIGHT_GRAY_COLOR);
+				JCheckBox checkbox = new ToggleButton(plugin.getName());
 				checkbox.addActionListener(e ->
 				{
 					checkboxState();
@@ -433,8 +432,8 @@ public class PluginPanel extends JPanel
 				checkbox.isSelected() &&
 					PLUGIN_CONFIG_MAP.containsKey(Plugins.sanitizedName(checkbox.getText())) &&
 					!PLUGIN_CONFIG_MAP.get(
-						Plugins.sanitizedName(checkbox.getText())
-					)
+							Plugins.sanitizedName(checkbox.getText())
+						)
 						.getLeft()))
 		{
 			checkboxes.forEach((checkbox) -> {

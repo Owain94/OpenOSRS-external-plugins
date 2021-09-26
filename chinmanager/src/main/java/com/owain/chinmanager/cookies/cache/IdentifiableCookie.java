@@ -11,6 +11,11 @@ class IdentifiableCookie
 {
 	private final Cookie cookie;
 
+	IdentifiableCookie(Cookie cookie)
+	{
+		this.cookie = cookie;
+	}
+
 	static List<IdentifiableCookie> decorateAll(Collection<Cookie> cookies)
 	{
 		List<IdentifiableCookie> identifiableCookies = new ArrayList<>(cookies.size());
@@ -21,14 +26,23 @@ class IdentifiableCookie
 		return identifiableCookies;
 	}
 
-	IdentifiableCookie(Cookie cookie)
-	{
-		this.cookie = cookie;
-	}
-
 	Cookie getCookie()
 	{
 		return cookie;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 17;
+
+		hash = 31 * hash + cookie.name().hashCode();
+		hash = 31 * hash + cookie.domain().hashCode();
+		hash = 31 * hash + cookie.path().hashCode();
+		hash = 31 * hash + (cookie.secure() ? 0 : 1);
+		hash = 31 * hash + (cookie.hostOnly() ? 0 : 1);
+
+		return hash;
 	}
 
 	@Override
@@ -46,19 +60,5 @@ class IdentifiableCookie
 			&& that.cookie.path().equals(this.cookie.path())
 			&& that.cookie.secure() == this.cookie.secure()
 			&& that.cookie.hostOnly() == this.cookie.hostOnly();
-	}
-
-	@Override
-	public int hashCode()
-	{
-		int hash = 17;
-
-		hash = 31 * hash + cookie.name().hashCode();
-		hash = 31 * hash + cookie.domain().hashCode();
-		hash = 31 * hash + cookie.path().hashCode();
-		hash = 31 * hash + (cookie.secure() ? 0 : 1);
-		hash = 31 * hash + (cookie.hostOnly() ? 0 : 1);
-
-		return hash;
 	}
 }

@@ -38,6 +38,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.Units;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.PluginPanel;
+import net.runelite.client.ui.components.ToggleButton;
 
 public class ChinBreakHandlerPluginPanel extends JPanel
 {
@@ -260,8 +261,8 @@ public class ChinBreakHandlerPluginPanel extends JPanel
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 
-		JCheckBox logoutButton = new JCheckBox("Logout");
-		JCheckBox afkButton = new JCheckBox("AFK");
+		JCheckBox logoutButton = new ToggleButton("Logout");
+		JCheckBox afkButton = new ToggleButton("AFK");
 
 		boolean logout = Boolean.parseBoolean(configManager.getConfiguration(ChinBreakHandlerPlugin.CONFIG_GROUP, pluginName + "-logout"));
 

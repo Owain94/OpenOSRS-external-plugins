@@ -2,10 +2,10 @@ package com.owain.chinmanager.tasks;
 
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
+import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
 import com.owain.chintasks.Task;
-import com.owain.chinmanager.ChinManagerState;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -28,40 +29,23 @@ import net.runelite.client.plugins.Plugin;
 @Slf4j
 public class LogoutTask implements Task<Void>
 {
-	enum LogoutState
-	{
-		NONE,
-		CLOSE_BANK,
-		CLOSE_LEPRECHAUN_STORE,
-		LOGOUT,
-		LOGOUT_TAB_SWITCH,
-		LOGOUT_TAB,
-		LOGOUT_BUTTON,
-		LOGOUT_WAIT,
-
-		;
-	}
-
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final Client client;
 	private final EventBus eventBus;
 	private final OptionsConfig optionsConfig;
-
 	private final List<Disposable> disposables = new ArrayList<>();
-
 	private LogoutState logoutState;
-
 	private int tikkie = 10;
 
 	@Inject
-	LogoutTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, OptionsConfig optionsConfig)
+	LogoutTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, ConfigManager configManager, Client client)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
-		this.client = chinManagerPlugin.getClient();
+		this.client = client;
 		this.eventBus = eventBus;
-		this.optionsConfig = optionsConfig;
+		this.optionsConfig = configManager.getConfig(OptionsConfig.class);
 	}
 
 	@Override
@@ -115,7 +99,7 @@ public class LogoutTask implements Task<Void>
 				logoutState = LogoutState.CLOSE_BANK;
 				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 			}
-			else if ( store != null && !store.isHidden())
+			else if (store != null && !store.isHidden())
 			{
 				logoutState = LogoutState.CLOSE_LEPRECHAUN_STORE;
 				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
@@ -238,5 +222,19 @@ public class LogoutTask implements Task<Void>
 		}
 
 		ChinManagerState.stateMachine.accept(ChinManagerStates.IDLE);
+	}
+
+	enum LogoutState
+	{
+		NONE,
+		CLOSE_BANK,
+		CLOSE_LEPRECHAUN_STORE,
+		LOGOUT,
+		LOGOUT_TAB_SWITCH,
+		LOGOUT_TAB,
+		LOGOUT_BUTTON,
+		LOGOUT_WAIT,
+
+		;
 	}
 }

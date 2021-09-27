@@ -1,6 +1,5 @@
 package com.owain.chinmanager.cookies.persistence;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.io.Serializable;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Cookie;
-import org.jetbrains.annotations.Nullable;
 
 @Slf4j
 @Singleton
@@ -22,7 +20,7 @@ public class SerializableCookie implements Serializable
 	private static final long NON_VALID_EXPIRES_AT = -1L;
 	private transient Cookie cookie;
 
-	private static @NonNull String byteArrayToHexString(byte @NonNull [] bytes)
+	private static String byteArrayToHexString(byte[] bytes)
 	{
 		StringBuilder sb = new StringBuilder(bytes.length * 2);
 		for (byte element : bytes)
@@ -37,7 +35,7 @@ public class SerializableCookie implements Serializable
 		return sb.toString();
 	}
 
-	private static byte @NonNull [] hexStringToByteArray(@NonNull String hexString)
+	private static byte[] hexStringToByteArray(String hexString)
 	{
 		int len = hexString.length();
 		byte[] data = new byte[len / 2];
@@ -49,7 +47,6 @@ public class SerializableCookie implements Serializable
 		return data;
 	}
 
-	@Nullable
 	public String encode(Cookie cookie)
 	{
 		this.cookie = cookie;
@@ -85,8 +82,7 @@ public class SerializableCookie implements Serializable
 		return byteArrayToHexString(byteArrayOutputStream.toByteArray());
 	}
 
-	@Nullable
-	public Cookie decode(@NonNull String encodedCookie)
+	public Cookie decode(String encodedCookie)
 	{
 		byte[] bytes = hexStringToByteArray(encodedCookie);
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
@@ -125,7 +121,7 @@ public class SerializableCookie implements Serializable
 		return cookie;
 	}
 
-	private void writeObject(@NonNull ObjectOutputStream out) throws IOException
+	private void writeObject(ObjectOutputStream out) throws IOException
 	{
 		out.writeObject(cookie.name());
 		out.writeObject(cookie.value());
@@ -137,7 +133,7 @@ public class SerializableCookie implements Serializable
 		out.writeBoolean(cookie.hostOnly());
 	}
 
-	private void readObject(@NonNull ObjectInputStream in) throws IOException, ClassNotFoundException
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		Cookie.Builder builder = new Cookie.Builder();
 

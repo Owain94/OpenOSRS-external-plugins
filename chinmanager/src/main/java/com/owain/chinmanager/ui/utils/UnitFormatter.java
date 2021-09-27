@@ -24,7 +24,6 @@
  */
 package com.owain.chinmanager.ui.utils;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.text.ParseException;
 import javax.swing.JFormattedTextField;
 
@@ -38,7 +37,7 @@ final class UnitFormatter extends JFormattedTextField.AbstractFormatter
 	}
 
 	@Override
-	public @NonNull Object stringToValue(final @NonNull String text) throws ParseException
+	public Object stringToValue(final String text) throws ParseException
 	{
 		final String trimmedText;
 
@@ -63,7 +62,7 @@ final class UnitFormatter extends JFormattedTextField.AbstractFormatter
 	}
 
 	@Override
-	public @NonNull String valueToString(final Object value)
+	public String valueToString(final Object value)
 	{
 		return value + units;
 	}

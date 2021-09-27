@@ -10,31 +10,28 @@ import com.owain.chinmanager.biconsumers.ResumeState;
 import com.owain.chinmanager.biconsumers.SetupState;
 import com.owain.chinmanager.biconsumers.TeleportState;
 import com.owain.chinstatemachine.StateMachine;
-import io.reactivex.rxjava3.annotations.NonNull;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 
 @Slf4j
 public class ChinManagerState
 {
-	@Nullable
 	public static StateMachine<ChinManagerContext, ChinManagerStates> stateMachine = null;
 
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> IDLE = new StateMachine.State<>(ChinManagerStates.IDLE.toString());
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGIN = new StateMachine.State<>(ChinManagerStates.LOGIN.toString());
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGIN_SCREEN = new StateMachine.State<>(ChinManagerStates.LOGIN_SCREEN.toString());
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> RESUME = new StateMachine.State<>(ChinManagerStates.RESUME.toString());
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> SETUP = new StateMachine.State<>(ChinManagerStates.SETUP.toString());
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> BANKING = new StateMachine.State<>(ChinManagerStates.BANKING.toString());
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> BANK_PIN = new StateMachine.State<>(ChinManagerStates.BANK_PIN.toString());
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> TELEPORTING = new StateMachine.State<>(ChinManagerStates.TELEPORTING.toString());
-	public static final StateMachine.@NonNull State<ChinManagerContext, ChinManagerStates> LOGOUT = new StateMachine.State<>(ChinManagerStates.LOGOUT.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> IDLE = new StateMachine.State<>(ChinManagerStates.IDLE.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> LOGIN = new StateMachine.State<>(ChinManagerStates.LOGIN.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> LOGIN_SCREEN = new StateMachine.State<>(ChinManagerStates.LOGIN_SCREEN.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> RESUME = new StateMachine.State<>(ChinManagerStates.RESUME.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> SETUP = new StateMachine.State<>(ChinManagerStates.SETUP.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> BANKING = new StateMachine.State<>(ChinManagerStates.BANKING.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> BANK_PIN = new StateMachine.State<>(ChinManagerStates.BANK_PIN.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> TELEPORTING = new StateMachine.State<>(ChinManagerStates.TELEPORTING.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> LOGOUT = new StateMachine.State<>(ChinManagerStates.LOGOUT.toString());
 
 	@Inject
-	public ChinManagerState(@NonNull BankingState bankingState, @NonNull BankPinState bankPinState, @NonNull SetupState setupState,
-							@NonNull LoginState loginState, @NonNull LoginScreenState loginScreenState, @NonNull ResumeState resumeState,
-							@NonNull LogoutState logoutState, @NonNull TeleportState teleportState)
+	public ChinManagerState(BankingState bankingState, BankPinState bankPinState, SetupState setupState,
+							LoginState loginState, LoginScreenState loginScreenState, ResumeState resumeState,
+							LogoutState logoutState, TeleportState teleportState)
 	{
 		stateMachine = new StateMachine<>(new ChinManagerContext(), IDLE);
 

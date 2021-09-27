@@ -3,7 +3,6 @@ package com.owain.chinmanager.api;
 import com.google.gson.JsonObject;
 import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.ChinManagerPlugin.JSON;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -20,17 +19,17 @@ public class AccountApi
 {
 	public static final boolean DEBUG = false;
 
-	private final @NonNull ChinManagerPlugin chinManagerPlugin;
+	private final ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
 
 	@Inject
-	AccountApi(@NonNull ChinManagerPlugin chinManagerPlugin)
+	AccountApi(ChinManagerPlugin chinManagerPlugin)
 	{
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.configManager = chinManagerPlugin.getConfigManager();
 	}
 
-	public @NonNull Observable<Boolean> login(String username, String password)
+	public Observable<Boolean> login(String username, String password)
 	{
 		return Observable.defer(() ->
 		{
@@ -95,7 +94,7 @@ public class AccountApi
 		});
 	}
 
-	public @NonNull Observable<String> checkLogin()
+	public Observable<String> checkLogin()
 	{
 		return Observable.defer(() ->
 		{

@@ -1,6 +1,5 @@
 package com.owain.chinmanager.ui.utils;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -14,19 +13,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Singleton;
 import javax.swing.Timer;
-import org.jetbrains.annotations.Nullable;
 
 @Singleton
 public final class SwingScheduler extends Scheduler
 {
 	@Override
-	public @NonNull Worker createWorker()
+	public Worker createWorker()
 	{
 		return new SwingWorker();
 	}
 
 	@Override
-	public @NonNull Disposable scheduleDirect(Runnable run)
+	public Disposable scheduleDirect(Runnable run)
 	{
 		DirectTask dt = new DirectTask(run);
 		EventQueue.invokeLater(dt);
@@ -34,7 +32,7 @@ public final class SwingScheduler extends Scheduler
 	}
 
 	@Override
-	public @NonNull Disposable scheduleDirect(Runnable run, long delay, @NonNull TimeUnit unit)
+	public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit)
 	{
 		DirectTimedTask dtt = new DirectTimedTask(
 			run,
@@ -46,7 +44,7 @@ public final class SwingScheduler extends Scheduler
 	}
 
 	@Override
-	public @NonNull Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, @NonNull TimeUnit unit)
+	public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit)
 	{
 		DirectTimedTask dtt = new DirectTimedTask(
 			run,
@@ -79,18 +77,18 @@ public final class SwingScheduler extends Scheduler
 			return tasks.isDisposed();
 		}
 
-		void remove(@NonNull Disposable d)
+		void remove(Disposable d)
 		{
 			tasks.delete(d);
 		}
 
-		boolean add(@NonNull Disposable d)
+		boolean add(Disposable d)
 		{
 			return tasks.add(d);
 		}
 
 		@Override
-		public @NonNull Disposable schedule(Runnable run)
+		public Disposable schedule(Runnable run)
 		{
 			WorkerTask wt = new WorkerTask(run);
 			if (add(wt))
@@ -102,7 +100,7 @@ public final class SwingScheduler extends Scheduler
 		}
 
 		@Override
-		public @NonNull Disposable schedule(Runnable run, long delay, @NonNull TimeUnit unit)
+		public Disposable schedule(Runnable run, long delay, TimeUnit unit)
 		{
 			WorkerTimedTask wtt = new WorkerTimedTask(
 				run,
@@ -118,7 +116,7 @@ public final class SwingScheduler extends Scheduler
 		}
 
 		@Override
-		public @NonNull Disposable schedulePeriodically(Runnable run, long initialDelay, long period, @NonNull TimeUnit unit)
+		public Disposable schedulePeriodically(Runnable run, long initialDelay, long period, TimeUnit unit)
 		{
 			WorkerTimedTask wtt = new WorkerTimedTask(
 				run,
@@ -183,7 +181,6 @@ public final class SwingScheduler extends Scheduler
 
 			final boolean periodic;
 
-			@Nullable
 			Runnable run;
 
 			WorkerTimedTask(Runnable run, int initialDelayMillis, int periodMillis, boolean periodic)
@@ -286,7 +283,6 @@ public final class SwingScheduler extends Scheduler
 
 		final boolean periodic;
 
-		@Nullable
 		Runnable run;
 
 		DirectTimedTask(Runnable run, int initialDelayMillis, int periodMillis, boolean periodic)

@@ -1,6 +1,5 @@
 package com.owain.chinmanager.ui.utils;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.Container;
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +10,8 @@ import javax.swing.JComponent;
 public class Components
 {
 	public static <T extends JComponent> List<T> findComponents(
-		final @NonNull Container container,
-		final @NonNull Class<T> componentType
+		final Container container,
+		final Class<T> componentType
 	)
 	{
 		return Stream.concat(

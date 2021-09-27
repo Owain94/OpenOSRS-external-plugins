@@ -9,7 +9,6 @@ import com.owain.chinmanager.ui.utils.Separator;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chinmanager.utils.Plugins;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -23,19 +22,18 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
-import org.jetbrains.annotations.Nullable;
 
 public class BreakOptionsPanel extends JPanel
 {
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-	private final @NonNull ChinManager chinManager;
-	private final @NonNull ChinManagerPlugin chinManagerPlugin;
+	private final ChinManager chinManager;
+	private final ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
-	private final @NonNull JPanel optionsPanel;
+	private final JPanel optionsPanel;
 	private final JPanel contentPanel = new JPanel(new BorderLayout());
 
 	@Inject
-	BreakOptionsPanel(@NonNull ChinManagerPlugin chinManagerPlugin, @NonNull ChinManager chinManager, @NonNull SwingScheduler swingScheduler, @NonNull ConfigPanel optionsPanel)
+	BreakOptionsPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager, SwingScheduler swingScheduler, ConfigPanel optionsPanel)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
@@ -66,7 +64,7 @@ public class BreakOptionsPanel extends JPanel
 	}
 
 	@Override
-	public @NonNull Dimension getPreferredSize()
+	public Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
@@ -110,7 +108,7 @@ public class BreakOptionsPanel extends JPanel
 		contentPanel.repaint();
 	}
 
-	private void onConfigChanged(@Nullable ConfigChanged configChanged)
+	private void onConfigChanged(ConfigChanged configChanged)
 	{
 		if (configChanged == null || !configChanged.getGroup().equals(ChinManagerPlugin.CONFIG_GROUP_BREAKHANDLER))
 		{

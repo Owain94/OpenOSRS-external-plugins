@@ -3,7 +3,6 @@ package com.owain.chinmanager.tasks;
 import com.owain.automation.Automation;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chintasks.Task;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import java.awt.event.KeyEvent;
 import javax.inject.Inject;
@@ -13,12 +12,12 @@ import net.runelite.api.Client;
 @Slf4j
 public class KeyTask implements Task<Void>
 {
-	private final @NonNull ChinManagerPlugin chinManagerPlugin;
+	private final ChinManagerPlugin chinManagerPlugin;
 	private final Client client;
 	private final String input;
 
 	@Inject
-	KeyTask(@NonNull ChinManagerPlugin chinManagerPlugin, String input)
+	KeyTask(ChinManagerPlugin chinManagerPlugin, String input)
 	{
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.client = chinManagerPlugin.getClient();

@@ -25,7 +25,7 @@ public class TeleportState
 		this.teleportTask = teleportTask;
 	}
 
-	public @NonNull BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> teleport()
+	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> teleport()
 	{
 		return (t1, state) -> {
 			@NonNull Completable obs = chinManagerPlugin.getTaskExecutor().prepareTask(teleportTask).ignoreElements();
@@ -34,7 +34,7 @@ public class TeleportState
 		};
 	}
 
-	public @NonNull BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
+	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
 	{
 		return (t1, state) -> {
 			if (teleportTask != null)

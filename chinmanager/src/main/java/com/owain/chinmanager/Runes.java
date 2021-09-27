@@ -25,7 +25,6 @@
 package com.owain.chinmanager;
 
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -86,7 +85,7 @@ public enum Runes
 		return runes.get(varbit);
 	}
 
-	public @NonNull String getName()
+	public String getName()
 	{
 		String name = this.name();
 		name = name.charAt(0) + name.substring(1).toLowerCase();

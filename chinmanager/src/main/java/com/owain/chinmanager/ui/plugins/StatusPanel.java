@@ -14,7 +14,6 @@ import com.owain.chinmanager.ui.utils.ConfigPanel;
 import com.owain.chinmanager.ui.utils.GridBagHelper;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,9 +39,9 @@ import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 public class StatusPanel extends JPanel
 {
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-	private final @NonNull SwingScheduler swingScheduler;
-	private final @NonNull ChinManager chinManager;
-	private final @NonNull ConfigManager configManager;
+	private final SwingScheduler swingScheduler;
+	private final ChinManager chinManager;
+	private final ConfigManager configManager;
 	private final InfoPanel infoPanel;
 	private final JPanel headerPanel = new JPanel(new GridBagLayout());
 	private final JPanel unlockAccountPanel = new JPanel(new BorderLayout());
@@ -50,12 +49,12 @@ public class StatusPanel extends JPanel
 	private final JButton stopPluginsButton = new JButton();
 	@Inject
 	StatusPanel(
-		@NonNull SwingScheduler swingScheduler,
-		@NonNull ChinManager chinManager,
+		SwingScheduler swingScheduler,
+		ChinManager chinManager,
 		InfoPanel infoPanel,
 		BreakOptionsPanel breakOptionsPanel,
-		@NonNull ConfigPanel teleportsPanel,
-		@NonNull ConfigManager configManager)
+		ConfigPanel teleportsPanel,
+		ConfigManager configManager)
 	{
 		this.swingScheduler = swingScheduler;
 		this.chinManager = chinManager;
@@ -103,7 +102,7 @@ public class StatusPanel extends JPanel
 	}
 
 	@Override
-	public @NonNull Dimension getPreferredSize()
+	public Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
@@ -191,7 +190,7 @@ public class StatusPanel extends JPanel
 		headerPanel.repaint();
 	}
 
-	private @NonNull JButton stopButton()
+	private JButton stopButton()
 	{
 		Set<Plugin> plugins = chinManager.getActivePlugins();
 
@@ -214,7 +213,7 @@ public class StatusPanel extends JPanel
 		pluginsPanel(plugins);
 	}
 
-	private void pluginsPanel(@NonNull Set<Plugin> plugins)
+	private void pluginsPanel(Set<Plugin> plugins)
 	{
 		pluginsPanel.removeAll();
 

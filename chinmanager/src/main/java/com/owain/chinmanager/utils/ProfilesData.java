@@ -1,6 +1,5 @@
 package com.owain.chinmanager.utils;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -21,7 +20,7 @@ public class ProfilesData
 {
 	private static final int iterations = 100000;
 
-	private static @NonNull String decryptText(byte @NonNull [] enc, @NonNull SecretKey aesKey) throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException
+	private static String decryptText(byte[] enc, SecretKey aesKey) throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException
 	{
 		Cipher cipher = Cipher.getInstance("AES");
 		SecretKeySpec newKey = new SecretKeySpec(aesKey.getEncoded(), "AES");
@@ -29,7 +28,7 @@ public class ProfilesData
 		return new String(cipher.doFinal(enc));
 	}
 
-	public static String getProfileData(@NonNull ConfigManager configManager, char[] password) throws InvalidKeySpecException, NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException
+	public static String getProfileData(ConfigManager configManager, char[] password) throws InvalidKeySpecException, NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException
 	{
 		String tmp = configManager.getConfiguration("betterProfiles", "profilesData");
 		if (tmp.startsWith("¬"))
@@ -40,7 +39,7 @@ public class ProfilesData
 		return tmp;
 	}
 
-	private static byte[] getSalt(@NonNull ConfigManager configManager)
+	private static byte[] getSalt(ConfigManager configManager)
 	{
 		String salt = configManager.getConfiguration("betterProfiles", "salt");
 		if (salt.length() == 0)
@@ -50,7 +49,7 @@ public class ProfilesData
 		return base64Decode(salt);
 	}
 
-	private static SecretKey getAesKey(@NonNull ConfigManager configManager, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException
+	private static SecretKey getAesKey(ConfigManager configManager, char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException
 	{
 		if (getSalt(configManager).length == 0)
 		{
@@ -63,7 +62,7 @@ public class ProfilesData
 		return factory.generateSecret(spec);
 	}
 
-	private static void setSalt(byte[] bytes, @NonNull ConfigManager configManager)
+	private static void setSalt(byte[] bytes, ConfigManager configManager)
 	{
 		configManager.setConfiguration("profiles", "salt", base64Encode(bytes));
 	}

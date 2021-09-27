@@ -1,6 +1,5 @@
 package com.owain.chinmanager.ui.utils;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
@@ -11,8 +10,8 @@ import net.runelite.client.util.SwingUtil;
 
 public class OnOffToggleButton extends JToggleButton
 {
-	private static final @NonNull ImageIcon ON_SWITCHER;
-	private static final @NonNull ImageIcon OFF_SWITCHER;
+	private static final ImageIcon ON_SWITCHER;
+	private static final ImageIcon OFF_SWITCHER;
 
 	static
 	{

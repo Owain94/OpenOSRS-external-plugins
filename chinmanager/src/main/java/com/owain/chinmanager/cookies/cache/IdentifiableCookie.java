@@ -1,6 +1,5 @@
 package com.owain.chinmanager.cookies.cache;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +16,7 @@ class IdentifiableCookie
 		this.cookie = cookie;
 	}
 
-	static @NonNull List<IdentifiableCookie> decorateAll(@NonNull Collection<Cookie> cookies)
+	static List<IdentifiableCookie> decorateAll(Collection<Cookie> cookies)
 	{
 		List<IdentifiableCookie> identifiableCookies = new ArrayList<>(cookies.size());
 		for (Cookie cookie : cookies)

@@ -6,7 +6,6 @@ import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chintasks.Task;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.KEY_TYPED;
@@ -20,12 +19,12 @@ import net.runelite.client.callback.ClientThread;
 public class SetupTask implements Task<Void>
 {
 	private final ChinManager chinManager;
-	private final @NonNull ChinManagerPlugin chinManagerPlugin;
+	private final ChinManagerPlugin chinManagerPlugin;
 	private final Client client;
 	private final ClientThread clientThread;
 
 	@Inject
-	SetupTask(ChinManager chinManager, @NonNull ChinManagerPlugin chinManagerPlugin)
+	SetupTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;

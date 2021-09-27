@@ -14,7 +14,6 @@ import com.owain.chinmanager.ui.utils.Separator;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.utils.ConfigGroup;
 import com.owain.chinmanager.websockets.WebsocketManager;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -54,7 +53,7 @@ public class WebAccountPanel extends JPanel
 	@Inject
 	WebAccountPanel(
 		SwingScheduler swingScheduler,
-		@NonNull ChinManagerPlugin chinManagerPlugin,
+		ChinManagerPlugin chinManagerPlugin,
 		AccountApi accountApi,
 		LicenseApi licenseApi,
 		WebsocketManager websocketManager
@@ -87,13 +86,13 @@ public class WebAccountPanel extends JPanel
 	}
 
 	@Override
-	public @NonNull Dimension getPreferredSize()
+	public Dimension getPreferredSize()
 	{
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
 	@Subscribe
-	private void onConfigChanged(@NonNull ConfigChanged configChanged)
+	private void onConfigChanged(ConfigChanged configChanged)
 	{
 		if (!configChanged.getKey().equals("token"))
 		{

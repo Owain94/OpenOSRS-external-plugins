@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.owain.chinmanager.ChinManagerPlugin;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import java.time.Duration;
 import java.time.Instant;
@@ -28,17 +27,17 @@ import okhttp3.ResponseBody;
 @Slf4j
 public class LicenseApi
 {
-	private final @NonNull ChinManagerPlugin chinManagerPlugin;
+	private final ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
 
 	@Inject
-	LicenseApi(@NonNull ChinManagerPlugin chinManagerPlugin)
+	LicenseApi(ChinManagerPlugin chinManagerPlugin)
 	{
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.configManager = chinManagerPlugin.getConfigManager();
 	}
 
-	public @NonNull Observable<Map<String, Map<String, String>>> getLicenses()
+	public Observable<Map<String, Map<String, String>>> getLicenses()
 	{
 		return Observable.defer(() ->
 		{
@@ -89,7 +88,7 @@ public class LicenseApi
 		});
 	}
 
-	public Map<String, Map<String, String>> processLicenses(@NonNull String licenses)
+	public Map<String, Map<String, String>> processLicenses(String licenses)
 	{
 		JsonArray json;
 		try

@@ -1,6 +1,5 @@
 package com.owain.chinmanager.ui.utils;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -23,7 +22,7 @@ public class VerticalSeparator extends JSeparator
 	}
 
 	@Override
-	public @NonNull Dimension getPreferredSize()
+	public Dimension getPreferredSize()
 	{
 		return new Dimension(15, super.getPreferredSize().height);
 	}

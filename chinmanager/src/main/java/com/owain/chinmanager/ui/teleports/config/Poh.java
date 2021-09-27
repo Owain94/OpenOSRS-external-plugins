@@ -1,6 +1,5 @@
 package com.owain.chinmanager.ui.teleports.config;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,10 +13,10 @@ public enum Poh
 
 	;
 
-	private final @NonNull String name;
+	private final String name;
 
 	@Override
-	public @NonNull String toString()
+	public String toString()
 	{
 		return name;
 	}

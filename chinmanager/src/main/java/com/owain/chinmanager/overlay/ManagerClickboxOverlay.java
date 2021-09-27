@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -15,7 +14,6 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
-import org.jetbrains.annotations.Nullable;
 
 public class ManagerClickboxOverlay extends Overlay
 {
@@ -24,7 +22,7 @@ public class ManagerClickboxOverlay extends Overlay
 	private final OptionsConfig optionsConfig;
 
 	@Inject
-	public ManagerClickboxOverlay(ModelOutlineRenderer modelOutlineRenderer, ChinManager chinManager, @NonNull ConfigManager configManager)
+	public ManagerClickboxOverlay(ModelOutlineRenderer modelOutlineRenderer, ChinManager chinManager, ConfigManager configManager)
 	{
 		this.modelOutliner = modelOutlineRenderer;
 		this.chinManager = chinManager;
@@ -34,7 +32,6 @@ public class ManagerClickboxOverlay extends Overlay
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
 
-	@Nullable
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{

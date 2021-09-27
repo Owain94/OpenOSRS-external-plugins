@@ -6,7 +6,6 @@ import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
 import com.owain.chintasks.Task;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class LogoutTask implements Task<Void>
 	private int tikkie = 10;
 
 	@Inject
-	LogoutTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, @NonNull ConfigManager configManager, Client client)
+	LogoutTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, ConfigManager configManager, Client client)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
@@ -137,7 +136,7 @@ public class LogoutTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(@NonNull MenuOptionClicked menuOptionClicked)
+	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (logoutState == LogoutState.CLOSE_BANK)
 		{

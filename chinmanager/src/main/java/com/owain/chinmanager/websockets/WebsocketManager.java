@@ -7,7 +7,6 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.api.AccountApi.DEBUG;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -33,7 +32,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
-import org.jetbrains.annotations.Nullable;
 
 @Slf4j
 public class WebsocketManager extends WebSocketListener
@@ -41,19 +39,17 @@ public class WebsocketManager extends WebSocketListener
 	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
 
 	private final ChinManagerPlugin chinManagerPlugin;
-	private final @NonNull ChinManager chinManager;
+	private final ChinManager chinManager;
 	private final InfoPanel infoPanel;
-	@Nullable
 	public String token = null;
 	private int ticksWithoutFriend = 0;
-	private @NonNull Boolean isSocketConnected = false;
-	private @NonNull Boolean broadcasting = false;
+	private Boolean isSocketConnected = false;
+	private Boolean broadcasting = false;
 
-	@Nullable
 	private WebSocket socket;
 
 	@Inject
-	WebsocketManager(ChinManagerPlugin chinManagerPlugin, @NonNull ChinManager chinManager, InfoPanel infoPanel)
+	WebsocketManager(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager, InfoPanel infoPanel)
 	{
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.chinManager = chinManager;
@@ -72,7 +68,7 @@ public class WebsocketManager extends WebSocketListener
 		);
 	}
 
-	private static @NonNull Request getWebsocketUrl()
+	private static Request getWebsocketUrl()
 	{
 		Request.Builder request = new Request.Builder();
 
@@ -169,7 +165,7 @@ public class WebsocketManager extends WebSocketListener
 		sendMessage(jsonData);
 	}
 
-	private void inventory(@NonNull InventoryID inventoryID)
+	private void inventory(InventoryID inventoryID)
 	{
 		if (chinManagerPlugin.getClient().getLocalPlayer() == null)
 		{
@@ -274,7 +270,7 @@ public class WebsocketManager extends WebSocketListener
 		sendMessage(jsonData);
 	}
 
-	private <T> T invokeAndWait(@NonNull Callable<T> r)
+	private <T> T invokeAndWait(Callable<T> r)
 	{
 		try
 		{
@@ -304,7 +300,7 @@ public class WebsocketManager extends WebSocketListener
 		}
 	}
 
-	private void activePlugins(@NonNull SortedSet<Plugin> plugins)
+	private void activePlugins(SortedSet<Plugin> plugins)
 	{
 		if (token == null || token.isEmpty())
 		{
@@ -334,7 +330,7 @@ public class WebsocketManager extends WebSocketListener
 		}
 	}
 
-	private void sendMessage(@NonNull JsonObject message)
+	private void sendMessage(JsonObject message)
 	{
 		if (!isSocketConnected || socket == null || token == null || token.isEmpty())
 		{

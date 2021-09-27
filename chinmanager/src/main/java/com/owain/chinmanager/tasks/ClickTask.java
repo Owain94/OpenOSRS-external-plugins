@@ -3,7 +3,6 @@ package com.owain.chinmanager.tasks;
 import com.owain.automation.Automation;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chintasks.Task;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import javax.inject.Inject;
 import net.runelite.api.Client;
@@ -13,10 +12,10 @@ import net.runelite.api.Point;
 public class ClickTask implements Task<Void>
 {
 	private final Client client;
-	private final @NonNull ChinManagerPlugin chinManagerPlugin;
+	private final ChinManagerPlugin chinManagerPlugin;
 
 	@Inject
-	ClickTask(@NonNull ChinManagerPlugin chinManagerPlugin)
+	ClickTask(ChinManagerPlugin chinManagerPlugin)
 	{
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.client = chinManagerPlugin.getClient();

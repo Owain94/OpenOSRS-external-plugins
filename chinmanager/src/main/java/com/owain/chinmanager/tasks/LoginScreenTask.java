@@ -5,7 +5,6 @@ import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chintasks.Task;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
@@ -27,14 +26,14 @@ import net.runelite.client.eventbus.Subscribe;
 public class LoginScreenTask implements Task<Void>
 {
 	private final ChinManager chinManager;
-	private final @NonNull ChinManagerPlugin chinManagerPlugin;
+	private final ChinManagerPlugin chinManagerPlugin;
 	private final Client client;
 	private final EventBus eventBus;
 
 	private final List<Disposable> disposables = new ArrayList<>();
 
 	@Inject
-	LoginScreenTask(ChinManager chinManager, @NonNull ChinManagerPlugin chinManagerPlugin, EventBus eventBus)
+	LoginScreenTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
@@ -89,7 +88,7 @@ public class LoginScreenTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(@NonNull MenuOptionClicked menuOptionClicked)
+	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		Widget playButton = client.getWidget(WidgetID.LOGIN_CLICK_TO_PLAY_GROUP_ID, 78);
 

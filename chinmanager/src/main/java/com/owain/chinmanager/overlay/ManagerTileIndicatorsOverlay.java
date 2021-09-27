@@ -28,7 +28,6 @@ import com.google.inject.Inject;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
-import io.reactivex.rxjava3.annotations.NonNull;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -43,7 +42,6 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
-import org.jetbrains.annotations.Nullable;
 
 public class ManagerTileIndicatorsOverlay extends Overlay
 {
@@ -52,7 +50,7 @@ public class ManagerTileIndicatorsOverlay extends Overlay
 	private final OptionsConfig optionsConfig;
 
 	@Inject
-	public ManagerTileIndicatorsOverlay(Client client, ChinManager chinManager, @NonNull ConfigManager configManager)
+	public ManagerTileIndicatorsOverlay(Client client, ChinManager chinManager, ConfigManager configManager)
 	{
 		this.client = client;
 		this.chinManager = chinManager;
@@ -63,9 +61,8 @@ public class ManagerTileIndicatorsOverlay extends Overlay
 		setPriority(OverlayPriority.MED);
 	}
 
-	@Nullable
 	@Override
-	public Dimension render(@NonNull Graphics2D graphics)
+	public Dimension render(Graphics2D graphics)
 	{
 		if (chinManager.getActivePlugins().size() == 0 || !optionsConfig.showOverlays())
 		{
@@ -88,7 +85,7 @@ public class ManagerTileIndicatorsOverlay extends Overlay
 		return null;
 	}
 
-	private void lineBetweenTiles(@NonNull Graphics2D graphics, @NonNull WorldPoint tile1, @NonNull WorldPoint tile2)
+	private void lineBetweenTiles(Graphics2D graphics, WorldPoint tile1, WorldPoint tile2)
 	{
 		if (tile1.getPlane() != client.getPlane())
 		{

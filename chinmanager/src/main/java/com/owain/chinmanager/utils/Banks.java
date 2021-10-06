@@ -1,12 +1,11 @@
 package com.owain.chinmanager.utils;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import net.runelite.api.ObjectID;
 
 public class Banks
 {
-	public static final Set<Integer> ALL_BANKS = ImmutableSet.of(
+	public static final Set<Integer> ALL_BANKS = Set.of(
 		ObjectID.BANK_BOOTH,
 		ObjectID.BANK_BOOTH_10083,
 		ObjectID.BANK_BOOTH_10355,

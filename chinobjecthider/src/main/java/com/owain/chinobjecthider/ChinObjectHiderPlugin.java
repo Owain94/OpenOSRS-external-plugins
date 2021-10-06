@@ -11,13 +11,11 @@ import net.runelite.api.Constants;
 import net.runelite.api.DecorativeObject;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
-import net.runelite.api.GraphicsObject;
 import net.runelite.api.GroundObject;
 import net.runelite.api.Scene;
 import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GraphicsObjectCreated;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -109,19 +107,6 @@ public class ChinObjectHiderPlugin extends Plugin
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
 		{
 			hide();
-		}
-	}
-
-	@Subscribe
-	public void onGraphicsObjectCreated(GraphicsObjectCreated graphicsObjectCreated)
-	{
-		GraphicsObject graphicsObject = graphicsObjectCreated.getGraphicsObject();
-
-		if (chinObjectHiderConfig.hideAllGraphicsObjects() || objectIds.contains(graphicsObject.getId()) ||
-			(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(graphicsObject.getId()).getName().toLowerCase()))
-		)
-		{
-			graphicsObject.unlink();
 		}
 	}
 

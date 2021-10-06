@@ -61,7 +61,7 @@ public class LoginScreenTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick gameTick)
+	public void onGameTick(GameTick gameTick)
 	{
 		if (chinManager.getActivePlugins().isEmpty())
 		{
@@ -88,7 +88,7 @@ public class LoginScreenTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
+	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		Widget playButton = client.getWidget(WidgetID.LOGIN_CLICK_TO_PLAY_GROUP_ID, 78);
 
@@ -97,7 +97,7 @@ public class LoginScreenTask implements Task<Void>
 			return;
 		}
 
-		chinManagerPlugin.menuAction(
+		menuOptionClicked = chinManagerPlugin.menuAction(
 			menuOptionClicked,
 			"Play",
 			"",
@@ -106,5 +106,10 @@ public class LoginScreenTask implements Task<Void>
 			-1,
 			playButton.getId()
 		);
+
+		if (!menuOptionClicked.isConsumed() && menuOptionClicked.getMenuAction() == MenuAction.WALK && menuOptionClicked.getParam0() == 0 && menuOptionClicked.getParam1() == 0)
+		{
+			menuOptionClicked.consume();
+		}
 	}
 }

@@ -265,7 +265,7 @@ public class ChinManagerPlugin extends Plugin
 	public static boolean logout;
 	public static boolean shouldSetup;
 	@Getter(AccessLevel.PUBLIC)
-	private static ArrayList<Equipment> equipmentList;
+	private static List<Equipment> equipmentList;
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PUBLIC)
 	private static String profileData;
@@ -1057,7 +1057,7 @@ public class ChinManagerPlugin extends Plugin
 
 		for (WorldPoint wp : area)
 		{
-			if ((getObject(client, wp) != null && getObject(client, wp) instanceof GameObject) ||
+			if ((getObject(client, wp) instanceof GameObject) ||
 				wp.getX() > objectWorldPoint.getX() && wp.getY() > objectWorldPoint.getY() ||
 				wp.getX() > objectWorldPoint.getX() && wp.getY() < objectWorldPoint.getY() ||
 				wp.getX() < objectWorldPoint.getX() && wp.getY() > objectWorldPoint.getY() ||
@@ -2078,7 +2078,7 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onItemSpawned(ItemSpawned itemSpawned)
+	public void onItemSpawned(ItemSpawned itemSpawned)
 	{
 		Tile tile = itemSpawned.getTile();
 		TileItem item = itemSpawned.getItem();
@@ -2087,7 +2087,7 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onItemDespawned(ItemDespawned itemDespawned)
+	public void onItemDespawned(ItemDespawned itemDespawned)
 	{
 		TileItem item = itemDespawned.getItem();
 
@@ -2099,7 +2099,7 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	public void menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int actionParam, int widgetId)
+	public MenuOptionClicked menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int actionParam, int widgetId)
 	{
 		menuOptionClicked.setMenuOption(option);
 		menuOptionClicked.setMenuTarget(target);
@@ -2111,6 +2111,8 @@ public class ChinManagerPlugin extends Plugin
 		log.debug("Chin manager menu action: {}", menuOptionClicked);
 
 		highlight(client, menuOptionClicked);
+
+		return menuOptionClicked;
 	}
 
 	public NPC getNPC(int id)
@@ -2156,7 +2158,7 @@ public class ChinManagerPlugin extends Plugin
 	public int getLowestItemMatch(List<Integer> items)
 	{
 		ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
-		ArrayList<Integer> equipmentItems = new ArrayList<>();
+		List<Integer> equipmentItems = new ArrayList<>();
 
 		if (itemContainer != null)
 		{

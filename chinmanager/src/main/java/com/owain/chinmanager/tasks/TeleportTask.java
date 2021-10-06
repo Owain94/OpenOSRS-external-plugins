@@ -118,7 +118,7 @@ public class TeleportTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick gameTick)
+	public void onGameTick(GameTick gameTick)
 	{
 		if (teleportState != cachedTeleportState)
 		{
@@ -770,7 +770,7 @@ public class TeleportTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onGameStateChanged(GameStateChanged gameStateChanged)
+	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN && (teleportState == TeleportState.TELEPORT_POH_WAIT || teleportState == TeleportState.MINIGAME_TELEPORT_WAIT || teleportState == TeleportState.TELEPORT_WAIT))
 		{
@@ -787,13 +787,20 @@ public class TeleportTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
+	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (teleportState == TeleportState.QUANTITY)
 		{
 			Widget withdrawOne = client.getWidget(12, 27);
 
-			chinManagerPlugin.menuAction(
+			if (withdrawOne == null)
+			{
+				menuOptionClicked.consume();
+				teleportState = TeleportState.NONE;
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Default quantity: 1",
 				"",
@@ -809,7 +816,14 @@ public class TeleportTask implements Task<Void>
 		{
 			Widget settingsButton = client.getWidget(WidgetInfo.BANK_SETTINGS_BUTTON);
 
-			chinManagerPlugin.menuAction(
+			if (settingsButton == null)
+			{
+				menuOptionClicked.consume();
+				teleportState = TeleportState.NONE;
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"menu",
 				"",
@@ -825,7 +839,14 @@ public class TeleportTask implements Task<Void>
 		{
 			Widget inventoryOptions = client.getWidget(12, 50);
 
-			chinManagerPlugin.menuAction(
+			if (inventoryOptions == null)
+			{
+				menuOptionClicked.consume();
+				teleportState = TeleportState.NONE;
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Show",
 				"<col=ff9040>Inventory item options</col>",
@@ -871,7 +892,7 @@ public class TeleportTask implements Task<Void>
 					index++;
 				}
 
-				chinManagerPlugin.menuAction(
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Bank",
 					"",
@@ -896,7 +917,7 @@ public class TeleportTask implements Task<Void>
 					index++;
 				}
 
-				chinManagerPlugin.menuAction(
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Bank",
 					"",
@@ -921,10 +942,11 @@ public class TeleportTask implements Task<Void>
 
 			if (bankContainerChild == null)
 			{
+				menuOptionClicked.consume();
 				return;
 			}
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Close",
 				"",
@@ -942,6 +964,7 @@ public class TeleportTask implements Task<Void>
 
 			if (bankContainer == null)
 			{
+				menuOptionClicked.consume();
 				return;
 			}
 
@@ -982,7 +1005,7 @@ public class TeleportTask implements Task<Void>
 
 				log.debug("Fetch item: {} - stack: {}", itemComposition.getName(), itemComposition.isStackable());
 
-				chinManagerPlugin.menuAction(
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Withdraw-All",
 					"Withdraw-All",
@@ -1003,10 +1026,11 @@ public class TeleportTask implements Task<Void>
 
 			if (bankContainer == null)
 			{
+				menuOptionClicked.consume();
 				return;
 			}
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -1024,17 +1048,27 @@ public class TeleportTask implements Task<Void>
 
 			if (inventory == null)
 			{
+				menuOptionClicked.consume();
 				teleportState = TeleportState.NONE;
 				return;
 			}
 
 			if (needRingOfDueling(chinManager.getTeleportingLocation()))
 			{
-				chinManagerPlugin.menuAction(
+				int item = getInventoryItemsMap(RINGS_OF_DUELING, client).keySet().stream().findFirst().orElse(-1);
+
+				if (item == -1)
+				{
+					menuOptionClicked.consume();
+					teleportState = TeleportState.NONE;
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Ring of dueling",
-					getInventoryItemsMap(RINGS_OF_DUELING, client).keySet().stream().findFirst().get(),
+					item,
 					MenuAction.ITEM_FOURTH_OPTION,
 					getFirstInventoryItemsPos(RINGS_OF_DUELING, client),
 					inventory.getId()
@@ -1042,11 +1076,20 @@ public class TeleportTask implements Task<Void>
 			}
 			else if (needGamesNecklace(chinManager.getTeleportingLocation()))
 			{
-				chinManagerPlugin.menuAction(
+				int item = getInventoryItemsMap(GAMES_NECKLACES, client).keySet().stream().findFirst().orElse(-1);
+
+				if (item == -1)
+				{
+					menuOptionClicked.consume();
+					teleportState = TeleportState.NONE;
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Games of necklace",
-					getInventoryItemsMap(GAMES_NECKLACES, client).keySet().stream().findFirst().get(),
+					item,
 					MenuAction.ITEM_FOURTH_OPTION,
 					getFirstInventoryItemsPos(GAMES_NECKLACES, client),
 					inventory.getId()
@@ -1054,11 +1097,20 @@ public class TeleportTask implements Task<Void>
 			}
 			else if (needCombatBracelet(chinManager.getTeleportingLocation()))
 			{
-				chinManagerPlugin.menuAction(
+				int item = getInventoryItemsMap(COMBAT_BRACELETS, client).keySet().stream().findFirst().orElse(-1);
+
+				if (item == -1)
+				{
+					menuOptionClicked.consume();
+					teleportState = TeleportState.NONE;
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Combat bracelet",
-					getInventoryItemsMap(COMBAT_BRACELETS, client).keySet().stream().findFirst().get(),
+					item,
 					MenuAction.ITEM_FOURTH_OPTION,
 					getFirstInventoryItemsPos(COMBAT_BRACELETS, client),
 					inventory.getId()
@@ -1066,11 +1118,20 @@ public class TeleportTask implements Task<Void>
 			}
 			else if (needSkillsNecklace(chinManager.getTeleportingLocation()))
 			{
-				chinManagerPlugin.menuAction(
+				int item = getInventoryItemsMap(SKILLS_NECKLACES, client).keySet().stream().findFirst().orElse(-1);
+
+				if (item == -1)
+				{
+					menuOptionClicked.consume();
+					teleportState = TeleportState.NONE;
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Skills necklace",
-					getInventoryItemsMap(SKILLS_NECKLACES, client).keySet().stream().findFirst().get(),
+					item,
 					MenuAction.ITEM_FOURTH_OPTION,
 					getFirstInventoryItemsPos(SKILLS_NECKLACES, client),
 					inventory.getId()
@@ -1078,11 +1139,20 @@ public class TeleportTask implements Task<Void>
 			}
 			else if (needRingOfWealth(chinManager.getTeleportingLocation()))
 			{
-				chinManagerPlugin.menuAction(
+				int item = getInventoryItemsMap(RINGS_OF_WEALTH, client).keySet().stream().findFirst().orElse(-1);
+
+				if (item == -1)
+				{
+					menuOptionClicked.consume();
+					teleportState = TeleportState.NONE;
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Ring of wealth",
-					getInventoryItemsMap(RINGS_OF_WEALTH, client).keySet().stream().findFirst().get(),
+					item,
 					MenuAction.ITEM_FOURTH_OPTION,
 					getFirstInventoryItemsPos(RINGS_OF_WEALTH, client),
 					inventory.getId()
@@ -1090,11 +1160,20 @@ public class TeleportTask implements Task<Void>
 			}
 			else if (needAmuletOfGlory(chinManager.getTeleportingLocation()))
 			{
-				chinManagerPlugin.menuAction(
+				int item = getInventoryItemsMap(AMULETS_OF_GLORY, client).keySet().stream().findFirst().orElse(-1);
+
+				if (item == -1)
+				{
+					menuOptionClicked.consume();
+					teleportState = TeleportState.NONE;
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Amulet of glory",
-					getInventoryItemsMap(AMULETS_OF_GLORY, client).keySet().stream().findFirst().get(),
+					item,
 					MenuAction.ITEM_FOURTH_OPTION,
 					getFirstInventoryItemsPos(AMULETS_OF_GLORY, client),
 					inventory.getId()
@@ -1102,11 +1181,20 @@ public class TeleportTask implements Task<Void>
 			}
 			else if (needDigsitePendant(chinManager.getTeleportingLocation()))
 			{
-				chinManagerPlugin.menuAction(
+				int item = getInventoryItemsMap(DIGSIDE_PENDANTS, client).keySet().stream().findFirst().orElse(-1);
+
+				if (item == -1)
+				{
+					menuOptionClicked.consume();
+					teleportState = TeleportState.NONE;
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Digsite pendant",
-					getInventoryItemsMap(DIGSIDE_PENDANTS, client).keySet().stream().findFirst().get(),
+					item,
 					MenuAction.ITEM_FOURTH_OPTION,
 					getFirstInventoryItemsPos(DIGSIDE_PENDANTS, client),
 					inventory.getId()
@@ -1114,11 +1202,20 @@ public class TeleportTask implements Task<Void>
 			}
 			else if (needXericsTalisman(chinManager.getTeleportingLocation()))
 			{
-				chinManagerPlugin.menuAction(
+				int item = getInventoryItemsMap(XERICS_TALISMAN, client).keySet().stream().findFirst().orElse(-1);
+
+				if (item == -1)
+				{
+					menuOptionClicked.consume();
+					teleportState = TeleportState.NONE;
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Keric's talisman",
-					getInventoryItemsMap(XERICS_TALISMAN, client).keySet().stream().findFirst().get(),
+					item,
 					MenuAction.ITEM_THIRD_OPTION,
 					getFirstInventoryItemsPos(XERICS_TALISMAN, client),
 					inventory.getId()
@@ -1135,11 +1232,12 @@ public class TeleportTask implements Task<Void>
 
 				if (inventory == null)
 				{
+					menuOptionClicked.consume();
 					teleportState = TeleportState.NONE;
 					return;
 				}
 
-				chinManagerPlugin.menuAction(
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Break",
 					"Break",
@@ -1155,11 +1253,12 @@ public class TeleportTask implements Task<Void>
 
 				if (teleportToHouse == null)
 				{
+					menuOptionClicked.consume();
 					teleportState = TeleportState.NONE;
 					return;
 				}
 
-				chinManagerPlugin.menuAction(
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Cast",
 					"<col=00ff00>Teleport to House</col>",
@@ -1182,7 +1281,7 @@ public class TeleportTask implements Task<Void>
 						return;
 					}
 
-					chinManagerPlugin.menuAction(
+					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Teleport",
 						"<col=ff9040>Construct. cape",
@@ -1203,7 +1302,7 @@ public class TeleportTask implements Task<Void>
 						return;
 					}
 
-					chinManagerPlugin.menuAction(
+					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Tele to POH",
 						"<col=ff9040>Construct. cape",
@@ -1390,7 +1489,7 @@ public class TeleportTask implements Task<Void>
 				menuAction = MenuAction.CC_OP_LOW_PRIORITY;
 			}
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"",
 				"",
@@ -1415,7 +1514,7 @@ public class TeleportTask implements Task<Void>
 
 			teleportState = TeleportState.POH_WAIT_TELEPORT_MENU;
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Teleport menu",
 				"",
@@ -1431,11 +1530,12 @@ public class TeleportTask implements Task<Void>
 
 			if (questTabQuest == null)
 			{
+				menuOptionClicked.consume();
 				teleportState = TeleportState.NONE;
 				return;
 			}
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Minigame List",
 				"Empty",
@@ -1477,9 +1577,16 @@ public class TeleportTask implements Task<Void>
 
 			Widget widget = client.getWidget(WidgetInfo.MINIGAME_TELEPORT_BUTTON);
 
+			if (widget == null)
+			{
+				menuOptionClicked.consume();
+				teleportState = TeleportState.NONE;
+				return;
+			}
+
 			teleportState = TeleportState.MINIGAME_TELEPORT_WAIT;
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Teleport",
 				"",
@@ -1489,11 +1596,16 @@ public class TeleportTask implements Task<Void>
 				widget.getId()
 			);
 		}
+
+		if (!menuOptionClicked.isConsumed() && menuOptionClicked.getMenuAction() == MenuAction.WALK && menuOptionClicked.getParam0() == 0 && menuOptionClicked.getParam1() == 0)
+		{
+			menuOptionClicked.consume();
+		}
 	}
 
 	private void jewelleryLogic(List<Integer> items)
 	{
-		ArrayList<Integer> equipmentItems = getEquipment();
+		List<Integer> equipmentItems = getEquipment();
 
 		if (client.getItemContainer(InventoryID.BANK) != null)
 		{
@@ -1571,7 +1683,7 @@ public class TeleportTask implements Task<Void>
 		}
 		else if (hasItems(List.copyOf(items), client))
 		{
-			ArrayList<Integer> equipmentItems = getEquipment();
+			List<Integer> equipmentItems = getEquipment();
 
 			if (teleportsConfig.pohTeleport() == Poh.RUNES && client.getVar(VarClientInt.INVENTORY_TAB) != 6)
 			{
@@ -2166,10 +2278,10 @@ public class TeleportTask implements Task<Void>
 		return runes.getItemId();
 	}
 
-	private ArrayList<Integer> getEquipment()
+	private List<Integer> getEquipment()
 	{
 		ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
-		ArrayList<Integer> equipmentItems = new ArrayList<>();
+		List<Integer> equipmentItems = new ArrayList<>();
 
 		if (itemContainer != null)
 		{

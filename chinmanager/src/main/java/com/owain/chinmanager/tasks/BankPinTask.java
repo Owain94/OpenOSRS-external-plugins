@@ -68,7 +68,7 @@ public class BankPinTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick gameTick)
+	public void onGameTick(GameTick gameTick)
 	{
 		if (client.getWidget(WidgetID.BANK_PIN_GROUP_ID, BANK_PIN_INSTRUCTION_TEXT.getChildId()) != null &&
 			(client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("First click the FIRST digit.") ||

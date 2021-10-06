@@ -29,6 +29,18 @@ import net.runelite.client.plugins.Plugin;
 @Slf4j
 public class LogoutTask implements Task<Void>
 {
+	enum LogoutState
+	{
+		NONE,
+		CLOSE_BANK,
+		CLOSE_LEPRECHAUN_STORE,
+		LOGOUT,
+		LOGOUT_TAB_SWITCH,
+		LOGOUT_TAB,
+		LOGOUT_BUTTON,
+		LOGOUT_WAIT,
+	}
+
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final Client client;
@@ -78,7 +90,7 @@ public class LogoutTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick gameTick)
+	public void onGameTick(GameTick gameTick)
 	{
 		if (tikkie >= 10)
 		{
@@ -136,7 +148,7 @@ public class LogoutTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
+	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (logoutState == LogoutState.CLOSE_BANK)
 		{
@@ -144,7 +156,13 @@ public class LogoutTask implements Task<Void>
 
 			logoutState = LogoutState.LOGOUT;
 
-			chinManagerPlugin.menuAction(
+			if (bankContainerChild == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Close",
 				"",
@@ -160,7 +178,13 @@ public class LogoutTask implements Task<Void>
 
 			logoutState = LogoutState.LOGOUT;
 
-			chinManagerPlugin.menuAction(
+			if (storeContainerChild == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Close",
 				"",
@@ -193,7 +217,7 @@ public class LogoutTask implements Task<Void>
 
 			logoutState = LogoutState.NONE;
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Logout",
 				"",
@@ -203,10 +227,15 @@ public class LogoutTask implements Task<Void>
 				param1
 			);
 		}
+
+		if (!menuOptionClicked.isConsumed() && menuOptionClicked.getMenuAction() == MenuAction.WALK && menuOptionClicked.getParam0() == 0 && menuOptionClicked.getParam1() == 0)
+		{
+			menuOptionClicked.consume();
+		}
 	}
 
 	@Subscribe
-	private void onGamestateChanged(GameStateChanged gameStateChanged)
+	public void onGamestateChanged(GameStateChanged gameStateChanged)
 	{
 		ChinManagerPlugin.logout = false;
 
@@ -222,18 +251,5 @@ public class LogoutTask implements Task<Void>
 		}
 
 		ChinManagerState.stateMachine.accept(ChinManagerStates.IDLE);
-	}
-
-	enum LogoutState
-	{
-		NONE,
-		CLOSE_BANK,
-		CLOSE_LEPRECHAUN_STORE,
-		LOGOUT,
-		LOGOUT_TAB_SWITCH,
-		LOGOUT_TAB,
-		LOGOUT_BUTTON,
-		LOGOUT_WAIT,
-
 	}
 }

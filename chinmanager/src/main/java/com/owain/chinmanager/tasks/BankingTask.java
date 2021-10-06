@@ -195,7 +195,7 @@ public class BankingTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick gameTick)
+	public void onGameTick(GameTick gameTick)
 	{
 		Widget bankTitleBar = client.getWidget(WidgetInfo.BANK_TITLE_BAR);
 
@@ -280,7 +280,7 @@ public class BankingTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
+	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (bankingState == BankingState.CLICK_BANK)
 		{
@@ -302,7 +302,7 @@ public class BankingTask implements Task<Void>
 
 				bankingState = BankingState.WAIT_BANK;
 
-				chinManagerPlugin.menuAction(
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Bank",
 					"",
@@ -327,7 +327,7 @@ public class BankingTask implements Task<Void>
 
 				bankingState = BankingState.WAIT_BANK;
 
-				chinManagerPlugin.menuAction(
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Bank",
 					"",
@@ -342,7 +342,14 @@ public class BankingTask implements Task<Void>
 		{
 			Widget withdrawOne = client.getWidget(12, 27);
 
-			chinManagerPlugin.menuAction(
+			if (withdrawOne == null)
+			{
+				menuOptionClicked.consume();
+				bankingState = BankingState.NONE;
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Default quantity: 1",
 				"",
@@ -358,7 +365,14 @@ public class BankingTask implements Task<Void>
 		{
 			Widget bankTabContainer = client.getWidget(WidgetInfo.BANK_TAB_CONTAINER);
 
-			chinManagerPlugin.menuAction(
+			if (bankTabContainer == null)
+			{
+				menuOptionClicked.consume();
+				bankingState = BankingState.NONE;
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"View all items",
 				"",
@@ -374,7 +388,14 @@ public class BankingTask implements Task<Void>
 		{
 			Widget settingsButton = client.getWidget(WidgetInfo.BANK_SETTINGS_BUTTON);
 
-			chinManagerPlugin.menuAction(
+			if (settingsButton == null)
+			{
+				menuOptionClicked.consume();
+				bankingState = BankingState.NONE;
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"menu",
 				"",
@@ -390,7 +411,14 @@ public class BankingTask implements Task<Void>
 		{
 			Widget inventoryOptions = client.getWidget(12, 50);
 
-			chinManagerPlugin.menuAction(
+			if (inventoryOptions == null)
+			{
+				menuOptionClicked.consume();
+				bankingState = BankingState.NONE;
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Show",
 				"<col=ff9040>Inventory item options</col>",
@@ -408,7 +436,14 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (deposit == null)
+			{
+				menuOptionClicked.consume();
+				bankingState = BankingState.NONE;
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Deposit inventory",
 				"",
@@ -424,7 +459,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (equipmentButton == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Show worn items",
 				"",
@@ -440,7 +481,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -456,7 +503,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -472,7 +525,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -488,7 +547,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -504,7 +569,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -520,7 +591,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -536,7 +613,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -552,7 +635,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -568,7 +657,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -584,7 +679,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -600,7 +701,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (bank == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
 				bank.getName(),
@@ -616,7 +723,13 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
-			chinManagerPlugin.menuAction(
+			if (equipmentButton == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Hide worn items",
 				"",
@@ -632,10 +745,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(0);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -651,10 +770,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(1);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -670,10 +795,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(2);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -689,10 +820,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(3);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -708,10 +845,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(4);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -727,10 +870,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(5);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -746,10 +895,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(7);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -765,10 +920,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(9);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -784,10 +945,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(10);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -803,10 +970,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(12);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -822,10 +995,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(13);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
 				"Withdraw-1",
@@ -841,10 +1020,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(0);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -860,10 +1045,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(1);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -879,10 +1070,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(2);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -898,10 +1095,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(3);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -917,10 +1120,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(4);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -936,10 +1145,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(5);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -955,10 +1170,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(7);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -974,10 +1195,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(9);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -993,10 +1220,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(10);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -1012,10 +1245,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(12);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -1031,10 +1270,16 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.DETERMINE_STATE;
 
+			if (bankInventoryContainer == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(13);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
-			chinManagerPlugin.menuAction(
+			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
 				"<col=ff9040>" + savedItem.getName() + "</col>",
@@ -1063,7 +1308,13 @@ public class BankingTask implements Task<Void>
 
 				bankingState = BankingState.DETERMINE_STATE;
 
-				chinManagerPlugin.menuAction(
+				if (bankContainer == null)
+				{
+					menuOptionClicked.consume();
+					return;
+				}
+
+				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Withdraw-1",
 					"Withdraw-1",
@@ -1107,6 +1358,12 @@ public class BankingTask implements Task<Void>
 
 					bankingState = BankingState.DETERMINE_STATE;
 
+					if (bankContainer == null)
+					{
+						menuOptionClicked.consume();
+						return;
+					}
+
 					chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Withdraw-1",
@@ -1127,11 +1384,16 @@ public class BankingTask implements Task<Void>
 		{
 			menuOptionClicked.consume();
 		}
+
+		if (!menuOptionClicked.isConsumed() && menuOptionClicked.getMenuAction() == MenuAction.WALK && menuOptionClicked.getParam0() == 0 && menuOptionClicked.getParam1() == 0)
+		{
+			menuOptionClicked.consume();
+		}
 	}
 
 	private void determineStates()
 	{
-		ArrayList<EquipmentItem> equipmentItems = equipmentSetup.getEquipment();
+		List<EquipmentItem> equipmentItems = equipmentSetup.getEquipment();
 		ItemContainer equipmentContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 
 		boolean geartab = false;
@@ -1155,7 +1417,7 @@ public class BankingTask implements Task<Void>
 			}
 		}
 
-		if (!gearDone && geartab && !client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
+		if (!gearDone && geartab && client.getWidget(WidgetInfo.BANK_TITLE_BAR) != null && !client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
 		{
 			bankingState = BankingState.SHOW_WORN_ITEMS;
 			return;
@@ -1233,11 +1495,11 @@ public class BankingTask implements Task<Void>
 			gearDone = true;
 		}
 
-		if (client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
+		if (client.getWidget(WidgetInfo.BANK_TITLE_BAR) != null && client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
 		{
 			bankingState = BankingState.HIDE_WORN_ITEMS;
 		}
-		else if (!client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
+		else if (client.getWidget(WidgetInfo.BANK_TITLE_BAR) != null && !client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
 		{
 			for (final EquipmentInventorySlot slot : EquipmentInventorySlot.values())
 			{

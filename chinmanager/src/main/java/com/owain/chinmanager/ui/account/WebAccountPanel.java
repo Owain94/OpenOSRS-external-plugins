@@ -92,7 +92,7 @@ public class WebAccountPanel extends JPanel
 	}
 
 	@Subscribe
-	private void onConfigChanged(ConfigChanged configChanged)
+	public void onConfigChanged(ConfigChanged configChanged)
 	{
 		if (!configChanged.getKey().equals("token"))
 		{
@@ -100,16 +100,6 @@ public class WebAccountPanel extends JPanel
 		}
 
 		contentPanel();
-	}
-
-	private void licenses(long minute)
-	{
-		if (!loggedin)
-		{
-			return;
-		}
-
-		loggedIn();
 	}
 
 	private void init()

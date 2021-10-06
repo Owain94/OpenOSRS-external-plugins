@@ -5,10 +5,12 @@ import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Point;
 
+@Slf4j
 public class ClickTask implements Task<Void>
 {
 	private final Client client;
@@ -41,7 +43,7 @@ public class ClickTask implements Task<Void>
 			}
 			catch (InterruptedException e)
 			{
-				e.printStackTrace();
+				log.error("", e);
 			}
 		});
 	}

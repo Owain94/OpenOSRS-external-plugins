@@ -19,10 +19,12 @@ class IdentifiableCookie
 	static List<IdentifiableCookie> decorateAll(Collection<Cookie> cookies)
 	{
 		List<IdentifiableCookie> identifiableCookies = new ArrayList<>(cookies.size());
+
 		for (Cookie cookie : cookies)
 		{
 			identifiableCookies.add(new IdentifiableCookie(cookie));
 		}
+
 		return identifiableCookies;
 	}
 

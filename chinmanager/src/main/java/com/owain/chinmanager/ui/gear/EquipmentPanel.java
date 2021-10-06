@@ -81,7 +81,7 @@ public class EquipmentPanel extends JPanel
 	private final JLabel noBanking;
 	private final JButton copyEquipmentButton;
 	private final JComboBox<String> pluginList;
-	private HashMap<EquipmentInventorySlot, EquipmentSlot> equipmentSlots;
+	private Map<EquipmentInventorySlot, EquipmentSlot> equipmentSlots;
 
 	@Inject
 	EquipmentPanel(
@@ -295,9 +295,9 @@ public class EquipmentPanel extends JPanel
 		{
 			for (final EquipmentSlot slot : equipmentSlots.values())
 			{
-				final ArrayList<EquipmentItem> container = getContainerFromSlot(slot);
+				final List<EquipmentItem> container = getContainerFromSlot(slot);
 
-				final ArrayList<EquipmentItem> playerContainer = getNormalizedContainer();
+				final List<EquipmentItem> playerContainer = getNormalizedContainer();
 				final EquipmentItem newItem = playerContainer.get(slot.getIndexInSlot());
 
 				container.set(slot.getIndexInSlot(), newItem);
@@ -320,11 +320,11 @@ public class EquipmentPanel extends JPanel
 			return;
 		}
 
-		final ArrayList<EquipmentItem> container = getContainerFromSlot(slot);
+		final List<EquipmentItem> container = getContainerFromSlot(slot);
 
 		clientThread.invokeLater(() ->
 		{
-			final ArrayList<EquipmentItem> playerContainer = getNormalizedContainer();
+			final List<EquipmentItem> playerContainer = getNormalizedContainer();
 			final EquipmentItem newItem = playerContainer.get(slot.getIndexInSlot());
 
 			container.set(slot.getIndexInSlot(), newItem);
@@ -373,7 +373,7 @@ public class EquipmentPanel extends JPanel
 
 									final String itemName = itemManager.getItemComposition(finalIdCopy).getName();
 									final EquipmentItem newItem = new EquipmentItem(finalIdCopy, itemName, quantity);
-									final ArrayList<EquipmentItem> container = getContainerFromSlot(slot);
+									final List<EquipmentItem> container = getContainerFromSlot(slot);
 
 									container.set(slot.getIndexInSlot(), newItem);
 									chinManagerPlugin.updateConfig();
@@ -386,7 +386,7 @@ public class EquipmentPanel extends JPanel
 					{
 						final String itemName = itemManager.getItemComposition(finalId).getName();
 						final EquipmentItem newItem = new EquipmentItem(finalId, itemName, 1);
-						final ArrayList<EquipmentItem> container = getContainerFromSlot(slot);
+						final List<EquipmentItem> container = getContainerFromSlot(slot);
 						container.set(slot.getIndexInSlot(), newItem);
 
 						chinManagerPlugin.updateConfig();
@@ -410,7 +410,7 @@ public class EquipmentPanel extends JPanel
 
 		clientThread.invokeLater(() ->
 		{
-			final ArrayList<EquipmentItem> container = getContainerFromSlot(slot);
+			final List<EquipmentItem> container = getContainerFromSlot(slot);
 
 			final EquipmentItem dummyItem = new EquipmentItem(-1, "", 0);
 
@@ -469,7 +469,7 @@ public class EquipmentPanel extends JPanel
 				Map<String, String> item = i.getValue();
 
 				EquipmentSlot containerSlot = equipmentSlots.values().stream().filter((slot) -> slot.getIndexInSlot() == i.getKey()).findFirst().get();
-				ArrayList<EquipmentItem> container = getContainerFromSlot(containerSlot);
+				List<EquipmentItem> container = getContainerFromSlot(containerSlot);
 
 
 				EquipmentItem equipmentItem = new EquipmentItem(Integer.parseInt(item.get("id"), 10), item.get("name"), Integer.parseInt(item.get("quantity"), 10));
@@ -485,9 +485,9 @@ public class EquipmentPanel extends JPanel
 		repaint();
 	}
 
-	private ArrayList<EquipmentItem> emptyContainer()
+	private List<EquipmentItem> emptyContainer()
 	{
-		ArrayList<EquipmentItem> newContainer = new ArrayList<>();
+		List<EquipmentItem> newContainer = new ArrayList<>();
 
 		for (int i = 0; i < NUM_EQUIPMENT_ITEMS; i++)
 		{
@@ -497,11 +497,11 @@ public class EquipmentPanel extends JPanel
 		return newContainer;
 	}
 
-	private ArrayList<EquipmentItem> getNormalizedContainer()
+	private List<EquipmentItem> getNormalizedContainer()
 	{
 		final ItemContainer container = client.getItemContainer(InventoryID.EQUIPMENT);
 
-		ArrayList<EquipmentItem> newContainer = new ArrayList<>();
+		List<EquipmentItem> newContainer = new ArrayList<>();
 
 		Item[] items = null;
 		if (container != null)
@@ -531,7 +531,7 @@ public class EquipmentPanel extends JPanel
 		return newContainer;
 	}
 
-	private ArrayList<EquipmentItem> getContainerFromSlot(final EquipmentSlot slot)
+	private List<EquipmentItem> getContainerFromSlot(final EquipmentSlot slot)
 	{
 		return slot.getParentSetup().getEquipment();
 	}

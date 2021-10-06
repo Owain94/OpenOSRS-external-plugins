@@ -4,7 +4,6 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.ChinManagerPanel;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
-import com.owain.chinmanager.ui.utils.OnOffToggleButton;
 import com.owain.chinmanager.ui.utils.UnitFormatterFactory;
 import com.owain.chinmanager.utils.Integers;
 import com.owain.chinmanager.utils.Plugins;
@@ -82,7 +81,7 @@ public class BreaksPanel extends JPanel
 		titleActions.setBackground(ChinManagerPanel.BACKGROUND_COLOR);
 		titleActions.setBorder(new EmptyBorder(0, 0, 0, 8));
 
-		JToggleButton onOffToggle = new OnOffToggleButton();
+		JToggleButton onOffToggle = new ToggleButton();
 
 		String pluginName = Plugins.sanitizedName(plugin);
 

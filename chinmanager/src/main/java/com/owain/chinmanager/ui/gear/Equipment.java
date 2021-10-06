@@ -24,7 +24,7 @@
  */
 package com.owain.chinmanager.ui.gear;
 
-import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,7 +34,7 @@ import lombok.Setter;
 public class Equipment
 {
 	@Getter(AccessLevel.PUBLIC)
-	private final ArrayList<EquipmentItem> equipment;
+	private final List<EquipmentItem> equipment;
 
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PACKAGE)

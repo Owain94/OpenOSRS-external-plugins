@@ -70,7 +70,7 @@ public class LoginTask implements Task<Void>
 	}
 
 	@Subscribe
-	private void onGameStateChanged(GameStateChanged gameStateChanged)
+	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		ChinManagerState.stateMachine.accept(ChinManagerStates.LOGIN_SCREEN);
 	}
@@ -152,7 +152,7 @@ public class LoginTask implements Task<Void>
 						}
 						catch (InterruptedException e)
 						{
-							e.printStackTrace();
+							log.error("", e);
 						}
 					});
 				}

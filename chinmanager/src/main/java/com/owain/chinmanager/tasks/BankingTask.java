@@ -340,7 +340,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.QUANTITY)
 		{
-			Widget withdrawOne = client.getWidget(12, 27);
+			Widget withdrawOne = client.getWidget(12, 28);
 
 			if (withdrawOne == null)
 			{
@@ -409,7 +409,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.ITEM_OPTIONS)
 		{
-			Widget inventoryOptions = client.getWidget(12, 50);
+			Widget inventoryOptions = client.getWidget(12, 51);
 
 			if (inventoryOptions == null)
 			{
@@ -477,7 +477,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_HEAD)
 		{
-			Widget bank = client.getWidget(12, 75);
+			Widget bank = client.getWidget(12, 76);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -499,7 +499,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_CAPE)
 		{
-			Widget bank = client.getWidget(12, 76);
+			Widget bank = client.getWidget(12, 77);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -521,7 +521,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_AMULET)
 		{
-			Widget bank = client.getWidget(12, 77);
+			Widget bank = client.getWidget(12, 78);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -543,7 +543,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_AMMO)
 		{
-			Widget bank = client.getWidget(12, 85);
+			Widget bank = client.getWidget(12, 86);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -565,7 +565,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_WEAPON)
 		{
-			Widget bank = client.getWidget(12, 78);
+			Widget bank = client.getWidget(12, 79);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -587,7 +587,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_BODY)
 		{
-			Widget bank = client.getWidget(12, 79);
+			Widget bank = client.getWidget(12, 80);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -609,7 +609,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_SHIELD)
 		{
-			Widget bank = client.getWidget(12, 80);
+			Widget bank = client.getWidget(12, 81);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -631,7 +631,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_LEGS)
 		{
-			Widget bank = client.getWidget(12, 81);
+			Widget bank = client.getWidget(12, 82);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -653,7 +653,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_GLOVES)
 		{
-			Widget bank = client.getWidget(12, 82);
+			Widget bank = client.getWidget(12, 83);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -675,7 +675,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_BOOTS)
 		{
-			Widget bank = client.getWidget(12, 83);
+			Widget bank = client.getWidget(12, 84);
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -697,7 +697,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_RING)
 		{
-			Widget bank = client.getWidget(12, 84);
+			Widget bank = client.getWidget(12, 85);
 
 			bankingState = BankingState.DETERMINE_STATE;
 

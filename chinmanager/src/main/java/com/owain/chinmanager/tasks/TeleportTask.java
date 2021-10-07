@@ -791,7 +791,7 @@ public class TeleportTask implements Task<Void>
 	{
 		if (teleportState == TeleportState.QUANTITY)
 		{
-			Widget withdrawOne = client.getWidget(12, 27);
+			Widget withdrawOne = client.getWidget(12, 28);
 
 			if (withdrawOne == null)
 			{

@@ -188,7 +188,7 @@ public class ChinObjectHiderPlugin extends Plugin
 								(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(gameObject.getId()).getName().toLowerCase()))
 							)
 							{
-								// scene.removeGameObject(gameObject);
+								scene.removeGameObject(gameObject);
 							}
 						}
 					}
@@ -199,7 +199,7 @@ public class ChinObjectHiderPlugin extends Plugin
 							(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(decorativeObject.getId()).getName().toLowerCase()))
 						)
 						{
-							// scene.removeDecorativeObject(client.getPlane(), x, y);
+							scene.removeDecorativeObject(client.getPlane(), x, y);
 						}
 					}
 
@@ -209,7 +209,7 @@ public class ChinObjectHiderPlugin extends Plugin
 							(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(wallObject.getId()).getName().toLowerCase()))
 						)
 						{
-							// scene.removeWallObject(client.getPlane(), x, y);
+							scene.removeWallObject(client.getPlane(), x, y);
 						}
 					}
 
@@ -219,7 +219,7 @@ public class ChinObjectHiderPlugin extends Plugin
 							(!objectNames.isEmpty() && objectNames.contains(client.getObjectDefinition(groundObject.getId()).getName().toLowerCase()))
 						)
 						{
-							// scene.removeGroundObject(client.getPlane(), x, y);
+							scene.removeGroundObject(client.getPlane(), x, y);
 						}
 					}
 				}

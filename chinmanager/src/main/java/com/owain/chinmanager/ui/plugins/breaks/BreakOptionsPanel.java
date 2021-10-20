@@ -9,11 +9,9 @@ import com.owain.chinmanager.ui.utils.Separator;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chinmanager.utils.Plugins;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.swing.JPanel;
@@ -25,7 +23,10 @@ import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 
 public class BreakOptionsPanel extends JPanel
 {
-	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
+	public static final CompositeDisposable BREAK_OPTIONS_DISPOSABLES = new CompositeDisposable();
+
+	private final SwingScheduler swingScheduler;
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
@@ -33,8 +34,9 @@ public class BreakOptionsPanel extends JPanel
 	private final JPanel contentPanel = new JPanel(new BorderLayout());
 
 	@Inject
-	BreakOptionsPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager, SwingScheduler swingScheduler, ConfigPanel optionsPanel)
+	BreakOptionsPanel(SwingScheduler swingScheduler, ChinManagerPlugin chinManagerPlugin, ChinManager chinManager, ConfigPanel optionsPanel)
 	{
+		this.swingScheduler = swingScheduler;
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.configManager = chinManagerPlugin.getConfigManager();
@@ -51,15 +53,14 @@ public class BreakOptionsPanel extends JPanel
 		breakOptionsPanel();
 
 		DISPOSABLES.addAll(
-			List.of(
-				chinManager
-					.getActiveObservable()
-					.observeOn(swingScheduler)
-					.subscribe((ignored) -> breakOptionsPanel()),
-				chinManager
-					.configChanged
-					.subscribe(this::onConfigChanged)
-			)
+			chinManager
+				.getActiveObservable()
+				.observeOn(swingScheduler)
+				.subscribe((ignored) -> breakOptionsPanel()),
+
+			chinManager
+				.configChanged
+				.subscribe(this::onConfigChanged)
 		);
 	}
 
@@ -72,6 +73,7 @@ public class BreakOptionsPanel extends JPanel
 	private void breakOptionsPanel()
 	{
 		contentPanel.removeAll();
+		BREAK_OPTIONS_DISPOSABLES.clear();
 
 		for (Plugin plugin : chinManager.getActivePlugins())
 		{
@@ -88,6 +90,8 @@ public class BreakOptionsPanel extends JPanel
 			}
 
 			BreaksPanel breaksPanel = new BreaksPanel(
+				BREAK_OPTIONS_DISPOSABLES,
+				swingScheduler,
 				chinManager,
 				chinManagerPlugin,
 				plugin

@@ -6,7 +6,7 @@ import com.owain.chinmanager.ui.account.OsrsAccountPanel;
 import com.owain.chinmanager.ui.account.WebAccountPanel;
 import com.owain.chinmanager.ui.plugins.StatusPanel;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,8 +14,6 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.swing.ImageIcon;
@@ -38,7 +36,7 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 
 	public static final Font NORMAL_FONT = FontManager.getRunescapeFont();
 	public static final Font SMALL_FONT = FontManager.getRunescapeSmallFont();
-	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
 	private static final ImageIcon HELP_ICON;
 	private static final ImageIcon HELP_HOVER_ICON;
 	private static final JTabbedPane MAIN_TABBED_PANE = new JTabbedPane();

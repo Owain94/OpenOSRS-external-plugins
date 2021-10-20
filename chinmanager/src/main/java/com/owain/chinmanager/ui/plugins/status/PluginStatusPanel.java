@@ -8,6 +8,7 @@ import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
 import static com.owain.chinmanager.ui.ChinManagerPanel.SMALL_FONT;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,7 +16,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
@@ -32,6 +32,7 @@ public class PluginStatusPanel extends JPanel
 	private final Plugin plugin;
 	private final JPanel extraDataPanel = new JPanel(new GridBagLayout());
 	private final JLabel status = new JLabel();
+
 	public PluginStatusPanel(
 		SwingScheduler swingScheduler,
 		ChinManager chinManager,
@@ -47,28 +48,25 @@ public class PluginStatusPanel extends JPanel
 
 		if (ChinManagerPlugin.PLUGIN_DISPOSABLE_MAP.containsKey(plugin))
 		{
-			ChinManagerPlugin.PLUGIN_DISPOSABLE_MAP.get(plugin).forEach((disposable) -> {
-				if (!disposable.isDisposed())
-				{
-					disposable.dispose();
-				}
-			});
-
+			ChinManagerPlugin.PLUGIN_DISPOSABLE_MAP.get(plugin).clear();
 			ChinManagerPlugin.PLUGIN_DISPOSABLE_MAP.remove(plugin);
 		}
 
-		ChinManagerPlugin.PLUGIN_DISPOSABLE_MAP.put(plugin,
-			List.of(
-				chinManager
-					.getExtraDataObservable()
-					.observeOn(swingScheduler)
-					.subscribe(this::extraData),
-				Observable
-					.interval(1, TimeUnit.SECONDS)
-					.observeOn(swingScheduler)
-					.subscribe((i) -> pluginStatus())
-			)
+		CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+		compositeDisposable.addAll(
+			chinManager
+				.getExtraDataObservable()
+				.observeOn(swingScheduler)
+				.subscribe(this::extraData),
+
+			Observable
+				.interval(1, TimeUnit.SECONDS)
+				.observeOn(swingScheduler)
+				.subscribe((i) -> pluginStatus())
 		);
+
+		ChinManagerPlugin.PLUGIN_DISPOSABLE_MAP.put(plugin, compositeDisposable);
 
 		init();
 		extraData();

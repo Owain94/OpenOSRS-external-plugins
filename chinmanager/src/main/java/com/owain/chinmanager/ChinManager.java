@@ -35,16 +35,31 @@ import org.apache.commons.lang3.tuple.Pair;
 @Slf4j
 public class ChinManager
 {
-	public final PublishSubject<ConfigChanged> configChanged = PublishSubject.create();
-	public final PublishSubject<GameStateChanged> gameStateChanged = PublishSubject.create();
+	private final Comparator<Plugin> pluginComparable = new Comparator<>()
+	{
+		@Override
+		public int compare(Plugin plugin1, Plugin plugin2)
+		{
+			Long p1 = (long) Integer.parseInt(pluginConfig.get(plugin1).get("combiningPriority"), 10);
+			Long p2 = (long) Integer.parseInt(pluginConfig.get(plugin2).get("combiningPriority"), 10);
+
+			return p2.compareTo(p1);
+		}
+	};
+
 	private final Set<Plugin> managerPlugins = new TreeSet<>((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 	private final PublishSubject<Set<Plugin>> managerPluginsSubject = PublishSubject.create();
+
 	private final Map<Plugin, Boolean> plugins = new TreeMap<>((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 	private final PublishSubject<Map<Plugin, Boolean>> pluginsSubject = PublishSubject.create();
+
 	private final SortedSet<Plugin> activePlugins;
 	private final PublishSubject<SortedSet<Plugin>> activePluginsSubject = PublishSubject.create();
+
 	private final Set<Plugin> stoppedPlugins = new HashSet<>();
 	private final PublishSubject<Set<Plugin>> stoppedPluginsSubject = PublishSubject.create();
+
+	private Plugin currentlyActive = null;
 	private final PublishSubject<String> currentlyActiveSubject = PublishSubject.create();
 
 	private final Map<Plugin, Pair<Instant, Integer>> plannedBreaks = new HashMap<>();
@@ -52,31 +67,36 @@ public class ChinManager
 
 	private final Set<Plugin> handover = new HashSet<>();
 	private final PublishSubject<Set<Plugin>> handoverSubject = PublishSubject.create();
-	private final PublishSubject<Plugin> bankingSubject = PublishSubject.create();
-	private final PublishSubject<Plugin> teleportingSubject = PublishSubject.create();
-	private final Map<Plugin, Map<String, String>> pluginConfig = new HashMap<>();
-	private final Comparator<Plugin> pluginComparable = (plugin1, plugin2) -> {
-		Long p1 = (long) Integer.parseInt(pluginConfig.get(plugin1).get("combiningPriority"), 10);
-		Long p2 = (long) Integer.parseInt(pluginConfig.get(plugin2).get("combiningPriority"), 10);
 
-		return p2.compareTo(p1);
-	};
-	private final Map<Plugin, Location> startLocations = new HashMap<>();
-	private final Map<Plugin, Map<Integer, Map<String, String>>> requiredItems = new HashMap<>();
-	private final Map<Plugin, Instant> activeBreaks = new HashMap<>();
-	private final PublishSubject<Map<Plugin, Instant>> activeBreaksSubject = PublishSubject.create();
-	private final Map<Plugin, Instant> startTimes = new HashMap<>();
-	private final PublishSubject<Plugin> logoutActionSubject = PublishSubject.create();
-	private final PublishSubject<Plugin> hopSubject = PublishSubject.create();
-	private final Map<Plugin, Map<String, String>> extraData = new HashMap<>();
-	private final PublishSubject<Map<Plugin, Map<String, String>>> extraDataSubject = PublishSubject.create();
-	private final Map<Plugin, Set<Integer>> bankItems = new HashMap<>();
-	private Plugin currentlyActive = null;
 	private boolean isBanking = false;
 	private Plugin bankingPlugin;
+	private final PublishSubject<Plugin> bankingSubject = PublishSubject.create();
+
 	private boolean isTeleporting = false;
 	private Location teleportingLocation = null;
+	private final PublishSubject<Plugin> teleportingSubject = PublishSubject.create();
+
+	private final Map<Plugin, Map<String, String>> pluginConfig = new HashMap<>();
+	private final Map<Plugin, Location> startLocations = new HashMap<>();
+
+	private final Map<Plugin, Map<Integer, Map<String, String>>> requiredItems = new HashMap<>();
+
+	private final Map<Plugin, Instant> activeBreaks = new HashMap<>();
+	private final PublishSubject<Map<Plugin, Instant>> activeBreaksSubject = PublishSubject.create();
+
+	private final Map<Plugin, Instant> startTimes = new HashMap<>();
 	private int amountOfBreaks = 0;
+
+	private final PublishSubject<Plugin> logoutActionSubject = PublishSubject.create();
+	private final PublishSubject<Plugin> hopSubject = PublishSubject.create();
+
+	public final PublishSubject<ConfigChanged> configChanged = PublishSubject.create();
+	public final PublishSubject<GameStateChanged> gameStateChanged = PublishSubject.create();
+
+	private final Map<Plugin, Map<String, String>> extraData = new HashMap<>();
+	private final PublishSubject<Map<Plugin, Map<String, String>>> extraDataSubject = PublishSubject.create();
+
+	private final Map<Plugin, Set<Integer>> bankItems = new HashMap<>();
 
 	ChinManager()
 	{
@@ -509,8 +529,6 @@ public class ChinManager
 	@Nullable
 	public Plugin getNextActive(Plugin plugin, Instant instant)
 	{
-		SortedSet<Plugin> active = activePlugins.stream().filter((activePlugin) -> activePlugin != currentlyActive).collect(Collectors.toCollection(() -> new TreeSet<>(pluginComparable)));
-
 		if (activePlugins.size() == 1)
 		{
 			return activePlugins.first();

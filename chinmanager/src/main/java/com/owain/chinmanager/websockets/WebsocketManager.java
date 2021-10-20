@@ -8,10 +8,9 @@ import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.api.AccountApi.DEBUG;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
@@ -36,7 +35,7 @@ import okhttp3.WebSocketListener;
 @Slf4j
 public class WebsocketManager extends WebSocketListener
 {
-	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
 
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ChinManager chinManager;
@@ -56,15 +55,13 @@ public class WebsocketManager extends WebSocketListener
 		this.infoPanel = infoPanel;
 
 		DISPOSABLES.addAll(
-			List.of(
-				chinManager
-					.getActiveObservable()
-					.subscribe(this::activePlugins),
-				Observable
-					.interval(500, TimeUnit.MILLISECONDS)
-					.observeOn(Schedulers.io())
-					.subscribe(this::milliseconds)
-			)
+			chinManager
+				.getActiveObservable()
+				.subscribe(this::activePlugins),
+			Observable
+				.interval(500, TimeUnit.MILLISECONDS)
+				.observeOn(Schedulers.io())
+				.subscribe(this::milliseconds)
 		);
 	}
 
@@ -276,7 +273,7 @@ public class WebsocketManager extends WebSocketListener
 		{
 			AtomicReference<T> ref = new AtomicReference<>();
 			Semaphore semaphore = new Semaphore(0);
-			chinManagerPlugin.getClientThread().invokeLater(() -> {
+			chinManagerPlugin.getClientThread().invoke(() -> {
 				try
 				{
 

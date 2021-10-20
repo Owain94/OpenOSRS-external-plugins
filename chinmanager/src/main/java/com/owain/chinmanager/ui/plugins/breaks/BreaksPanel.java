@@ -4,9 +4,12 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.ChinManagerPanel;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
+import com.owain.chinmanager.ui.utils.AbstractButtonSource;
+import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.ui.utils.UnitFormatterFactory;
 import com.owain.chinmanager.utils.Integers;
 import com.owain.chinmanager.utils.Plugins;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -36,12 +39,16 @@ import net.runelite.client.ui.components.ToggleButton;
 
 public class BreaksPanel extends JPanel
 {
+	private final CompositeDisposable DISPOSABLES;
+	private final SwingScheduler swingScheduler;
 	private final ChinManager chinManager;
 	private final ConfigManager configManager;
 	private final Plugin plugin;
 
-	BreaksPanel(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, Plugin plugin)
+	BreaksPanel(CompositeDisposable compositeDisposable, SwingScheduler swingScheduler, ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, Plugin plugin)
 	{
+		this.DISPOSABLES = compositeDisposable;
+		this.swingScheduler = swingScheduler;
 		this.chinManager = chinManager;
 		this.configManager = chinManagerPlugin.getConfigManager();
 		this.plugin = plugin;
@@ -238,11 +245,13 @@ public class BreaksPanel extends JPanel
 		logoutButton.setSelected(logout);
 		afkButton.setSelected(!logout);
 
-		logoutButton.addActionListener(e ->
-			configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP_BREAKHANDLER, pluginName + "-logout", logoutButton.isSelected()));
+		DISPOSABLES.addAll(
+			AbstractButtonSource.fromActionOf(logoutButton, swingScheduler)
+				.subscribe((e) -> configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP_BREAKHANDLER, pluginName + "-logout", logoutButton.isSelected())),
 
-		afkButton.addActionListener(e ->
-			configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP_BREAKHANDLER, pluginName + "-logout", !afkButton.isSelected()));
+			AbstractButtonSource.fromActionOf(afkButton, swingScheduler)
+				.subscribe((e) -> configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP_BREAKHANDLER, pluginName + "-logout", !afkButton.isSelected()))
+		);
 
 		buttonGroup.add(logoutButton);
 		buttonGroup.add(afkButton);

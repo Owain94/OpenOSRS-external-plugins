@@ -8,7 +8,7 @@ import com.owain.chinmanager.ui.utils.SwingScheduler;
 import static com.owain.chinmanager.ui.utils.Time.formatDuration;
 import com.owain.chinmanager.utils.Plugins;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -16,9 +16,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +35,7 @@ import org.apache.commons.lang3.tuple.Pair;
 @Slf4j
 public class InfoPanel extends JPanel
 {
-	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
 	public static boolean breakShowing;
 	public final JLabel breakingTimeLabel = new JLabel("", SwingConstants.CENTER);
 	public final JLabel scheduledTimeLabel = new JLabel("", SwingConstants.CENTER);
@@ -53,6 +51,7 @@ public class InfoPanel extends JPanel
 	public boolean breaking;
 	private long inGameTime = 0;
 	private long breakTime = 0;
+
 	@Inject
 	InfoPanel(SwingScheduler swingScheduler, ChinManager chinManager, ChinManagerPlugin chinManagerPlugin)
 	{
@@ -69,28 +68,23 @@ public class InfoPanel extends JPanel
 		infoPanel();
 
 		DISPOSABLES.addAll(
-			List.of(
-				Observable
-					.interval(500, TimeUnit.MILLISECONDS)
-					.observeOn(swingScheduler)
-					.subscribe(this::milliseconds),
-				chinManager
-					.getActiveBreaksObservable()
-					.observeOn(swingScheduler)
-					.subscribe((i) -> infoPanel()),
-				chinManager
-					.getActiveObservable()
-					.observeOn(swingScheduler)
-					.subscribe((i) -> infoPanel()),
-				chinManager
-					.getPlannedBreaksObservable()
-					.observeOn(swingScheduler)
-					.subscribe((i) -> infoPanel()),
-				chinManager
-					.gameStateChanged
-					.observeOn(swingScheduler)
-					.subscribe((i) -> infoPanel())
-			)
+			Observable
+				.interval(500, TimeUnit.MILLISECONDS)
+				.observeOn(swingScheduler)
+				.subscribe(this::milliseconds),
+
+			Observable.merge(
+					chinManager
+						.getActiveBreaksObservable(),
+					chinManager
+						.getActiveObservable(),
+					chinManager
+						.getPlannedBreaksObservable(),
+					chinManager
+						.gameStateChanged
+				)
+				.observeOn(swingScheduler)
+				.subscribe((i) -> infoPanel())
 		);
 	}
 

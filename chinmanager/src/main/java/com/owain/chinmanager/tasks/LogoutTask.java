@@ -4,6 +4,8 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
+import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
+import com.owain.chinmanager.magicnumbers.MagicNumberWidgets;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
@@ -104,7 +106,7 @@ public class LogoutTask implements Task<Void>
 
 		if (logoutState == LogoutState.LOGOUT)
 		{
-			Widget store = client.getWidget(125, 1);
+			Widget store = client.getWidget(MagicNumberWidgets.LEPRECHAUN_STORE_CONTAINER.getGroupId(), MagicNumberWidgets.LEPRECHAUN_STORE_CONTAINER.getChildId());
 
 			if (client.getItemContainer(InventoryID.BANK) != null)
 			{
@@ -126,15 +128,15 @@ public class LogoutTask implements Task<Void>
 			// Logout tab
 			if (client.getVar(VarClientInt.INVENTORY_TAB) != 10)
 			{
-				client.runScript(915, 10);
+				client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 10);
 			}
 
 			logoutState = LogoutState.LOGOUT_TAB;
 		}
 		else if (logoutState == LogoutState.LOGOUT_TAB)
 		{
-			Widget logoutButton = client.getWidget(182, 8);
-			Widget logoutDoorButton = client.getWidget(69, 23);
+			Widget logoutButton = client.getWidget(MagicNumberWidgets.LOG_OUT_BUTTON.getGroupId(), MagicNumberWidgets.LOG_OUT_BUTTON.getChildId());
+			Widget logoutDoorButton = client.getWidget(MagicNumberWidgets.LOG_OUT_DOOR.getGroupId(), MagicNumberWidgets.LOG_OUT_DOOR.getChildId());
 
 			if (logoutButton != null || logoutDoorButton != null)
 			{
@@ -152,7 +154,7 @@ public class LogoutTask implements Task<Void>
 	{
 		if (logoutState == LogoutState.CLOSE_BANK)
 		{
-			Widget bankContainerChild = client.getWidget(12, 2);
+			Widget bankContainerChild = client.getWidget(MagicNumberWidgets.BANK_CONTAINER_CONTAINER.getGroupId(), MagicNumberWidgets.BANK_CONTAINER_CONTAINER.getChildId());
 
 			logoutState = LogoutState.LOGOUT;
 
@@ -174,7 +176,7 @@ public class LogoutTask implements Task<Void>
 		}
 		else if (logoutState == LogoutState.CLOSE_LEPRECHAUN_STORE)
 		{
-			Widget storeContainerChild = client.getWidget(125, 1);
+			Widget storeContainerChild = client.getWidget(MagicNumberWidgets.LEPRECHAUN_STORE_CONTAINER.getGroupId(), MagicNumberWidgets.LEPRECHAUN_STORE_CONTAINER.getChildId());
 
 			logoutState = LogoutState.LOGOUT;
 
@@ -196,8 +198,8 @@ public class LogoutTask implements Task<Void>
 		}
 		else if (logoutState == LogoutState.LOGOUT_BUTTON)
 		{
-			Widget logoutButton = client.getWidget(182, 8);
-			Widget logoutDoorButton = client.getWidget(69, 23);
+			Widget logoutButton = client.getWidget(MagicNumberWidgets.LOG_OUT_BUTTON.getGroupId(), MagicNumberWidgets.LOG_OUT_BUTTON.getChildId());
+			Widget logoutDoorButton = client.getWidget(MagicNumberWidgets.LOG_OUT_DOOR.getGroupId(), MagicNumberWidgets.LOG_OUT_DOOR.getChildId());
 			int param1 = -1;
 
 			if (logoutButton != null)

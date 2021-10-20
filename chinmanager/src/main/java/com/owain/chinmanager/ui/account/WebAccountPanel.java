@@ -7,13 +7,16 @@ import static com.owain.chinmanager.ui.ChinManagerPanel.BACKGROUND_COLOR;
 import static com.owain.chinmanager.ui.ChinManagerPanel.NORMAL_FONT;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
 import static com.owain.chinmanager.ui.ChinManagerPanel.SMALL_FONT;
-import com.owain.chinmanager.ui.utils.DeferredDocumentChangedListener;
+import com.owain.chinmanager.ui.utils.AbstractButtonSource;
+import com.owain.chinmanager.ui.utils.DocumentEventSource;
 import com.owain.chinmanager.ui.utils.GridBagHelper;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
 import com.owain.chinmanager.ui.utils.Separator;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.utils.ConfigGroup;
 import com.owain.chinmanager.websockets.WebsocketManager;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,7 +24,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionListener;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
@@ -32,6 +34,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -42,6 +45,8 @@ import net.runelite.client.util.LinkBrowser;
 @Slf4j
 public class WebAccountPanel extends JPanel
 {
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
+
 	private final SwingScheduler swingScheduler;
 	private final ConfigManager configManager;
 	private final AccountApi accountApi;
@@ -49,7 +54,7 @@ public class WebAccountPanel extends JPanel
 	private final WebsocketManager websocketManager;
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
 	private final JMultilineLabel errorLabel = new JMultilineLabel();
-	private boolean loggedin;
+
 	@Inject
 	WebAccountPanel(
 		SwingScheduler swingScheduler,
@@ -121,12 +126,10 @@ public class WebAccountPanel extends JPanel
 				websocketManager.token = checkLogin;
 				if (checkLogin != null && !checkLogin.isEmpty())
 				{
-					loggedin = true;
 					loggedIn();
 				}
 				else
 				{
-					loggedin = false;
 					loggedOut();
 				}
 			});
@@ -232,14 +235,11 @@ public class WebAccountPanel extends JPanel
 
 							final JButton syncLicense = new JButton();
 							syncLicense.setText("Use remote license");
-							syncLicense.addActionListener(e -> {
-								for (ActionListener al : syncLicense.getActionListeners())
-								{
-									syncLicense.removeActionListener(al);
-								}
 
-								configManager.setConfiguration(ConfigGroup.getConfigGroup(licenseMap.getKey()), "token", license);
-							});
+							DISPOSABLES.add(
+								AbstractButtonSource.fromActionOf(syncLicense, swingScheduler)
+									.subscribe((e) -> configManager.setConfiguration(ConfigGroup.getConfigGroup(licenseMap.getKey()), "token", license))
+							);
 
 							mismatchPanel.add(syncLicense, BorderLayout.SOUTH);
 
@@ -261,7 +261,6 @@ public class WebAccountPanel extends JPanel
 
 				final JButton refresh = new JButton();
 				refresh.setText("Refresh");
-				refresh.addActionListener(e -> loggedIn());
 
 				GridBagHelper.addComponent(contentPanel,
 					refresh,
@@ -272,11 +271,6 @@ public class WebAccountPanel extends JPanel
 
 				final JButton signOut = new JButton();
 				signOut.setText("Sign out");
-				signOut.addActionListener(e ->
-				{
-					configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "cookies", "");
-					contentPanel();
-				});
 
 				GridBagHelper.addComponent(contentPanel,
 					signOut,
@@ -285,6 +279,17 @@ public class WebAccountPanel extends JPanel
 
 				contentPanel.revalidate();
 				contentPanel.repaint();
+
+				DISPOSABLES.addAll(
+					AbstractButtonSource.fromActionOf(refresh, swingScheduler)
+						.subscribe((e) -> loggedIn()),
+
+					AbstractButtonSource.fromActionOf(signOut, swingScheduler)
+						.subscribe((e) -> {
+							configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "cookies", "");
+							contentPanel();
+						})
+				);
 			});
 	}
 
@@ -316,7 +321,10 @@ public class WebAccountPanel extends JPanel
 		title.setForeground(Color.WHITE);
 
 		signup.setText("Sign up");
-		signup.addActionListener(e -> LinkBrowser.browse("https://chinplugins.xyz/register"));
+		DISPOSABLES.add(
+			AbstractButtonSource.fromActionOf(signup, swingScheduler)
+				.subscribe((e) -> LinkBrowser.browse("https://chinplugins.xyz/register"))
+		);
 
 		signup.setBorder(new EmptyBorder(3, 0, 3, 0));
 
@@ -356,38 +364,47 @@ public class WebAccountPanel extends JPanel
 			errorLabel,
 			0, 8, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
 
-		DeferredDocumentChangedListener loginListener = new DeferredDocumentChangedListener();
-		loginListener.addChangeListener(e ->
-		{
-			final String username = usernameField.getText();
-			final String password = String.valueOf(passwordField.getPassword());
+		Observable<ChangeEvent> usernameDocumentEventObservable = DocumentEventSource.fromDocumentEventsOf(
+			usernameField.getDocument(), swingScheduler
+		);
 
-			if (username.contains("@") && username.contains(".") && !password.equals(""))
-			{
-				accountApi
-					.login(usernameField.getText(), String.valueOf(passwordField.getPassword()))
-					.subscribeOn(Schedulers.io())
-					.take(1)
-					.observeOn(swingScheduler)
-					.subscribe((login) -> {
-						if (login)
-						{
-							errorLabel.setVisible(false);
-							contentPanel();
-						}
-						else
-						{
-							errorLabel.setVisible(true);
-						}
-					});
-			}
-			else
-			{
-				errorLabel.setVisible(false);
-			}
-		});
-		passwordField.getDocument().addDocumentListener(loginListener);
-		usernameField.getDocument().addDocumentListener(loginListener);
+		Observable<ChangeEvent> passwordDocumentEventObservable = DocumentEventSource.fromDocumentEventsOf(
+			passwordField.getDocument(), swingScheduler
+		);
+
+		DISPOSABLES.add(
+			Observable.merge(
+				usernameDocumentEventObservable,
+				passwordDocumentEventObservable
+			).subscribe((e) -> {
+				final String username = usernameField.getText();
+				final String password = String.valueOf(passwordField.getPassword());
+
+				if (username.contains("@") && username.contains(".") && !password.equals(""))
+				{
+					accountApi
+						.login(usernameField.getText(), String.valueOf(passwordField.getPassword()))
+						.subscribeOn(Schedulers.io())
+						.take(1)
+						.observeOn(swingScheduler)
+						.subscribe((login) -> {
+							if (login)
+							{
+								errorLabel.setVisible(false);
+								contentPanel();
+							}
+							else
+							{
+								errorLabel.setVisible(true);
+							}
+						});
+				}
+				else
+				{
+					errorLabel.setVisible(false);
+				}
+			}, (e) -> log.error("[WebAccountPanel] Something went wrong", e))
+		);
 
 		contentPanel.revalidate();
 		contentPanel.repaint();

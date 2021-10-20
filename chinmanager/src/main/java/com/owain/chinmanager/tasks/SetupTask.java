@@ -4,6 +4,7 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
+import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
@@ -58,7 +59,7 @@ public class SetupTask implements Task<Void>
 					ChinManagerState.stateMachine.accept(ChinManagerStates.IDLE);
 					if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
 					{
-						client.runScript(915, 3);
+						client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 3);
 					}
 					chinManager.setCurrentlyActive(chinManager.getActivePlugins().stream().findFirst().orElse(null));
 				});

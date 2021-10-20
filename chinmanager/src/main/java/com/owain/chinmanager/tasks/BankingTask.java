@@ -20,6 +20,8 @@ import static com.owain.chinmanager.ChinManagerPlugin.SKILLS_NECKLACES;
 import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.Location;
+import com.owain.chinmanager.magicnumbers.MagicNumberVars;
+import com.owain.chinmanager.magicnumbers.MagicNumberWidgets;
 import com.owain.chinmanager.ui.gear.Equipment;
 import com.owain.chinmanager.ui.gear.EquipmentItem;
 import com.owain.chinmanager.ui.teleports.TeleportsConfig;
@@ -207,7 +209,7 @@ public class BankingTask implements Task<Void>
 				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 			}
 		}
-		else if (client.getVarbitValue(6590) != 0)
+		else if (client.getVarbitValue(MagicNumberVars.BANK_QUANTITY.getId()) != 0)
 		{
 			bankingState = BankingState.QUANTITY;
 			disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
@@ -217,7 +219,7 @@ public class BankingTask implements Task<Void>
 			bankingState = BankingState.BANK_TAB;
 			disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 		}
-		else if (client.getVarbitValue(10079) != 0)
+		else if (client.getVarbitValue(MagicNumberVars.BANK_OPTIONS.getId()) != 0)
 		{
 			if (bankTitleBar != null)
 			{
@@ -340,7 +342,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.QUANTITY)
 		{
-			Widget withdrawOne = client.getWidget(12, 28);
+			Widget withdrawOne = client.getWidget(MagicNumberWidgets.BANK_WITHDRAW_ONE.getGroupId(), MagicNumberWidgets.BANK_WITHDRAW_ONE.getGroupId());
 
 			if (withdrawOne == null)
 			{
@@ -409,7 +411,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.ITEM_OPTIONS)
 		{
-			Widget inventoryOptions = client.getWidget(12, 51);
+			Widget inventoryOptions = client.getWidget(MagicNumberWidgets.BANK_INVENTORY_OPTIONS.getGroupId(), MagicNumberWidgets.BANK_INVENTORY_OPTIONS.getChildId());
 
 			if (inventoryOptions == null)
 			{
@@ -477,7 +479,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_HEAD)
 		{
-			Widget bank = client.getWidget(12, 76);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_HEAD.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_HEAD.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -499,7 +501,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_CAPE)
 		{
-			Widget bank = client.getWidget(12, 77);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_CAPE.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_CAPE.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -521,7 +523,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_AMULET)
 		{
-			Widget bank = client.getWidget(12, 78);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_AMULET.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_AMULET.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -543,7 +545,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_AMMO)
 		{
-			Widget bank = client.getWidget(12, 86);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_AMMO.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_AMMO.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -565,7 +567,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_WEAPON)
 		{
-			Widget bank = client.getWidget(12, 79);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_WEAPON.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_WEAPON.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -587,7 +589,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_BODY)
 		{
-			Widget bank = client.getWidget(12, 80);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_BODY.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_BODY.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -609,7 +611,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_SHIELD)
 		{
-			Widget bank = client.getWidget(12, 81);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_SHIELD.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_SHIELD.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -631,7 +633,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_LEGS)
 		{
-			Widget bank = client.getWidget(12, 82);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_LEGS.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_LEGS.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -653,7 +655,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_GLOVES)
 		{
-			Widget bank = client.getWidget(12, 83);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_GLOVES.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_GLOVES.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -675,7 +677,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_BOOTS)
 		{
-			Widget bank = client.getWidget(12, 84);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_BOOTS.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_BOOTS.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 
@@ -697,7 +699,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.BANK_RING)
 		{
-			Widget bank = client.getWidget(12, 85);
+			Widget bank = client.getWidget(MagicNumberWidgets.BANK_EQUIPMENT_RING.getGroupId(), MagicNumberWidgets.BANK_EQUIPMENT_RING.getChildId());
 
 			bankingState = BankingState.DETERMINE_STATE;
 

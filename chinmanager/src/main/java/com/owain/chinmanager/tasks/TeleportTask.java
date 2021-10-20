@@ -8,6 +8,9 @@ import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.Location;
 import com.owain.chinmanager.Runes;
+import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
+import com.owain.chinmanager.magicnumbers.MagicNumberVars;
+import com.owain.chinmanager.magicnumbers.MagicNumberWidgets;
 import com.owain.chinmanager.ui.teleports.TeleportsConfig;
 import com.owain.chinmanager.ui.teleports.config.AmuletOfGlory;
 import com.owain.chinmanager.ui.teleports.config.CombatBracelet;
@@ -139,12 +142,12 @@ public class TeleportTask implements Task<Void>
 
 		Widget bankTitleBar = client.getWidget(WidgetInfo.BANK_TITLE_BAR);
 
-		if (client.getItemContainer(InventoryID.BANK) != null && client.getVarbitValue(6590) != 0)
+		if (client.getItemContainer(InventoryID.BANK) != null && client.getVarbitValue(MagicNumberVars.BANK_QUANTITY.getId()) != 0)
 		{
 			teleportState = TeleportState.QUANTITY;
 			disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 		}
-		else if (client.getItemContainer(InventoryID.BANK) != null && client.getVarbitValue(10079) != 0)
+		else if (client.getItemContainer(InventoryID.BANK) != null && client.getVarbitValue(MagicNumberVars.BANK_OPTIONS.getId()) != 0)
 		{
 			if (bankTitleBar != null)
 			{
@@ -222,7 +225,7 @@ public class TeleportTask implements Task<Void>
 		}
 		else if (teleportState == TeleportState.SELECT_MINIGAME)
 		{
-			if (client.getVar(Varbits.QUEST_TAB) != 2)
+			if (client.getVarbitValue(MagicNumberVars.GROUPING_TAB.getId()) != 3)
 			{
 				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 			}
@@ -262,7 +265,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
-				client.runScript(124, id);
+				client.runScript(MagicNumberScripts.MINIGAME_TELEPORT.getId(), id);
 				teleportState = TeleportState.MINIGAME_TELEPORT;
 			}
 		}
@@ -274,7 +277,7 @@ public class TeleportTask implements Task<Void>
 		{
 			if (client.getVar(VarClientInt.INVENTORY_TAB) != 4)
 			{
-				client.runScript(915, 4);
+				client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 4);
 			}
 			teleportState = TeleportState.TELEPORT_EQUIPMENT;
 		}
@@ -290,7 +293,7 @@ public class TeleportTask implements Task<Void>
 
 			if (needSkillsNecklace(location) || needXericsTalisman(location))
 			{
-				option = client.getWidget(187, 3);
+				option = client.getWidget(MagicNumberWidgets.TELEPORT_LOG.getGroupId(), MagicNumberWidgets.TELEPORT_LOG.getChildId());
 			}
 			else
 			{
@@ -470,7 +473,7 @@ public class TeleportTask implements Task<Void>
 		}
 		else if (teleportState == TeleportState.TELEPORTING)
 		{
-			Widget loadingHome = client.getWidget(71, 7);
+			Widget loadingHome = client.getWidget(MagicNumberWidgets.LOADING_HOME_MAIN.getGroupId(), MagicNumberWidgets.LOADING_HOME_MAIN.getChildId());
 
 			if (loadingHome != null && !loadingHome.isHidden())
 			{
@@ -479,7 +482,7 @@ public class TeleportTask implements Task<Void>
 
 			if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
 			{
-				client.runScript(915, 3);
+				client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 3);
 			}
 
 			TileObject exitPortal = chinManagerPlugin.getObject(ObjectID.PORTAL_4525);
@@ -500,11 +503,11 @@ public class TeleportTask implements Task<Void>
 		}
 		else if (teleportState == TeleportState.POH_WAIT_TELEPORT_MENU)
 		{
-			if (client.getWidget(590, 1) != null)
+			if (client.getWidget(MagicNumberWidgets.JEWELLERY_BOX.getGroupId(), MagicNumberWidgets.JEWELLERY_BOX.getChildId()) != null)
 			{
 				teleportState = TeleportState.POH_TELEPORT_MENU;
 			}
-			else if (client.getWidget(187, 3) != null)
+			else if (client.getWidget(MagicNumberWidgets.TELEPORT_LOG.getGroupId(), MagicNumberWidgets.TELEPORT_LOG.getChildId()) != null)
 			{
 				teleportState = TeleportState.POH_TELEPORT_MENU;
 			}
@@ -515,11 +518,11 @@ public class TeleportTask implements Task<Void>
 
 			Widget option = null;
 
-			if (client.getWidget(187, 3) != null)
+			if (client.getWidget(MagicNumberWidgets.TELEPORT_LOG.getGroupId(), MagicNumberWidgets.TELEPORT_LOG.getChildId()) != null)
 			{
-				option = client.getWidget(187, 3);
+				option = client.getWidget(MagicNumberWidgets.TELEPORT_LOG.getGroupId(), MagicNumberWidgets.TELEPORT_LOG.getChildId());
 			}
-			else if (client.getWidget(590, 1) != null)
+			else if (client.getWidget(MagicNumberWidgets.JEWELLERY_BOX.getGroupId(), MagicNumberWidgets.JEWELLERY_BOX.getChildId()) != null)
 			{
 				switch (location)
 				{
@@ -778,7 +781,7 @@ public class TeleportTask implements Task<Void>
 			{
 				if (client.getVar(VarClientInt.INVENTORY_TAB) != 6)
 				{
-					client.runScript(915, 6);
+					client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 6);
 				}
 			}
 
@@ -791,7 +794,7 @@ public class TeleportTask implements Task<Void>
 	{
 		if (teleportState == TeleportState.QUANTITY)
 		{
-			Widget withdrawOne = client.getWidget(12, 28);
+			Widget withdrawOne = client.getWidget(MagicNumberWidgets.BANK_WITHDRAW_ONE.getGroupId(), MagicNumberWidgets.BANK_WITHDRAW_ONE.getChildId());
 
 			if (withdrawOne == null)
 			{
@@ -837,7 +840,7 @@ public class TeleportTask implements Task<Void>
 		}
 		else if (teleportState == TeleportState.ITEM_OPTIONS)
 		{
-			Widget inventoryOptions = client.getWidget(12, 50);
+			Widget inventoryOptions = client.getWidget(MagicNumberWidgets.BANK_INVENTORY_OPTIONS.getGroupId(), MagicNumberWidgets.BANK_INVENTORY_OPTIONS.getChildId());
 
 			if (inventoryOptions == null)
 			{
@@ -936,7 +939,7 @@ public class TeleportTask implements Task<Void>
 		}
 		else if (teleportState == TeleportState.CLOSE_BANK)
 		{
-			Widget bankContainerChild = client.getWidget(12, 2);
+			Widget bankContainerChild = client.getWidget(MagicNumberWidgets.BANK_CONTAINER_CONTAINER.getGroupId(), MagicNumberWidgets.BANK_CONTAINER_CONTAINER.getChildId());
 
 			teleportState = TeleportState.NONE;
 
@@ -1526,23 +1529,22 @@ public class TeleportTask implements Task<Void>
 		}
 		else if (teleportState == TeleportState.SELECT_MINIGAME)
 		{
-			Widget questTabQuest = client.getWidget(WidgetInfo.QUESTTAB_QUEST_TAB);
+			Widget groupingTab = client.getWidget(MagicNumberWidgets.GROUPING_TAB.getGroupId(), MagicNumberWidgets.GROUPING_TAB.getChildId());
 
-			if (questTabQuest == null)
+			if (groupingTab == null)
 			{
-				menuOptionClicked.consume();
 				teleportState = TeleportState.NONE;
 				return;
 			}
 
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
-				"Minigame List",
-				"Empty",
+				"Grouping",
+				"",
 				1,
 				MenuAction.CC_OP,
 				-1,
-				questTabQuest.getId() + 10
+				groupingTab.getId()
 			);
 		}
 		else if (teleportState == TeleportState.MINIGAME_TELEPORT)
@@ -1687,11 +1689,11 @@ public class TeleportTask implements Task<Void>
 
 			if (teleportsConfig.pohTeleport() == Poh.RUNES && client.getVar(VarClientInt.INVENTORY_TAB) != 6)
 			{
-				client.runScript(915, 6);
+				client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 6);
 			}
 			else if (teleportsConfig.pohTeleport() == Poh.CONSTRUCTION_CAPE && equipmentItems.stream().anyMatch(CONSTRUCT_CAPE::contains) && client.getVar(VarClientInt.INVENTORY_TAB) != 4)
 			{
-				client.runScript(915, 4);
+				client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 4);
 			}
 
 			teleportState = TeleportState.TELEPORT_POH;
@@ -1712,9 +1714,9 @@ public class TeleportTask implements Task<Void>
 		}
 		else
 		{
-			if (client.getVar(VarClientInt.INVENTORY_TAB) != 2)
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 7)
 			{
-				client.runScript(915, 2);
+				client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 7);
 			}
 
 			teleportState = TeleportState.SELECT_MINIGAME;

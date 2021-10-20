@@ -10,10 +10,14 @@ import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
 import static com.owain.chinmanager.ui.ChinManagerPanel.SMALL_FONT;
 import static com.owain.chinmanager.ui.ChinManagerPanel.wrapContainer;
-import com.owain.chinmanager.ui.utils.DeferredDocumentChangedListener;
+import com.owain.chinmanager.ui.utils.AbstractButtonSource;
+import com.owain.chinmanager.ui.utils.DocumentEventSource;
 import com.owain.chinmanager.ui.utils.GridBagHelper;
+import com.owain.chinmanager.ui.utils.ItemEventSource;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
+import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.utils.ProfilesData;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -46,12 +50,17 @@ import net.runelite.client.ui.components.ToggleButton;
 
 public class OsrsAccountPanel extends JPanel
 {
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
+
+	private final SwingScheduler swingScheduler;
 	private final ConfigManager configManager;
 	private final ChinManager chinManager;
 	private final JPanel contentPanel = new JPanel(new GridBagLayout());
+
 	@Inject
-	OsrsAccountPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager)
+	OsrsAccountPanel(SwingScheduler swingScheduler, ChinManagerPlugin chinManagerPlugin, ChinManager chinManager)
 	{
+		this.swingScheduler = swingScheduler;
 		this.configManager = chinManagerPlugin.getConfigManager();
 		this.chinManager = chinManager;
 
@@ -96,15 +105,19 @@ public class OsrsAccountPanel extends JPanel
 			profilesButton.setEnabled(false);
 		}
 
-		manualButton.addActionListener(e -> {
-			configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection", manualButton.isSelected());
-			contentPanel(manualButton.isSelected());
-		});
+		DISPOSABLES.addAll(
+			AbstractButtonSource.fromActionOf(manualButton, swingScheduler)
+				.subscribe((e) -> {
+					configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection", manualButton.isSelected());
+					contentPanel(manualButton.isSelected());
+				}),
 
-		profilesButton.addActionListener(e -> {
-			configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection", !profilesButton.isSelected());
-			contentPanel(!profilesButton.isSelected());
-		});
+			AbstractButtonSource.fromActionOf(profilesButton, swingScheduler)
+				.subscribe((e) -> {
+					configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection", !profilesButton.isSelected());
+					contentPanel(!profilesButton.isSelected());
+				})
+		);
 
 		buttonGroup.add(manualButton);
 		buttonGroup.add(profilesButton);
@@ -141,10 +154,6 @@ public class OsrsAccountPanel extends JPanel
 			final JTextField usernameField = new JTextField();
 			usernameField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			usernameField.setText(configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-username"));
-			DeferredDocumentChangedListener usernameListener = new DeferredDocumentChangedListener();
-			usernameListener.addChangeListener(e ->
-				configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-username", usernameField.getText()));
-			usernameField.getDocument().addDocumentListener(usernameListener);
 
 			GridBagHelper.addComponent(contentPanel,
 				usernameField,
@@ -161,10 +170,6 @@ public class OsrsAccountPanel extends JPanel
 			final JPasswordField passwordField = new JPasswordField();
 			passwordField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			passwordField.setText(configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-password"));
-			DeferredDocumentChangedListener passwordListener = new DeferredDocumentChangedListener();
-			passwordListener.addChangeListener(e ->
-				configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-password", String.valueOf(passwordField.getPassword())));
-			passwordField.getDocument().addDocumentListener(passwordListener);
 
 			GridBagHelper.addComponent(contentPanel,
 				passwordField,
@@ -181,10 +186,6 @@ public class OsrsAccountPanel extends JPanel
 			final JPasswordField bankPin = new JPasswordField();
 			bankPin.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			bankPin.setText(configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-pin"));
-			DeferredDocumentChangedListener bankPinListener = new DeferredDocumentChangedListener();
-			bankPinListener.addChangeListener(e ->
-				configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-pin", String.valueOf(bankPin.getPassword())));
-			bankPin.getDocument().addDocumentListener(bankPinListener);
 
 			GridBagHelper.addComponent(contentPanel,
 				bankPin,
@@ -201,6 +202,20 @@ public class OsrsAccountPanel extends JPanel
 				description,
 				0, counter, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(5, 0, 10, 0));
+
+			DISPOSABLES.addAll(
+				DocumentEventSource.fromDocumentEventsOf(
+					bankPin.getDocument(), swingScheduler
+				).subscribe((e) -> configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-pin", String.valueOf(bankPin.getPassword()))),
+
+				DocumentEventSource.fromDocumentEventsOf(
+					passwordField.getDocument(), swingScheduler
+				).subscribe((e) -> configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-password", String.valueOf(passwordField.getPassword()))),
+
+				DocumentEventSource.fromDocumentEventsOf(
+					usernameField.getDocument(), swingScheduler
+				).subscribe((e) -> configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-manual-username", usernameField.getText()))
+			);
 		}
 		else if (ChinManagerPlugin.getProfileData() == null)
 		{
@@ -217,20 +232,21 @@ public class OsrsAccountPanel extends JPanel
 			parsingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			parsingLabel.setPreferredSize(new Dimension(PANEL_WIDTH, 15));
 
-			DeferredDocumentChangedListener passwordListener = new DeferredDocumentChangedListener();
-			passwordListener.addChangeListener(e ->
-			{
-				try
-				{
-					ChinManagerPlugin.setProfileData(ProfilesData.getProfileData(configManager, passwordField.getPassword()));
-					contentPanel(false);
-				}
-				catch (InvalidKeySpecException | NoSuchPaddingException | BadPaddingException | InvalidKeyException | IllegalBlockSizeException | NoSuchAlgorithmException ignored)
-				{
-					parsingLabel.setText("Incorrect password!");
-				}
-			});
-			passwordField.getDocument().addDocumentListener(passwordListener);
+			DISPOSABLES.add(
+				DocumentEventSource.fromDocumentEventsOf(
+					passwordField.getDocument(), swingScheduler
+				).subscribe((e) -> {
+					try
+					{
+						ChinManagerPlugin.setProfileData(ProfilesData.getProfileData(configManager, passwordField.getPassword()));
+						contentPanel(false);
+					}
+					catch (InvalidKeySpecException | NoSuchPaddingException | BadPaddingException | InvalidKeyException | IllegalBlockSizeException | NoSuchAlgorithmException ignored)
+					{
+						parsingLabel.setText("Incorrect password!");
+					}
+				})
+			);
 
 			GridBagHelper.addComponent(contentPanel,
 				passwordField,
@@ -274,13 +290,6 @@ public class OsrsAccountPanel extends JPanel
 				final JPasswordField bankPin = new JPasswordField();
 
 				filterComboBox.setPreferredSize(new Dimension(PluginPanel.PANEL_WIDTH - 20, 30));
-				filterComboBox.addActionListener(e -> {
-					if (filterComboBox.getSelectedItem() != null)
-					{
-						configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-profiles-account", filterComboBox.getSelectedItem().toString());
-						bankPin.setText(configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-profiles-pin-" + filterComboBox.getSelectedItem().toString()));
-					}
-				});
 
 				String config = configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-profiles-account");
 
@@ -314,10 +323,6 @@ public class OsrsAccountPanel extends JPanel
 
 					bankPin.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 					bankPin.setText(configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-profiles-pin-" + filterComboBox.getSelectedItem().toString()));
-					DeferredDocumentChangedListener bankPinListener = new DeferredDocumentChangedListener();
-					bankPinListener.addChangeListener(e ->
-						configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-profiles-pin-" + filterComboBox.getSelectedItem().toString(), String.valueOf(bankPin.getPassword())));
-					bankPin.getDocument().addDocumentListener(bankPinListener);
 
 					GridBagHelper.addComponent(contentPanel,
 						bankPin,
@@ -335,6 +340,23 @@ public class OsrsAccountPanel extends JPanel
 						0, counter, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 						new Insets(5, 0, 10, 0));
 				}
+
+
+				DISPOSABLES.addAll(
+					DocumentEventSource.fromDocumentEventsOf(
+						bankPin.getDocument(), swingScheduler
+					).subscribe((e) -> configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-profiles-pin-" + filterComboBox.getSelectedItem().toString(), String.valueOf(bankPin.getPassword()))),
+
+					ItemEventSource.fromItemEventsOf(
+						filterComboBox, swingScheduler
+					).subscribe((e) -> {
+						if (filterComboBox.getSelectedItem() != null)
+						{
+							configManager.setConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-profiles-account", filterComboBox.getSelectedItem().toString());
+							bankPin.setText(configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection-profiles-pin-" + filterComboBox.getSelectedItem().toString()));
+						}
+					})
+				);
 			}
 		}
 

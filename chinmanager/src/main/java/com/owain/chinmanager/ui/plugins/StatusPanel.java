@@ -10,19 +10,18 @@ import com.owain.chinmanager.ui.plugins.breaks.BreakOptionsPanel;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
 import com.owain.chinmanager.ui.plugins.status.PluginStatusPanel;
 import com.owain.chinmanager.ui.teleports.TeleportsConfig;
+import com.owain.chinmanager.ui.utils.AbstractButtonSource;
 import com.owain.chinmanager.ui.utils.ConfigPanel;
 import com.owain.chinmanager.ui.utils.GridBagHelper;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
@@ -32,13 +31,15 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.Plugin;
 import static net.runelite.client.ui.PluginPanel.PANEL_WIDTH;
 
+@Slf4j
 public class StatusPanel extends JPanel
 {
-	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
 	private final SwingScheduler swingScheduler;
 	private final ChinManager chinManager;
 	private final ConfigManager configManager;
@@ -47,6 +48,7 @@ public class StatusPanel extends JPanel
 	private final JPanel unlockAccountPanel = new JPanel(new BorderLayout());
 	private final JPanel pluginsPanel = new JPanel(new GridBagLayout());
 	private final JButton stopPluginsButton = new JButton();
+
 	@Inject
 	StatusPanel(
 		SwingScheduler swingScheduler,
@@ -83,21 +85,31 @@ public class StatusPanel extends JPanel
 		pluginsPanel();
 
 		DISPOSABLES.addAll(
-			List.of(
-				chinManager
-					.getActiveObservable()
-					.observeOn(swingScheduler)
-					.subscribe(
-						(plugins) -> {
-							this.pluginsPanel(plugins);
-							headerPanel();
-						}),
-				chinManager
-					.configChanged
-					.observeOn(swingScheduler)
-					.subscribe(
-						(ignored) -> headerPanel())
-			)
+			chinManager
+				.getActiveObservable()
+				.observeOn(swingScheduler)
+				.subscribe(
+					(plugins) -> {
+						this.pluginsPanel(plugins);
+						headerPanel();
+					}),
+
+			chinManager
+				.configChanged
+				.observeOn(swingScheduler)
+				.subscribe(
+					(ignored) -> headerPanel()),
+
+			AbstractButtonSource.fromActionOf(stopPluginsButton, swingScheduler)
+				.subscribe((e) -> {
+					for (Plugin plugin : Set.copyOf(chinManager.getActivePlugins()))
+					{
+						chinManager.stopPlugin(plugin);
+					}
+
+					chinManager.setCurrentlyActive(null);
+					chinManager.setAmountOfBreaks(0);
+				})
 		);
 	}
 
@@ -182,29 +194,12 @@ public class StatusPanel extends JPanel
 			new Insets(0, 0, 5, 0));
 
 		GridBagHelper.addComponent(headerPanel,
-			stopButton(),
+			stopPluginsButton,
 			0, 2, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 			new Insets(5, 0, 5, 0));
 
 		headerPanel.revalidate();
 		headerPanel.repaint();
-	}
-
-	private JButton stopButton()
-	{
-		Set<Plugin> plugins = chinManager.getActivePlugins();
-
-		stopPluginsButton.addActionListener(e -> {
-			for (Plugin plugin : Set.copyOf(plugins))
-			{
-				chinManager.stopPlugin(plugin);
-			}
-
-			chinManager.setCurrentlyActive(null);
-			chinManager.setAmountOfBreaks(0);
-		});
-
-		return stopPluginsButton;
 	}
 
 	private void pluginsPanel()

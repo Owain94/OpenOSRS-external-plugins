@@ -5,12 +5,14 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
 import static com.owain.chinmanager.ui.ChinManagerPanel.SMALL_FONT;
+import com.owain.chinmanager.ui.utils.AbstractButtonSource;
 import com.owain.chinmanager.ui.utils.Components;
 import com.owain.chinmanager.ui.utils.GridBagHelper;
 import com.owain.chinmanager.ui.utils.JMultilineLabel;
 import com.owain.chinmanager.ui.utils.Separator;
+import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.utils.Plugins;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -37,7 +39,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import lombok.extern.slf4j.Slf4j;
 import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -56,10 +57,9 @@ import net.runelite.client.util.SwingUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-@Slf4j
 public class PluginPanel extends JPanel
 {
-	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
 	public static final Map<String, Pair<Boolean, Integer>> PLUGIN_CONFIG_MAP = new HashMap<>();
 	private static final ImageIcon CONFIG_ICON;
 	private static final ImageIcon CONFIG_ICON_HOVER;
@@ -71,6 +71,7 @@ public class PluginPanel extends JPanel
 		CONFIG_ICON_HOVER = new ImageIcon(ImageUtil.luminanceOffset(configIcon, -100));
 	}
 
+	private final SwingScheduler swingScheduler;
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final EventBus eventBus;
@@ -81,8 +82,13 @@ public class PluginPanel extends JPanel
 	private final JPanel requiredItemsPanel = new JPanel(new GridBagLayout());
 
 	@Inject
-	PluginPanel(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager)
+	PluginPanel(
+		SwingScheduler swingScheduler,
+		ChinManagerPlugin chinManagerPlugin,
+		ChinManager chinManager
+	)
 	{
+		this.swingScheduler = swingScheduler;
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.eventBus = chinManagerPlugin.getEventBus();
@@ -91,15 +97,15 @@ public class PluginPanel extends JPanel
 		setLayout(new BorderLayout());
 		setBackground(PANEL_BACKGROUND_COLOR);
 
-		Disposable pluginManager = chinManager
-			.getManagerPluginObservable()
-			.subscribe((plugins) -> {
-				updatePluginConfigMap();
-
-				SwingUtil.syncExec(this::pluginsPanel);
-			});
-
-		DISPOSABLES.add(pluginManager);
+		DISPOSABLES.add(
+			chinManager
+				.getManagerPluginObservable()
+				.observeOn(swingScheduler)
+				.subscribe((plugins) -> {
+					updatePluginConfigMap();
+					this.pluginsPanel();
+				})
+		);
 
 		contentPanel.setBorder(new EmptyBorder(5, 10, 0, 10));
 		add(contentPanel, BorderLayout.CENTER);
@@ -171,11 +177,13 @@ public class PluginPanel extends JPanel
 				item.setMinimumSize(new Dimension(PANEL_WIDTH, 0));
 
 				JCheckBox checkbox = new ToggleButton(plugin.getName());
-				checkbox.addActionListener(e ->
-				{
-					checkboxState();
-					startButtonState();
-				});
+				DISPOSABLES.add(
+					AbstractButtonSource.fromActionOf(checkbox, swingScheduler)
+						.subscribe((e) -> {
+							checkboxState();
+							startButtonState();
+						})
+				);
 
 				if (plugins.size() == 1)
 				{
@@ -195,11 +203,13 @@ public class PluginPanel extends JPanel
 				configButton.setPreferredSize(new Dimension(25, 0));
 				configButton.setToolTipText("Edit plugin configuration");
 
-				configButton.addActionListener(e ->
-				{
-					configButton.setIcon(CONFIG_ICON);
-					openGroupConfigPanel(plugin);
-				});
+				DISPOSABLES.add(
+					AbstractButtonSource.fromActionOf(configButton, swingScheduler)
+						.subscribe((e) -> {
+							configButton.setIcon(CONFIG_ICON);
+							openGroupConfigPanel(plugin);
+						})
+				);
 
 				item.add(configButton, BorderLayout.EAST);
 
@@ -225,7 +235,10 @@ public class PluginPanel extends JPanel
 			final JButton resetButton = new JButton();
 			resetButton.setText("Reset");
 			resetButton.setEnabled(plugins.size() > 1);
-			resetButton.addActionListener(e -> resetCheckboxes());
+			DISPOSABLES.add(
+				AbstractButtonSource.fromActionOf(resetButton, swingScheduler)
+					.subscribe((e) -> resetCheckboxes())
+			);
 			GridBagHelper.addComponent(contentPanel,
 				resetButton,
 				0, counter, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -239,21 +252,23 @@ public class PluginPanel extends JPanel
 					.stream()
 					.anyMatch(AbstractButton::isSelected)
 			);
-			startPluginsButton.addActionListener(e -> {
-					chinManager.setAmountOfBreaks(0);
-					chinManager.startPlugins(
-						Components.findComponents(contentPanel, JCheckBox.class)
-							.stream()
-							.filter(AbstractButton::isSelected)
-							.map(AbstractButton::getText)
-							.map(Plugins::sanitizedName)
-							.map(chinManager::getPlugin)
-							.filter(Objects::nonNull)
-							.collect(Collectors.toList())
-					);
+			DISPOSABLES.add(
+				AbstractButtonSource.fromActionOf(startPluginsButton, swingScheduler)
+					.subscribe((e) -> {
+						chinManager.setAmountOfBreaks(0);
+						chinManager.startPlugins(
+							Components.findComponents(contentPanel, JCheckBox.class)
+								.stream()
+								.filter(AbstractButton::isSelected)
+								.map(AbstractButton::getText)
+								.map(Plugins::sanitizedName)
+								.map(chinManager::getPlugin)
+								.filter(Objects::nonNull)
+								.collect(Collectors.toList())
+						);
 
-					chinManager.setCurrentlyActive(chinManagerPlugin);
-				}
+						chinManager.setCurrentlyActive(chinManagerPlugin);
+					})
 			);
 
 			GridBagHelper.addComponent(contentPanel,

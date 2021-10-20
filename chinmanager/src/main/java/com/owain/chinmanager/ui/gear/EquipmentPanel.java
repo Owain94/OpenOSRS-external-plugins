@@ -26,6 +26,7 @@ package com.owain.chinmanager.ui.gear;
 
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
+import com.owain.chinmanager.ui.utils.AbstractButtonSource;
 import com.owain.chinmanager.ui.utils.SwingScheduler;
 import com.owain.chinmanager.utils.Plugins;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -75,6 +76,7 @@ public class EquipmentPanel extends JPanel
 	private final ChatboxPanelManager chatboxPanelManager;
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
+	private final SwingScheduler swingScheduler;
 	@Getter(AccessLevel.PROTECTED)
 	private final JPanel containerSlotsPanel;
 	private final JPanel subPanel;
@@ -102,6 +104,7 @@ public class EquipmentPanel extends JPanel
 		this.chatboxItemSearch = chatboxItemSearch;
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
+		this.swingScheduler = swingScheduler;
 
 		chinManagerPlugin.loadEquipmentConfig();
 
@@ -179,8 +182,11 @@ public class EquipmentPanel extends JPanel
 
 		JMenuItem updateFromContainer = new JMenuItem("Update Slot from your equipment");
 		popupMenu.add(updateFromContainer);
-		updateFromContainer.addActionListener(e ->
-			updateSlotFromContainer(slot));
+
+		DISPOSABLES.add(
+			AbstractButtonSource.fromActionOf(updateFromContainer, swingScheduler)
+				.subscribe((e) -> updateSlotFromContainer(slot))
+		);
 	}
 
 	protected void addUpdateFromSearchMouseListenerToSlot(final EquipmentSlot slot)
@@ -189,8 +195,11 @@ public class EquipmentPanel extends JPanel
 		JPopupMenu popupMenu = slot.getComponentPopupMenu();
 		JMenuItem updateFromSearch = new JMenuItem("Update Slot from Search");
 		popupMenu.add(updateFromSearch);
-		updateFromSearch.addActionListener(e ->
-			updateSlotFromSearch(slot));
+
+		DISPOSABLES.add(
+			AbstractButtonSource.fromActionOf(updateFromSearch, swingScheduler)
+				.subscribe((e) -> updateSlotFromSearch(slot))
+		);
 	}
 
 	protected void addRemoveMouseListenerToSlot(final EquipmentSlot slot)
@@ -199,8 +208,11 @@ public class EquipmentPanel extends JPanel
 		JPopupMenu popupMenu = slot.getComponentPopupMenu();
 		JMenuItem removeSlot = new JMenuItem("Remove Item from Slot");
 		popupMenu.add(removeSlot);
-		removeSlot.addActionListener(e ->
-			removeItemFromSlot(slot));
+
+		DISPOSABLES.add(
+			AbstractButtonSource.fromActionOf(removeSlot, swingScheduler)
+				.subscribe((e) -> removeItemFromSlot(slot))
+		);
 	}
 
 	private void setComponentPopupMenuToSlot(final EquipmentSlot slot)

@@ -13,13 +13,15 @@ import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.cookies.PersistentCookieJar;
 import com.owain.chinmanager.cookies.cache.SetCookieCache;
 import com.owain.chinmanager.cookies.persistence.OpenOSRSCookiePersistor;
+import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
 import com.owain.chinmanager.overlay.ManagerClickboxDebugOverlay;
 import com.owain.chinmanager.overlay.ManagerClickboxOverlay;
 import com.owain.chinmanager.overlay.ManagerTileIndicatorsOverlay;
 import com.owain.chinmanager.overlay.ManagerWidgetOverlay;
 import com.owain.chinmanager.ui.ChinManagerPanel;
+import com.owain.chinmanager.ui.account.OsrsAccountPanel;
+import com.owain.chinmanager.ui.account.WebAccountPanel;
 import com.owain.chinmanager.ui.gear.Equipment;
-import com.owain.chinmanager.ui.gear.EquipmentPanel;
 import com.owain.chinmanager.ui.plugins.PluginPanel;
 import com.owain.chinmanager.ui.plugins.StatusPanel;
 import com.owain.chinmanager.ui.plugins.breaks.BreakOptionsPanel;
@@ -33,7 +35,8 @@ import static com.owain.chinmanager.utils.Plugins.sanitizedName;
 import com.owain.chinmanager.websockets.WebsocketManager;
 import com.owain.chintasks.TaskExecutor;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Type;
 import java.time.Instant;
@@ -162,9 +165,12 @@ public class ChinManagerPlugin extends Plugin
 	public static final String PLUGIN_NAME = "Chin manager";
 	public static final String CONFIG_GROUP = "chinmanager";
 	public final static String CONFIG_GROUP_BREAKHANDLER = "chinbreakhandler";
+
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-	public static final List<Disposable> DISPOSABLES = new ArrayList<>();
-	public static final Map<Plugin, List<Disposable>> PLUGIN_DISPOSABLE_MAP = new HashMap<>();
+
+	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
+	public static final Map<Plugin, CompositeDisposable> PLUGIN_DISPOSABLE_MAP = new HashMap<>();
+
 	public static final List<Integer> DIGSIDE_PENDANTS = List.of(
 		ItemID.DIGSITE_PENDANT_1,
 		ItemID.DIGSITE_PENDANT_2,
@@ -172,6 +178,7 @@ public class ChinManagerPlugin extends Plugin
 		ItemID.DIGSITE_PENDANT_4,
 		ItemID.DIGSITE_PENDANT_5
 	);
+
 	public static final List<Integer> RINGS_OF_DUELING = List.of(
 		ItemID.RING_OF_DUELING1,
 		ItemID.RING_OF_DUELING2,
@@ -182,6 +189,7 @@ public class ChinManagerPlugin extends Plugin
 		ItemID.RING_OF_DUELING7,
 		ItemID.RING_OF_DUELING8
 	);
+
 	public static final List<Integer> GAMES_NECKLACES = List.of(
 		ItemID.GAMES_NECKLACE1,
 		ItemID.GAMES_NECKLACE2,
@@ -192,6 +200,7 @@ public class ChinManagerPlugin extends Plugin
 		ItemID.GAMES_NECKLACE7,
 		ItemID.GAMES_NECKLACE8
 	);
+
 	public static final List<Integer> COMBAT_BRACELETS = List.of(
 		ItemID.COMBAT_BRACELET1,
 		ItemID.COMBAT_BRACELET2,
@@ -208,6 +217,7 @@ public class ChinManagerPlugin extends Plugin
 		ItemID.SKILLS_NECKLACE5,
 		ItemID.SKILLS_NECKLACE6
 	);
+
 	public static final List<Integer> RINGS_OF_WEALTH = List.of(
 		ItemID.RING_OF_WEALTH_1,
 		ItemID.RING_OF_WEALTH_2,
@@ -220,6 +230,7 @@ public class ChinManagerPlugin extends Plugin
 		ItemID.RING_OF_WEALTH_I4,
 		ItemID.RING_OF_WEALTH_I5
 	);
+
 	public static final List<Integer> AMULETS_OF_GLORY = List.of(
 		ItemID.AMULET_OF_ETERNAL_GLORY,
 		ItemID.AMULET_OF_GLORY1,
@@ -235,100 +246,142 @@ public class ChinManagerPlugin extends Plugin
 		ItemID.AMULET_OF_GLORY_T5,
 		ItemID.AMULET_OF_GLORY_T6
 	);
+
 	public static final List<Integer> XERICS_TALISMAN = List.of(
 		ItemID.XERICS_TALISMAN
 	);
+
 	public static final List<Integer> CONSTRUCT_CAPE = List.of(
 		ItemID.CONSTRUCT_CAPE,
 		ItemID.CONSTRUCT_CAPET
 	);
+
 	public static final List<Integer> RUNE_POUCHES = List.of(
 		ItemID.RUNE_POUCH,
 		ItemID.RUNE_POUCH_L
 	);
+
 	@Getter(AccessLevel.PUBLIC)
 	public static final List<WidgetItem> highlightWidgetItem = new ArrayList<>();
+
 	// Debug
 	@Getter(AccessLevel.PUBLIC)
 	public static final Map<TileObject, Integer> debugTileObjectMap = new HashMap<>();
+
 	@Getter(AccessLevel.PUBLIC)
 	public static final Set<WorldPoint> debugReachableWorldAreas = new HashSet<>();
+
 	@Getter(AccessLevel.PUBLIC)
 	public static final Map<WorldPoint, Integer> debugReachableTiles = new HashMap<>();
+
 	private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
+
 	@Getter(AccessLevel.PUBLIC)
 	private final static Map<TileItem, Tile> tileItems = new HashMap<>();
+
 	@Getter(AccessLevel.PUBLIC)
 	private final static Set<TileObject> objects = new HashSet<>();
+
 	@Getter(AccessLevel.PUBLIC)
 	private final static Set<Actor> actors = new HashSet<>();
+
 	public static boolean logout;
 	public static boolean shouldSetup;
+
 	@Getter(AccessLevel.PUBLIC)
 	private static List<Equipment> equipmentList;
+
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PUBLIC)
 	private static String profileData;
+
 	@Getter(AccessLevel.PUBLIC)
 	private static Actor highlightActor = null;
+
 	@Getter(AccessLevel.PUBLIC)
 	private static ItemLayer highlightItemLayer = null;
+
 	@Getter(AccessLevel.PUBLIC)
 	private static TileObject highlightTileObject = null;
+
 	@Getter(AccessLevel.PUBLIC)
 	@Setter(AccessLevel.PUBLIC)
 	private static List<WorldPoint> highlightDaxPath = null;
+
 	@Getter(AccessLevel.PUBLIC)
 	private static Widget highlightWidget = null;
+
 	@Getter(AccessLevel.PUBLIC)
 	public OkHttpClient okHttpClient;
+
 	@Inject
 	private ClientToolbar clientToolbar;
+
 	@Inject
 	@Getter(AccessLevel.PUBLIC)
 	private ConfigManager configManager;
+
 	@Inject
 	@Getter(AccessLevel.PUBLIC)
 	private EventBus eventBus;
+
 	@Inject
 	private ChinManager chinManager;
+
 	@Inject
 	private OpenOSRSCookiePersistor openOSRSCookiePersistor;
+
 	@Inject
 	@Getter(AccessLevel.PUBLIC)
 	private Client client;
+
 	@Inject
 	@Getter(AccessLevel.PUBLIC)
 	private ClientThread clientThread;
+
 	@Inject
 	private ItemManager itemManager;
+
 	@Inject
 	private WorldService worldService;
+
 	@Inject
 	@Getter(AccessLevel.PUBLIC)
 	private TaskExecutor taskExecutor;
+
 	@Inject
 	private OptionsConfig optionsConfig;
-	private NavigationButton navButton;
+
 	@Getter(AccessLevel.PUBLIC)
 	private ExecutorService executorService;
+
 	@Inject
 	@SuppressWarnings("unused")
 	private ChinManagerState chinManagerState;
+
 	@Inject
 	private ChatMessageManager chatMessageManager;
+
 	@Inject
 	private OverlayManager overlayManager;
+
 	@Inject
 	private ManagerClickboxOverlay managerClickboxOverlay;
+
 	@Inject
 	private ManagerClickboxDebugOverlay managerClickboxDebugOverlay;
+
 	@Inject
 	private ManagerWidgetOverlay managerWidgetOverlay;
+
 	@Inject
 	private ManagerTileIndicatorsOverlay managerTileIndicatorsOverlay;
+
+	private NavigationButton navButton;
+
 	@Getter(AccessLevel.PUBLIC)
 	private Random random;
+
 	private int delay = -1;
 	private net.runelite.api.World quickHopTargetWorld;
 	private int displaySwitcherAttempts = 0;
@@ -745,7 +798,7 @@ public class ChinManagerPlugin extends Plugin
 				return actions.contains("Bank") || actions.contains("Collect") ||
 					imposterActions.contains("Bank") || imposterActions.contains("Collect");
 			})
-			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
+			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
 			.min(Comparator.comparing(npc -> {
 					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
 					if (path == null)
@@ -794,7 +847,7 @@ public class ChinManagerPlugin extends Plugin
 				return actions.contains("Bank") || actions.contains("Collect") ||
 					imposterActions.contains("Bank") || imposterActions.contains("Collect");
 			})
-			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
+			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
 			.min(Comparator.comparing(npc -> {
 					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
 					if (path == null)
@@ -829,7 +882,7 @@ public class ChinManagerPlugin extends Plugin
 
 				return actions.contains("Bank");
 			})
-			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
+			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
 			.min(Comparator.comparing(npc -> {
 					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
 					if (path == null)
@@ -862,7 +915,7 @@ public class ChinManagerPlugin extends Plugin
 
 				return actions.contains("Bank");
 			})
-			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 10)
+			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
 			.min(Comparator.comparing(npc -> {
 					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
 					if (path == null)
@@ -1222,131 +1275,138 @@ public class ChinManagerPlugin extends Plugin
 		Banking.ITEMS = Set.of();
 
 		DISPOSABLES.addAll(
-			List.of(
-				stateMachine.getStateObservable().subscribe((state) -> ChinManagerPlugin.resetHighlight()),
-				stateMachine.connect().subscribe(),
-				chinManager
-					.getActiveObservable()
-					.subscribe((plugins) -> {
-						if (plugins.isEmpty())
-						{
-							shouldSetup = true;
-							Banking.ITEMS = Set.of();
-							delay = -1;
-							logout = false;
-							stateMachine.accept(ChinManagerStates.IDLE);
-						}
-						else
-						{
-							Banking.ITEMS = plugins
-								.stream()
-								.map((plugin) -> {
-									Set<Integer> items = new HashSet<>();
+			stateMachine.getStateObservable().subscribe((state) -> ChinManagerPlugin.resetHighlight()),
 
-									equipmentList
-										.stream()
-										.filter((equip) -> equip.getName().equals(sanitizedName(plugin)))
-										.findFirst().ifPresent(equipment -> equipment.getEquipment().forEach((item) -> items.add(item.getId())));
+			stateMachine.connect().subscribe(),
 
-									items.addAll(
-										Stream.of(Set.of(
-													ItemID.TELEPORT_TO_HOUSE,
-													ItemID.LAW_RUNE,
-													ItemID.AIR_RUNE,
-													ItemID.EARTH_RUNE
-												),
-												DIGSIDE_PENDANTS,
-												RINGS_OF_DUELING,
-												GAMES_NECKLACES,
-												COMBAT_BRACELETS,
-												SKILLS_NECKLACES,
-												RINGS_OF_WEALTH,
-												AMULETS_OF_GLORY,
-												XERICS_TALISMAN,
-												CONSTRUCT_CAPE,
-												RUNE_POUCHES
-											)
-											.flatMap(Collection::stream)
-											.collect(Collectors.toSet())
-									);
+			chinManager
+				.getActiveObservable()
+				.subscribe((plugins) -> {
+					if (plugins.isEmpty())
+					{
+						shouldSetup = true;
+						Banking.ITEMS = Set.of();
+						delay = -1;
+						logout = false;
+						stateMachine.accept(ChinManagerStates.IDLE);
+					}
+					else
+					{
+						Banking.ITEMS = plugins
+							.stream()
+							.map((plugin) -> {
+								Set<Integer> items = new HashSet<>();
 
-									if (chinManager.getBankItems().containsKey(plugin))
-									{
-										items.addAll(chinManager.getBankItems().get(plugin));
-									}
+								equipmentList
+									.stream()
+									.filter((equip) -> equip.getName().equals(sanitizedName(plugin)))
+									.findFirst().ifPresent(equipment -> equipment.getEquipment().forEach((item) -> items.add(item.getId())));
 
-									return items;
-								})
-								.flatMap(Set::stream)
-								.collect(Collectors.toSet());
-						}
-					}),
-				chinManager
-					.getlogoutActionObservable()
-					.subscribe(
-						(plugin) ->
-						{
-							if (plugin != null)
-							{
-								stateMachine.accept(ChinManagerStates.LOGOUT);
-							}
-						}
-					),
-				chinManager
-					.hopNowObservable()
-					.subscribe(
-						(plugin) ->
-						{
-							if (plugin != null)
-							{
-								hop();
-							}
-						}
-					),
-				chinManager
-					.getActiveBreaksObservable()
-					.subscribe(this::breakActivated),
-				chinManager
-					.getCurrentlyActiveObservable()
-					.subscribe(this::currentlyActive),
-				chinManager
-					.getBankingObservable()
-					.subscribe((plugin) -> {
-						if (stateMachine.getState() != ChinManagerState.BANKING)
-						{
-							stateMachine.accept(ChinManagerStates.BANKING);
-						}
-					}),
-				chinManager
-					.getTeleportingObservable()
-					.subscribe((plugin) -> {
-						if (stateMachine.getState() != ChinManagerState.TELEPORTING)
-						{
-							stateMachine.accept(ChinManagerStates.TELEPORTING);
-						}
-					}),
-				Observable
-					.interval(1, TimeUnit.SECONDS)
-					.subscribe(this::seconds),
-				chinManager
-					.configChanged
-					.subscribe(
-						(configChanged) -> {
-							if (configChanged.getGroup().equals("mock") && configChanged.getKey().equals("mock"))
-							{
-								if (chinManager.isCurrentlyActive(this) && stateMachine.getState() == ChinManagerState.IDLE)
+								items.addAll(
+									Stream.of(Set.of(
+												ItemID.TELEPORT_TO_HOUSE,
+												ItemID.LAW_RUNE,
+												ItemID.AIR_RUNE,
+												ItemID.EARTH_RUNE
+											),
+											DIGSIDE_PENDANTS,
+											RINGS_OF_DUELING,
+											GAMES_NECKLACES,
+											COMBAT_BRACELETS,
+											SKILLS_NECKLACES,
+											RINGS_OF_WEALTH,
+											AMULETS_OF_GLORY,
+											XERICS_TALISMAN,
+											CONSTRUCT_CAPE,
+											RUNE_POUCHES
+										)
+										.flatMap(Collection::stream)
+										.collect(Collectors.toSet())
+								);
+
+								if (chinManager.getBankItems().containsKey(plugin))
 								{
-									clientThread.invoke(() -> {
-										if (client.getGameState() == GameState.LOGIN_SCREEN)
-										{
-											shouldSetup = true;
-											stateMachine.accept(ChinManagerStates.LOGIN);
-										}
-									});
+									items.addAll(chinManager.getBankItems().get(plugin));
+								}
+
+								return items;
+							})
+							.flatMap(Set::stream)
+							.collect(Collectors.toSet());
+					}
+				}),
+
+			chinManager
+				.getlogoutActionObservable()
+				.subscribe(
+					(plugin) ->
+					{
+						if (plugin != null)
+						{
+							stateMachine.accept(ChinManagerStates.LOGOUT);
+						}
+					}
+				),
+
+			chinManager
+				.hopNowObservable()
+				.subscribe(
+					(plugin) ->
+					{
+						if (plugin != null)
+						{
+							hop();
+						}
+					}
+				),
+
+			chinManager
+				.getActiveBreaksObservable()
+				.subscribe(this::breakActivated),
+
+			chinManager
+				.getCurrentlyActiveObservable()
+				.subscribe(this::currentlyActive),
+
+			chinManager
+				.getBankingObservable()
+				.subscribe((plugin) -> {
+					if (stateMachine.getState() != ChinManagerState.BANKING)
+					{
+						stateMachine.accept(ChinManagerStates.BANKING);
+					}
+				}),
+
+			chinManager
+				.getTeleportingObservable()
+				.subscribe((plugin) -> {
+					if (stateMachine.getState() != ChinManagerState.TELEPORTING)
+					{
+						stateMachine.accept(ChinManagerStates.TELEPORTING);
+					}
+				}),
+
+			Observable
+				.interval(1, TimeUnit.SECONDS)
+				.subscribe(this::seconds),
+
+			chinManager
+				.configChanged
+				.observeOn(Schedulers.from(clientThread))
+				.subscribe(
+					(configChanged) -> {
+						if (configChanged.getGroup().equals("mock") && configChanged.getKey().equals("mock"))
+						{
+							if (chinManager.isCurrentlyActive(this) && stateMachine.getState() == ChinManagerState.IDLE)
+							{
+								if (client.getGameState() == GameState.LOGIN_SCREEN)
+								{
+									shouldSetup = true;
+									stateMachine.accept(ChinManagerStates.LOGIN);
 								}
 							}
-						})
-			)
+						}
+					})
 		);
 	}
 
@@ -1378,24 +1438,25 @@ public class ChinManagerPlugin extends Plugin
 		{
 		}
 
-		Stream.of(
+		Set<CompositeDisposable> compositeDisposableSet = Stream.of(
 				WebsocketManager.DISPOSABLES,
 				ChinManagerPanel.DISPOSABLES,
 				PluginPanel.DISPOSABLES,
 				StatusPanel.DISPOSABLES,
 				InfoPanel.DISPOSABLES,
 				BreakOptionsPanel.DISPOSABLES,
-				EquipmentPanel.DISPOSABLES,
-				DISPOSABLES,
-				PLUGIN_DISPOSABLE_MAP.values()
-					.stream()
-					.flatMap(Collection::stream)
-					.collect(Collectors.toList())
-			).flatMap(Collection::stream)
-			.forEach(disposable -> {
-				if (disposable != null && !disposable.isDisposed())
+				BreakOptionsPanel.BREAK_OPTIONS_DISPOSABLES,
+				OsrsAccountPanel.DISPOSABLES,
+				WebAccountPanel.DISPOSABLES,
+				DISPOSABLES
+			)
+			.collect(Collectors.toSet());
+		compositeDisposableSet.addAll(PLUGIN_DISPOSABLE_MAP.values());
+
+		compositeDisposableSet.forEach(compositeDisposable -> {
+				if (compositeDisposable != null && !compositeDisposable.isDisposed())
 				{
-					disposable.dispose();
+					compositeDisposable.clear();
 				}
 			});
 
@@ -1620,7 +1681,7 @@ public class ChinManagerPlugin extends Plugin
 				{
 					if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
 					{
-						client.runScript(915, 3);
+						client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 3);
 					}
 
 					stateMachine.accept(ChinManagerStates.RESUME);

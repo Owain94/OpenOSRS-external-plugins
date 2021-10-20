@@ -9,6 +9,7 @@ import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,18 +80,17 @@ public class LoginTask implements Task<Void>
 	{
 		disposables.add(
 			Observable.timer(3, TimeUnit.SECONDS)
+				.observeOn(Schedulers.from(clientThread))
 				.subscribe((a) -> {
 					if (chinManager.getActivePlugins().isEmpty())
 					{
 						return;
 					}
 
-					clientThread.invoke(() -> {
-						if (client.getGameState() == GameState.LOGIN_SCREEN)
-						{
-							login();
-						}
-					});
+					if (client.getGameState() == GameState.LOGIN_SCREEN)
+					{
+						login();
+					}
 				})
 		);
 

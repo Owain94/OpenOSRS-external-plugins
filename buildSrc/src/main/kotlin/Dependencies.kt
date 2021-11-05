@@ -30,10 +30,10 @@ object ProjectVersions {
 
 object Libraries {
     private object Versions {
-        const val apacheCommonsText = "1.2"
-        const val guava = "23.2-jre"
-        const val guice = "4.1.0"
-        const val lombok = "1.18.4"
+        const val apacheCommonsText = "1.9"
+        const val guava = "30.1.1-jre"
+        const val guice = "5.0.1"
+        const val lombok = "1.18.20"
         const val pf4j = "3.6.0"
         const val rxjava = "3.1.1"
     }

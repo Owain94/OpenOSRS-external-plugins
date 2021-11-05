@@ -1,4 +1,3 @@
-import com.savvasdalkitsis.jsonmerger.JsonMerger
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.gradle.api.DefaultTask
@@ -12,7 +11,6 @@ import java.nio.file.Paths
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 open class BootstrapTask : DefaultTask() {
@@ -91,7 +89,7 @@ open class BootstrapTask : DefaultTask() {
                         pluginAdded = true
                     }
 
-                    if (!pluginAdded)  {
+                    if (!pluginAdded) {
                         plugins.add(pluginObject)
                     }
 

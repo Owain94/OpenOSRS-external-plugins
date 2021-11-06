@@ -67,7 +67,7 @@ final class OpenBsdSoundCard extends AbstractSoundCard {
      * getSoundCards.
      * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a {@link List} object.
      */
     public static List<SoundCard> getSoundCards() {
         List<String> dmesg = ExecutingCommand.runNative("dmesg");

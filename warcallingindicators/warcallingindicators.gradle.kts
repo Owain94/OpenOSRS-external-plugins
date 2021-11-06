@@ -29,8 +29,8 @@ project.extra["PluginName"] = "War calling indicators"
 project.extra["PluginDescription"] = "War War War"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.20")
+    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.6.0")
 }
 
 tasks {

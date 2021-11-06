@@ -112,7 +112,7 @@ public interface CentralProcessor {
      * representing milliseconds spent in User (0), Nice (1), System (2), Idle (3),
      * IOwait (4), Hardware interrupts (IRQ) (5), Software interrupts/DPC (SoftIRQ)
      * (6), or Steal (7) states. Use
-     * {@link oshi.hardware.CentralProcessor.TickType#getIndex()} to retrieve the
+     * {@link TickType#getIndex()} to retrieve the
      * appropriate index. By measuring the difference between ticks across a time
      * interval, CPU load over that interval may be calculated.
      * <p>
@@ -175,7 +175,7 @@ public interface CentralProcessor {
      * representing milliseconds spent in User (0), Nice (1), System (2), Idle (3),
      * IOwait (4), Hardware interrupts (IRQ) (5), Software interrupts/DPC (SoftIRQ)
      * (6), or Steal (7) states. Use
-     * {@link oshi.hardware.CentralProcessor.TickType#getIndex()} to retrieve the
+     * {@link TickType#getIndex()} to retrieve the
      * appropriate index. By measuring the difference between ticks across a time
      * interval, CPU load over that interval may be calculated.
      * <p>

@@ -1,5 +1,3 @@
-import ProjectVersions.openosrsVersion
-
 buildscript {
     repositories {
         gradlePluginPortal()
@@ -27,7 +25,6 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        jcenter()
     }
 }
 
@@ -40,12 +37,6 @@ subprojects {
 
     repositories {
         mavenCentral {
-            content {
-                excludeGroupByRegex("com\\.openosrs.*")
-            }
-        }
-
-        jcenter {
             content {
                 excludeGroupByRegex("com\\.openosrs.*")
             }
@@ -66,16 +57,21 @@ subprojects {
     apply(plugin = "com.github.andygoossens.gradle-modernizer-plugin")
 
     dependencies {
-        compileOnly("com.openosrs:http-api:$openosrsVersion+")
-        compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
-        compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
+        compileOnly(group = "com.openosrs", name = "http-api", version = "4.15.1")
+        compileOnly(group = "com.openosrs", name = "runelite-api", version = "4.15.1")
+        compileOnly(group = "com.openosrs", name = "runelite-client", version = "4.15.1")
 
-        compileOnly(Libraries.apacheCommonsText)
-        compileOnly(Libraries.guava)
-        compileOnly(Libraries.guice)
-        compileOnly(Libraries.lombok)
-        compileOnly(Libraries.pf4j)
-        compileOnly(Libraries.rxjava)
+        compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.9")
+        compileOnly(group = "com.google.guava", name = "guava", version = "30.1.1-jre") {
+            exclude(group = "com.google.code.findbugs", module = "jsr305")
+            exclude(group = "com.google.errorprone", module = "error_prone_annotations")
+            exclude(group = "com.google.j2objc", module = "j2objc-annotations")
+            exclude(group = "org.codehaus.mojo", module = "animal-sniffer-annotations")
+        }
+        compileOnly(group = "com.google.inject", name = "guice", version = "5.0.1")
+        compileOnly(group = "org.projectlombok", name = "lombok", version = "1.18.4")
+        compileOnly(group = "org.pf4j", name = "pf4j", version = "3.6.0")
+        compileOnly(group = "io.reactivex.rxjava3", name = "rxjava", version = "3.1.1")
     }
 
     if (this.name != "oshi") {
@@ -83,7 +79,7 @@ subprojects {
 
         checkstyle {
             maxWarnings = 0
-            toolVersion = "8.25"
+            toolVersion = "9.1"
             isShowViolations = true
             isIgnoreFailures = false
         }
@@ -102,22 +98,10 @@ subprojects {
         }
     }
 
-    configure<JavaPluginConvention> {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
     tasks {
-        withType<JavaCompile> {
-            options.encoding = "UTF-8"
-        }
-
-        compileKotlin {
-            kotlinOptions {
-                jvmTarget = "11"
-                freeCompilerArgs = listOf("-Xjvm-default=enable")
-            }
-            sourceCompatibility = "11"
+        java {
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
         }
 
         withType<AbstractArchiveTask> {
@@ -127,8 +111,20 @@ subprojects {
             fileMode = 420
         }
 
+        withType<JavaCompile> {
+            options.encoding = "UTF-8"
+        }
+
         withType<Checkstyle> {
             group = "verification"
+        }
+
+        compileKotlin {
+            kotlinOptions {
+                jvmTarget = "11"
+                freeCompilerArgs = listOf("-Xjvm-default=enable")
+            }
+            sourceCompatibility = "11"
         }
 
         register<Copy>("copyDeps") {

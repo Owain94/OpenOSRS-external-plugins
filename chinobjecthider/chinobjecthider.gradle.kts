@@ -29,8 +29,8 @@ project.extra["PluginName"] = "Chin object hider"
 project.extra["PluginDescription"] = "Object goes poof"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.20")
+    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.6.0")
 }
 
 tasks {

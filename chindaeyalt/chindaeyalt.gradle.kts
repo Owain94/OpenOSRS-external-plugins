@@ -29,8 +29,8 @@ project.extra["PluginName"] = "Chin daeyalt"
 project.extra["PluginDescription"] = "Daeyalt essence miner"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.20")
+    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.6.0")
 
     compileOnly(project(":chinbreakhandler"))
 }

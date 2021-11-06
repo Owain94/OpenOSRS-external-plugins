@@ -77,14 +77,14 @@ public interface ComputerSystem {
     /**
      * Get the computer system firmware/BIOS.
      *
-     * @return A {@link oshi.hardware.Firmware} object for this system
+     * @return A {@link Firmware} object for this system
      */
     Firmware getFirmware();
 
     /**
      * Get the computer system baseboard/motherboard.
      *
-     * @return A {@link oshi.hardware.Baseboard} object for this system
+     * @return A {@link Baseboard} object for this system
      */
     Baseboard getBaseboard();
 

@@ -25,6 +25,7 @@ package oshi.util.platform.windows;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -78,7 +79,7 @@ public final class PerfCounterQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param perfObject
@@ -111,7 +112,7 @@ public final class PerfCounterQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param perfObject
@@ -154,7 +155,7 @@ public final class PerfCounterQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param wmiClass
@@ -164,13 +165,13 @@ public final class PerfCounterQuery {
      */
     public static <T extends Enum<T>> Map<T, Long> queryValuesFromWMI(Class<T> propertyEnum, String wmiClass) {
         WmiQuery<T> query = new WmiQuery<>(wmiClass, propertyEnum);
-        WmiResult<T> result = WmiQueryHandler.createInstance().queryWMI(query);
+        WmiResult<T> result = Objects.requireNonNull(WmiQueryHandler.createInstance()).queryWMI(query);
         EnumMap<T, Long> valueMap = new EnumMap<>(propertyEnum);
         if (result.getResultCount() > 0) {
             for (T prop : propertyEnum.getEnumConstants()) {
                 switch (result.getCIMType(prop)) {
                 case Wbemcli.CIM_UINT16:
-                    valueMap.put(prop, Long.valueOf(WmiUtil.getUint16(result, prop, 0)));
+                    valueMap.put(prop, (long) WmiUtil.getUint16(result, prop, 0));
                     break;
                 case Wbemcli.CIM_UINT32:
                     valueMap.put(prop, WmiUtil.getUint32asLong(result, prop, 0));

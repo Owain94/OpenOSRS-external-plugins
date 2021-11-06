@@ -32,6 +32,7 @@ import static oshi.util.Memoizer.memoize;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -288,7 +289,7 @@ public class WindowsOperatingSystem extends AbstractOperatingSystem {
         Map<Integer, Integer> parentPidMap = new HashMap<>();
         // Get processes from ToolHelp API for parent PID
         Tlhelp32.PROCESSENTRY32.ByReference processEntry = new Tlhelp32.PROCESSENTRY32.ByReference();
-        WinNT.HANDLE snapshot = Kernel32.INSTANCE.CreateToolhelp32Snapshot(Tlhelp32.TH32CS_SNAPPROCESS, new DWORD(0));
+        HANDLE snapshot = Kernel32.INSTANCE.CreateToolhelp32Snapshot(Tlhelp32.TH32CS_SNAPPROCESS, new DWORD(0));
         try {
             while (Kernel32.INSTANCE.Process32Next(snapshot, processEntry)) {
                 parentPidMap.put(processEntry.th32ProcessID.intValue(), processEntry.th32ParentProcessID.intValue());
@@ -481,15 +482,15 @@ public class WindowsOperatingSystem extends AbstractOperatingSystem {
     }
 
     @Override
-    public OSService[] getServices() {
+    public List<OSService> getServices() {
         try (W32ServiceManager sm = new W32ServiceManager()) {
             sm.open(Winsvc.SC_MANAGER_ENUMERATE_SERVICE);
             Winsvc.ENUM_SERVICE_STATUS_PROCESS[] services = sm.enumServicesStatusExProcess(WinNT.SERVICE_WIN32,
                     Winsvc.SERVICE_STATE_ALL, null);
-            OSService[] svcArray = new OSService[services.length];
-            for (int i = 0; i < services.length; i++) {
+            List<OSService> svcArray = new ArrayList<>();
+            for (Winsvc.ENUM_SERVICE_STATUS_PROCESS service : services) {
                 State state;
-                switch (services[i].ServiceStatusProcess.dwCurrentState) {
+                switch (service.ServiceStatusProcess.dwCurrentState) {
                 case 1:
                     state = STOPPED;
                     break;
@@ -500,13 +501,12 @@ public class WindowsOperatingSystem extends AbstractOperatingSystem {
                     state = OTHER;
                     break;
                 }
-                svcArray[i] = new OSService(services[i].lpDisplayName, services[i].ServiceStatusProcess.dwProcessId,
-                        state);
+                svcArray.add(new OSService(service.lpDisplayName, service.ServiceStatusProcess.dwProcessId, state));
             }
             return svcArray;
-        } catch (com.sun.jna.platform.win32.Win32Exception ex) {
+        } catch (Win32Exception ex) {
             LOG.error("Win32Exception: {}", ex.getMessage());
-            return new OSService[0];
+            return Collections.emptyList();
         }
     }
 

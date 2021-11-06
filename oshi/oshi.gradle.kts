@@ -23,9 +23,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "5.8.0"
+version = "5.8.3"
 
 dependencies {
-    compileOnly(group = "net.java.dev.jna", name = "jna", version = "5.8.0")
-    compileOnly(group = "net.java.dev.jna", name = "jna-platform", version = "5.8.0")
+    compileOnly(group = "net.java.dev.jna", name = "jna", version = "5.9.0")
+    compileOnly(group = "net.java.dev.jna", name = "jna-platform", version = "5.9.0")
 }

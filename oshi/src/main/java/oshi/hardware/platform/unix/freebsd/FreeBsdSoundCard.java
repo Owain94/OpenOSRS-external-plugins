@@ -61,7 +61,7 @@ final class FreeBsdSoundCard extends AbstractSoundCard {
      * getSoundCards.
      * </p>
      *
-     * @return a {@link java.util.List} object.
+     * @return a {@link List} object.
      */
     public static List<SoundCard> getSoundCards() {
         Map<String, String> vendorMap = new HashMap<>();

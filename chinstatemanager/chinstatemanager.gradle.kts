@@ -26,5 +26,5 @@
 version = "1.0.0"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
+    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.20")
 }

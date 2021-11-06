@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,7 +69,7 @@ public final class PerfCounterWildcardQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PerfCounterQuery.PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param perfObject
@@ -103,7 +104,7 @@ public final class PerfCounterWildcardQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PerfCounterQuery.PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param perfObject
@@ -177,7 +178,7 @@ public final class PerfCounterWildcardQuery {
      *            The enum type of {@code propertyEnum}
      * @param propertyEnum
      *            An enum which implements
-     *            {@link oshi.util.platform.windows.PerfCounterQuery.PdhCounterProperty}
+     *            {@link PerfCounterQuery.PdhCounterProperty}
      *            and contains the WMI field (Enum value) and PDH Counter string
      *            (instance and counter)
      * @param wmiClass
@@ -191,7 +192,7 @@ public final class PerfCounterWildcardQuery {
         List<String> instances = new ArrayList<>();
         EnumMap<T, List<Long>> valuesMap = new EnumMap<>(propertyEnum);
         WmiQuery<T> query = new WmiQuery<>(wmiClass, propertyEnum);
-        WmiResult<T> result = WmiQueryHandler.createInstance().queryWMI(query);
+        WmiResult<T> result = Objects.requireNonNull(WmiQueryHandler.createInstance()).queryWMI(query);
         if (result.getResultCount() > 0) {
             for (T prop : propertyEnum.getEnumConstants()) {
                 // First element is instance name
@@ -204,7 +205,7 @@ public final class PerfCounterWildcardQuery {
                     for (int i = 0; i < result.getResultCount(); i++) {
                         switch (result.getCIMType(prop)) {
                         case Wbemcli.CIM_UINT16:
-                            values.add(Long.valueOf(WmiUtil.getUint16(result, prop, i)));
+                            values.add((long) WmiUtil.getUint16(result, prop, i));
                             break;
                         case Wbemcli.CIM_UINT32:
                             values.add(WmiUtil.getUint32asLong(result, prop, i));

@@ -136,7 +136,7 @@ public final class GlobalConfig {
     }
 
     /**
-     * Load the given {@link java.util.Properties} into the global configuration.
+     * Load the given {@link Properties} into the global configuration.
      *
      * @param properties
      *            The new properties

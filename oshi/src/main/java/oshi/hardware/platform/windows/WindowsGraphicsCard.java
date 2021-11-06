@@ -71,7 +71,7 @@ final class WindowsGraphicsCard extends AbstractGraphicsCard {
      * {@link oshi.hardware.common.AbstractHardwareAbstractionLayer} to access the
      * graphics cards.
      *
-     * @return List of {@link oshi.hardware.platform.windows.WindowsGraphicsCard}
+     * @return List of {@link WindowsGraphicsCard}
      *         objects.
      */
     public static List<GraphicsCard> getGraphicsCards() {

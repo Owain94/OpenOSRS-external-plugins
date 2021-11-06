@@ -58,7 +58,7 @@ public final class Xwininfo {
      *
      * @param visibleOnly
      *            Whether to restrict the list to only windows visible to the user.
-     * @return A list of {@link oshi.software.os.OSDesktopWindow} objects
+     * @return A list of {@link OSDesktopWindow} objects
      *         representing the desktop windows.
      */
     public static List<OSDesktopWindow> queryXWindows(boolean visibleOnly) {

@@ -31,18 +31,14 @@ project.extra["PluginDescription"] = "Configure and manage chin plugins"
 dependencies {
     api(project(":oshi"))
 
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
+    annotationProcessor(group = "org.projectlombok", name = "lombok", version = "1.18.20")
+    annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.6.0")
 
     api(project(":chinstatemanager"))
     api(project(":chinautomation"))
 
     compileOnly(group = "com.google.code.gson", name = "gson", version = "2.8.5")
     compileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1")
-
-//    implementation(group = "com.github.HayateLaTech", name = "OAuth2Discord", version = "-SNAPSHOT") {
-//        exclude(group = "com.squareup.okhttp3")
-//    }
 }
 
 tasks {

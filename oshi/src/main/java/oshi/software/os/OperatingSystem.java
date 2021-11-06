@@ -23,6 +23,7 @@
  */
 package oshi.software.os;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -50,16 +51,6 @@ import oshi.util.Util;
  */
 @ThreadSafe
 public interface OperatingSystem {
-
-    /**
-     * Controls sorting of Process lists.
-     *
-     * @deprecated Use comparators from {@link ProcessSorting}.
-     */
-    @Deprecated
-    enum ProcessSort {
-        CPU, MEMORY, OLDEST, NEWEST, PID, PARENTPID, NAME
-    }
 
     /**
      * Constants which may be used to filter Process lists in
@@ -139,41 +130,6 @@ public interface OperatingSystem {
          */
         public static final Comparator<OSProcess> NAME_ASC = Comparator.comparing(OSProcess::getName,
                 String.CASE_INSENSITIVE_ORDER);
-
-        /**
-         * Temporary method to convert deprecated ProcessSort to its corresponding
-         * comparator. Remove when the deprecated enum is removed.
-         *
-         * @param sort
-         *            The process sort
-         * @return The corresponding comparator
-         */
-        private static Comparator<OSProcess> convertSortToComparator(ProcessSort sort) {
-            if (sort != null) {
-                switch (sort) {
-                case CPU:
-                    return CPU_DESC;
-                case MEMORY:
-                    return RSS_DESC;
-                case OLDEST:
-                    return UPTIME_DESC;
-                case NEWEST:
-                    return UPTIME_ASC;
-                case PID:
-                    return PID_ASC;
-                case PARENTPID:
-                    return PARENTPID_ASC;
-                case NAME:
-                    return NAME_ASC;
-                default:
-                    // Should never get here! If you get this exception you've
-                    // added something to the enum without adding it here. Tsk.
-                    // But that enum is now deprecated so double-tsk if you add!
-                    throw new IllegalArgumentException("Unimplemented enum type: " + sort.toString());
-                }
-            }
-            return NO_SORTING;
-        }
     }
 
     /**
@@ -198,26 +154,26 @@ public interface OperatingSystem {
     OSVersionInfo getVersionInfo();
 
     /**
-     * Instantiates a {@link oshi.software.os.FileSystem} object.
+     * Instantiates a {@link FileSystem} object.
      *
-     * @return A {@link oshi.software.os.FileSystem} object.
+     * @return A {@link FileSystem} object.
      */
     FileSystem getFileSystem();
 
     /**
-     * Instantiates a {@link oshi.software.os.InternetProtocolStats} object.
+     * Instantiates a {@link InternetProtocolStats} object.
      *
-     * @return a {@link oshi.software.os.InternetProtocolStats} object.
+     * @return a {@link InternetProtocolStats} object.
      */
     InternetProtocolStats getInternetProtocolStats();
 
     /**
      * Gets currently running processes. No order is guaranteed.
      *
-     * @return A list of {@link oshi.software.os.OSProcess} objects for the
+     * @return A list of {@link OSProcess} objects for the
      *         specified number (or all) of currently running processes, sorted as
      *         specified. The list may contain null elements or processes with a
-     *         state of {@link OSProcess.State#INVALID} if a process terminates
+     *         state of {@link State#INVALID} if a process terminates
      *         during iteration.
      */
     default List<OSProcess> getProcesses() {
@@ -238,38 +194,14 @@ public interface OperatingSystem {
      *            {@code null} for no sorting.
      * @param limit
      *            Max number of results to return, or 0 to return all results
-     * @return A list of {@link oshi.software.os.OSProcess} objects, optionally
+     * @return A list of {@link OSProcess} objects, optionally
      *         filtered, sorted, and limited to the specified number.
      *         <p>
      *         The list may contain processes with a state of
-     *         {@link OSProcess.State#INVALID} if a process terminates during
+     *         {@link State#INVALID} if a process terminates during
      *         iteration.
      */
     List<OSProcess> getProcesses(Predicate<OSProcess> filter, Comparator<OSProcess> sort, int limit);
-
-    /**
-     * Gets currently running processes, optionally limited to the top "N" for a
-     * particular sorting order. If a positive limit is specified, returns only that
-     * number of processes; zero will return all processes. The order may be
-     * specified by the sort parameter, for example, to return the top cpu or memory
-     * consuming processes; if the sort is {@code null}, no order is guaranteed.
-     *
-     * @param limit
-     *            Max number of results to return, or 0 to return all results
-     * @param sort
-     *            If not null, determines sorting of results
-     * @return A list of {@link oshi.software.os.OSProcess} objects for the
-     *         specified number (or all) of currently running processes, sorted as
-     *         specified. The list may contain null elements or processes with a
-     *         state of {@link OSProcess.State#INVALID} if a process terminates
-     *         during iteration.
-     * @deprecated Use {@link #getProcesses(Predicate, Comparator, int)} with
-     *             sorting constants from {@link ProcessSorting}.
-     */
-    @Deprecated
-    default List<OSProcess> getProcesses(int limit, ProcessSort sort) {
-        return getProcesses(null, ProcessSorting.convertSortToComparator(sort), limit);
-    }
 
     /**
      * Gets information on a {@link Collection} of currently running processes. This
@@ -277,7 +209,7 @@ public interface OperatingSystem {
      *
      * @param pids
      *            A collection of process IDs
-     * @return A list of {@link oshi.software.os.OSProcess} objects for the
+     * @return A list of {@link OSProcess} objects for the
      *         specified process ids if it is running
      */
     default List<OSProcess> getProcesses(Collection<Integer> pids) {
@@ -290,37 +222,10 @@ public interface OperatingSystem {
      *
      * @param pid
      *            A process ID
-     * @return An {@link oshi.software.os.OSProcess} object for the specified
+     * @return An {@link OSProcess} object for the specified
      *         process id if it is running; null otherwise
      */
     OSProcess getProcess(int pid);
-
-    /**
-     * Gets currently running child processes of provided parent PID, optionally
-     * limited to the top "N" for a particular sorting order. If a positive limit is
-     * specified, returns only that number of processes; zero will return all
-     * processes. The order may be specified by the sort parameter, for example, to
-     * return the top cpu or memory consuming processes; if the sort is
-     * {@code null}, no order is guaranteed.
-     *
-     * @param parentPid
-     *            A process ID
-     * @param limit
-     *            Max number of results to return, or 0 to return all results
-     * @param sort
-     *            If not null, determines sorting of results
-     * @return A list of {@link oshi.software.os.OSProcess} objects representing the
-     *         specified number (or all) of currently running child processes of the
-     *         provided PID, sorted as specified. The list may contain null elements
-     *         or processes with a state of {@link OSProcess.State#INVALID} if a
-     *         process terminates during iteration.
-     * @deprecated Use {@link #getChildProcesses(int, Predicate, Comparator, int)}
-     *             with sorting constants from {@link ProcessSorting}.
-     */
-    @Deprecated
-    default List<OSProcess> getChildProcesses(int parentPid, int limit, ProcessSort sort) {
-        return getChildProcesses(parentPid, null, ProcessSorting.convertSortToComparator(sort), limit);
-    }
 
     /**
      * Gets currently running child processes of provided parent PID, optionally
@@ -338,12 +243,12 @@ public interface OperatingSystem {
      *            {@code null} for no sorting.
      * @param limit
      *            Max number of results to return, or 0 to return all results
-     * @return A list of {@link oshi.software.os.OSProcess} objects representing the
+     * @return A list of {@link OSProcess} objects representing the
      *         currently running child processes of the provided PID, optionally
      *         filtered, sorted, and limited to the specified number.
      *         <p>
      *         The list may contain processes with a state of
-     *         {@link OSProcess.State#INVALID} if a process terminates during
+     *         {@link State#INVALID} if a process terminates during
      *         iteration.
      */
     List<OSProcess> getChildProcesses(int parentPid, Predicate<OSProcess> filter, Comparator<OSProcess> sort,
@@ -366,12 +271,12 @@ public interface OperatingSystem {
      *            {@code null} for no sorting.
      * @param limit
      *            Max number of results to return, or 0 to return all results
-     * @return A list of {@link oshi.software.os.OSProcess} objects representing the
+     * @return A list of {@link OSProcess} objects representing the
      *         currently running descendant processes of the provided PID,
      *         optionally filtered, sorted, and limited to the specified number.
      *         <p>
      *         The list may contain processes with a state of
-     *         {@link OSProcess.State#INVALID} if a process terminates during
+     *         {@link State#INVALID} if a process terminates during
      *         iteration.
      */
     List<OSProcess> getDescendantProcesses(int parentPid, Predicate<OSProcess> filter, Comparator<OSProcess> sort,
@@ -431,9 +336,9 @@ public interface OperatingSystem {
     }
 
     /**
-     * Instantiates a {@link oshi.software.os.NetworkParams} object.
+     * Instantiates a {@link NetworkParams} object.
      *
-     * @return A {@link oshi.software.os.NetworkParams} object.
+     * @return A {@link NetworkParams} object.
      */
     NetworkParams getNetworkParams();
 
@@ -443,8 +348,8 @@ public interface OperatingSystem {
      *
      * @return An array of {@link OSService} objects
      */
-    default OSService[] getServices() {
-        return new OSService[0];
+    default List<OSService> getServices() {
+        return new ArrayList<>();
     }
 
     /**
@@ -456,13 +361,13 @@ public interface OperatingSystem {
      * introducing any additional conflicts. Users should note, however, that other
      * operating system code may access the same native code.
      * <p>
-     * The {@link oshi.driver.unix.Who#queryWho()} method produces similar output
+     * The {@link Who#queryWho()} method produces similar output
      * parsing the output of the Posix-standard {@code who} command, and may
      * internally employ reentrant code on some platforms. Users may opt to use this
      * command-line variant by default using the {@code oshi.os.unix.whoCommand}
      * configuration property.
      *
-     * @return A list of {@link oshi.software.os.OSSession} objects representing
+     * @return A list of {@link OSSession} objects representing
      *         logged-in users
      */
     default List<OSSession> getSessions() {
@@ -485,7 +390,7 @@ public interface OperatingSystem {
      *            <p>
      *            This is a best effort attempt at a reasonable definition of
      *            visibility. Visible windows may be completely transparent.
-     * @return A list of {@link oshi.software.os.OSDesktopWindow} objects
+     * @return A list of {@link OSDesktopWindow} objects
      *         representing the desktop windows.
      */
     default List<OSDesktopWindow> getDesktopWindows(boolean visibleOnly) {
@@ -505,7 +410,13 @@ public interface OperatingSystem {
         private final String versionStr;
 
         public OSVersionInfo(String version, String codeName, String buildNumber) {
-            this.version = version;
+            // Insider Preview Windows 11 is marked as Windows 10 build 22000
+            // Temporary code until JDK os.name matches up
+            if ("10".equals(version) && buildNumber.compareTo("22000") >= 0) {
+                this.version = "11";
+            } else {
+                this.version = version;
+            }
             this.codeName = codeName;
             this.buildNumber = buildNumber;
 

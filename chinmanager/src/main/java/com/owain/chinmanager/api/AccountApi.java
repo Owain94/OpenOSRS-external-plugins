@@ -17,8 +17,6 @@ import okhttp3.ResponseBody;
 @Slf4j
 public class AccountApi
 {
-	public static final boolean DEBUG = false;
-
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ConfigManager configManager;
 
@@ -29,37 +27,65 @@ public class AccountApi
 		this.configManager = chinManagerPlugin.getConfigManager();
 	}
 
-	public Observable<Boolean> login(String username, String password)
+	public Observable<Integer> login(String username, String password)
 	{
 		return Observable.defer(() ->
 		{
-			HttpUrl httpUrl;
-
-			if (DEBUG)
-			{
-				httpUrl = new HttpUrl.Builder()
-					.scheme("http")
-					.host("localhost")
-					.port(4200)
-					.addPathSegment("api")
-					.addPathSegment("user")
-					.addPathSegment("signin")
-					.build();
-			}
-			else
-			{
-				httpUrl = new HttpUrl.Builder()
-					.scheme("https")
-					.host("chinplugins.xyz")
-					.addPathSegment("api")
-					.addPathSegment("user")
-					.addPathSegment("signin")
-					.build();
-			}
+			HttpUrl httpUrl = BaseApi.user("signin");
 
 			JsonObject json = new JsonObject();
 			json.addProperty("email", username);
 			json.addProperty("password", password);
+
+			RequestBody body = RequestBody.create(json.toString(), JSON);
+
+			Request request = new Request.Builder()
+				.addHeader("accept", "application/json")
+				.url(httpUrl)
+				.post(body)
+				.build();
+
+			try (Response response = chinManagerPlugin.getOkHttpClient().newCall(request).execute())
+			{
+				ResponseBody responseBody = response.body();
+				if (responseBody == null)
+				{
+					return Observable.just(-1);
+				}
+
+				String responseBodyString = responseBody.string();
+				if (responseBodyString.isEmpty() || responseBodyString.contains("message"))
+				{
+					responseBody.close();
+					return Observable.just(-1);
+				}
+
+				responseBody.close();
+
+				if (responseBodyString.contains("\"totp\":true"))
+				{
+					return Observable.just(0);
+				}
+
+				return Observable.just(1);
+			}
+			catch (Exception ignored)
+			{
+				return Observable.just(-1);
+			}
+		});
+	}
+
+	public Observable<Boolean> loginAuth(String username, String password, String code)
+	{
+		return Observable.defer(() ->
+		{
+			HttpUrl httpUrl = BaseApi.user("signin");
+
+			JsonObject json = new JsonObject();
+			json.addProperty("email", username);
+			json.addProperty("password", password);
+			json.addProperty("code", code);
 
 			RequestBody body = RequestBody.create(json.toString(), JSON);
 
@@ -85,6 +111,7 @@ public class AccountApi
 				}
 
 				responseBody.close();
+
 				return Observable.just(true);
 			}
 			catch (Exception ignored)
@@ -105,29 +132,7 @@ public class AccountApi
 				return Observable.just("");
 			}
 
-			HttpUrl httpUrl;
-
-			if (DEBUG)
-			{
-				httpUrl = new HttpUrl.Builder()
-					.scheme("http")
-					.host("localhost")
-					.port(4200)
-					.addPathSegment("api")
-					.addPathSegment("user")
-					.addPathSegment("check")
-					.build();
-			}
-			else
-			{
-				httpUrl = new HttpUrl.Builder()
-					.scheme("https")
-					.host("chinplugins.xyz")
-					.addPathSegment("api")
-					.addPathSegment("user")
-					.addPathSegment("check")
-					.build();
-			}
+			HttpUrl httpUrl = BaseApi.user("check");
 
 			RequestBody body = RequestBody.create("{}", JSON);
 
@@ -180,6 +185,73 @@ public class AccountApi
 			catch (Exception e)
 			{
 				return Observable.just("");
+			}
+		});
+	}
+
+	public Observable<Integer> oneTime(String key, String code)
+	{
+		return Observable.defer(() ->
+		{
+			HttpUrl httpUrl = BaseApi.discord("onetime");
+
+			JsonObject json = new JsonObject();
+			json.addProperty("key", key);
+			json.addProperty("totp", code);
+
+			RequestBody body = RequestBody.create(json.toString(), JSON);
+
+			Request request = new Request.Builder()
+				.addHeader("accept", "application/json")
+				.url(httpUrl)
+				.post(body)
+				.build();
+
+			try (Response response = chinManagerPlugin.getOkHttpClient().newCall(request).execute())
+			{
+				ResponseBody responseBody = response.body();
+				if (responseBody == null)
+				{
+					return Observable.just(0);
+				}
+
+				String responseBodyString = responseBody.string();
+				if (responseBodyString.isEmpty())
+				{
+					responseBody.close();
+					return Observable.just(0);
+				}
+
+				responseBody.close();
+
+				JsonObject responseBodyJson = GSON.fromJson(responseBodyString, JsonObject.class);
+				boolean success = responseBodyJson.get("success").getAsBoolean();
+
+				if (success)
+				{
+					return Observable.just(1);
+				}
+				else
+				{
+					String error = responseBodyJson.get("error").getAsString();
+
+					if (error.equals("Requires TOTP"))
+					{
+						return Observable.just(-1);
+					}
+					else if (error.equals("Invalid TOTP"))
+					{
+						return Observable.just(2);
+					}
+					else
+					{
+						return Observable.just(0);
+					}
+				}
+			}
+			catch (Exception ignored)
+			{
+				return Observable.just(0);
 			}
 		});
 	}

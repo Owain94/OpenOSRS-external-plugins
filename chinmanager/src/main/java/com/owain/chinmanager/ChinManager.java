@@ -68,6 +68,9 @@ public class ChinManager
 	private final Set<Plugin> handover = new HashSet<>();
 	private final PublishSubject<Set<Plugin>> handoverSubject = PublishSubject.create();
 
+	private final Map<String, String> warnings = new HashMap<>();
+	private final PublishSubject<Map<String, String>> warningsSubject = PublishSubject.create();
+
 	private boolean isBanking = false;
 	private Plugin bankingPlugin;
 	private final PublishSubject<Plugin> bankingSubject = PublishSubject.create();
@@ -633,6 +636,39 @@ public class ChinManager
 	{
 		extraData.remove(plugin);
 		extraDataSubject.onNext(extraData);
+	}
+
+	public Map<String, String> getWarnings()
+	{
+		return warnings;
+	}
+
+	public @NonNull Observable<Map<String, String>> getWarningsObservable()
+	{
+		return warningsSubject.hide();
+	}
+
+	public void addWarning(String header, String message)
+	{
+		if (warnings.containsKey(header))
+		{
+			return;
+		}
+
+		warnings.put(header, message);
+		warningsSubject.onNext(warnings);
+	}
+
+	public void removeWarning(String header)
+	{
+		warnings.remove(header);
+		warningsSubject.onNext(warnings);
+	}
+
+	public void resetWarnings()
+	{
+		warnings.clear();
+		warningsSubject.onNext(warnings);
 	}
 
 	public @NonNull Observable<Map<Plugin, Map<String, String>>> getExtraDataObservable()

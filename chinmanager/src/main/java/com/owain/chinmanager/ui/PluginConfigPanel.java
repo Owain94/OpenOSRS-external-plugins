@@ -30,7 +30,7 @@ public class PluginConfigPanel extends JPanel
 
 		String startPlugins = "Select the plugin(s) you would like to start below and click on the start button. Make sure to configure your gear in the gear tab below!";
 		String gear = "Configure your gear for each plugin below. If any or all slots are left empty your current equipped item for that slot will be used!";
-		String teleports = "Configure the teleports that you have available on your account, this is used when transitioning between plugins!";
+		String teleports = "Configure the teleports that you have available on your account, these gear setups are used when transitioning between plugins!";
 
 		JMultilineLabel description = new JMultilineLabel();
 		description.setText(startPlugins);

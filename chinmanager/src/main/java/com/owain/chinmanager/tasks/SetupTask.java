@@ -2,7 +2,6 @@ package com.owain.chinmanager.tasks;
 
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
-import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
@@ -10,6 +9,7 @@ import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.KEY_TYPED;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -36,6 +36,11 @@ public class SetupTask implements Task<Void>
 	@Override
 	public void routine(ObservableEmitter<Void> emitter)
 	{
+		if (chinManagerPlugin.getExecutorService() == null || chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
+		{
+			chinManagerPlugin.setExecutorService(Executors.newSingleThreadExecutor());
+		}
+
 		chinManagerPlugin.getExecutorService().submit(() ->
 		{
 			ChinManagerPlugin.shouldSetup = false;
@@ -56,12 +61,13 @@ public class SetupTask implements Task<Void>
 				keyEvent(KeyEvent.KEY_RELEASED, KeyEvent.VK_UP);
 
 				clientThread.invoke(() -> {
-					ChinManagerState.stateMachine.accept(ChinManagerStates.IDLE);
+					chinManagerPlugin.transition(ChinManagerStates.IDLE);
+
 					if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
 					{
 						client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 3);
 					}
-					chinManager.setCurrentlyActive(chinManager.getActivePlugins().stream().findFirst().orElse(null));
+					chinManager.setCurrentlyActive(chinManager.getNextActive());
 				});
 			}
 			catch (InterruptedException e)
@@ -69,6 +75,11 @@ public class SetupTask implements Task<Void>
 				log.error("Oops!", e);
 			}
 		});
+	}
+
+	public void unsubscribe()
+	{
+		chinManagerPlugin.getExecutorService().shutdownNow();
 	}
 
 	public void keyEvent(int id, int key)

@@ -6,7 +6,6 @@ import com.google.common.primitives.Ints;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.ChinManagerPlugin.CONFIG_GROUP;
-import com.owain.chinmanager.ui.ChinManagerPanel;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.awt.BorderLayout;
@@ -203,18 +202,6 @@ public class ConfigPanel extends FixedWidthPanel
 
 			if (cid.getType().isAssignableFrom(Consumer.class))
 			{
-				String userId = configManager.getConfiguration(CONFIG_GROUP, "discord-id");
-				if (cid.getItem().keyName().equals("discordLogin") && userId != null && !userId.isEmpty())
-				{
-					JMultilineLabel currentUser = new JMultilineLabel();
-					currentUser.setText("Currently logged in as: \"" + configManager.getConfiguration(CONFIG_GROUP, "discord-username") + "\", click below to change user");
-					currentUser.setFont(ChinManagerPanel.SMALL_FONT);
-					currentUser.setDisabledTextColor(Color.WHITE);
-					currentUser.setBorder(new EmptyBorder(0, 0, 5, 0));
-
-					item.add(currentUser, BorderLayout.CENTER);
-				}
-
 				JButton button = new JButton(cid.getItem().name());
 				button.addActionListener((e) ->
 					configManager.getConsumer(pluginConfig.getGroup().value(), cid.getItem().keyName()).accept(chinManagerPlugin));

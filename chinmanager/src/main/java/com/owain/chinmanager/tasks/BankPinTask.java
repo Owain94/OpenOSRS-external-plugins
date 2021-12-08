@@ -1,13 +1,13 @@
 package com.owain.chinmanager.tasks;
 
 import com.owain.chinmanager.ChinManagerPlugin;
-import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -46,17 +46,24 @@ public class BankPinTask implements Task<Void>
 	@Override
 	public void routine(ObservableEmitter<Void> emitter)
 	{
+		if (chinManagerPlugin.getExecutorService() == null || chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
+		{
+			chinManagerPlugin.setExecutorService(Executors.newSingleThreadExecutor());
+		}
+
 		eventBus.register(this);
 	}
 
 	public void unsubscribe()
 	{
+		chinManagerPlugin.getExecutorService().shutdownNow();
+
+		eventBus.unregister(this);
+
 		first = false;
 		second = false;
 		third = false;
 		fourth = false;
-
-		eventBus.unregister(this);
 
 		for (Disposable disposable : disposables)
 		{
@@ -78,7 +85,7 @@ public class BankPinTask implements Task<Void>
 		{
 			if (client.getItemContainer(InventoryID.BANK) != null)
 			{
-				stateMachine.accept(ChinManagerStates.IDLE);
+				chinManagerPlugin.transition(ChinManagerStates.IDLE);
 				return;
 			}
 
@@ -97,13 +104,13 @@ public class BankPinTask implements Task<Void>
 			}
 			else
 			{
-				stateMachine.accept(ChinManagerStates.IDLE);
+				chinManagerPlugin.transition(ChinManagerStates.IDLE);
 				return;
 			}
 
 			if (bankpin == null || bankpin.length() != 4)
 			{
-				stateMachine.accept(ChinManagerStates.IDLE);
+				chinManagerPlugin.transition(ChinManagerStates.IDLE);
 				return;
 			}
 
@@ -181,7 +188,7 @@ public class BankPinTask implements Task<Void>
 		}
 		else
 		{
-			stateMachine.accept(ChinManagerStates.IDLE);
+			chinManagerPlugin.transition(ChinManagerStates.IDLE);
 		}
 	}
 }

@@ -27,9 +27,13 @@ public class KeyTask implements Task<Void>
 	@Override
 	public void routine(ObservableEmitter<Void> emitter)
 	{
+		if (chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
+		{
+			return;
+		}
+
 		chinManagerPlugin.getExecutorService().submit(() ->
 		{
-
 			try
 			{
 				if (input.equals(" "))

@@ -5,13 +5,13 @@ import com.google.gson.JsonObject;
 import com.openosrs.client.OpenOSRS;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
-import static com.owain.chinmanager.api.AccountApi.DEBUG;
+import static com.owain.chinmanager.api.BaseApi.DEBUG;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.ArrayList;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +41,6 @@ public class WebsocketManager extends WebSocketListener
 	private final ChinManager chinManager;
 	private final InfoPanel infoPanel;
 	public String token = null;
-	private int ticksWithoutFriend = 0;
 	private Boolean isSocketConnected = false;
 	private Boolean broadcasting = false;
 
@@ -57,7 +56,11 @@ public class WebsocketManager extends WebSocketListener
 		DISPOSABLES.addAll(
 			chinManager
 				.getActiveObservable()
-				.subscribe(this::activePlugins),
+				.subscribe((ignored) -> activePlugins()),
+			Observable
+				.interval(300, TimeUnit.MILLISECONDS)
+				.observeOn(Schedulers.io())
+				.subscribe(this::millisecondsstatus),
 			Observable
 				.interval(500, TimeUnit.MILLISECONDS)
 				.observeOn(Schedulers.io())
@@ -90,19 +93,20 @@ public class WebsocketManager extends WebSocketListener
 			return;
 		}
 
-		ticksWithoutFriend++;
-
-		if (ticksWithoutFriend > 6)
-		{
-			broadcasting = false;
-			ticksWithoutFriend = 0;
-		}
-
-		status();
 		location();
 
 		inventory(InventoryID.INVENTORY);
 		inventory(InventoryID.EQUIPMENT);
+	}
+
+	private void millisecondsstatus(Long aLong)
+	{
+		if (!broadcasting)
+		{
+			return;
+		}
+
+		status();
 	}
 
 	private void status()
@@ -297,8 +301,10 @@ public class WebsocketManager extends WebSocketListener
 		}
 	}
 
-	private void activePlugins(SortedSet<Plugin> plugins)
+	private void activePlugins()
 	{
+		Set<Plugin> plugins = chinManager.getActivePlugins();
+
 		if (token == null || token.isEmpty())
 		{
 			closeSocket();

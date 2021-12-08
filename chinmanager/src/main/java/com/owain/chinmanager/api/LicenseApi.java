@@ -48,13 +48,7 @@ public class LicenseApi
 				return Observable.just(Map.of());
 			}
 
-			HttpUrl httpUrl = new HttpUrl.Builder()
-				.scheme("https")
-				.host("chinplugins.xyz")
-				.addPathSegment("api")
-				.addPathSegment("license")
-				.addPathSegment("user")
-				.build();
+			HttpUrl httpUrl = BaseApi.license("user");
 
 			Request request = new Request.Builder()
 				.addHeader("accept", "application/json")
@@ -71,6 +65,7 @@ public class LicenseApi
 				}
 
 				String responseBodyString = responseBody.string();
+
 				if (responseBodyString.isEmpty())
 				{
 					responseBody.close();

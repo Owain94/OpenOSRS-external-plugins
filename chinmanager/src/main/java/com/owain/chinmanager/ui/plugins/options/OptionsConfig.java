@@ -121,4 +121,121 @@ public interface OptionsConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigTitle(
+		name = "Notifications",
+		description = "",
+		position = 10
+	)
+	String notificationsTitle = "Notifications";
+
+	@ConfigItem(
+		keyName = "discordNotifications",
+		name = "Discord notifications",
+		description = "Enable discord notifications",
+		position = 11,
+		title = notificationsTitle
+	)
+	default boolean discordNotifications()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "username",
+		name = "Username",
+		description = "Send username in the notification",
+		position = 12,
+		title = notificationsTitle,
+		hidden = true,
+		unhide = "discordNotifications"
+	)
+	default boolean username()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "breaks",
+		name = "Break",
+		description = "Send a notification when taking a break",
+		position = 13,
+		title = notificationsTitle,
+		hidden = true,
+		unhide = "discordNotifications"
+	)
+	default boolean breaks()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "resume",
+		name = "Resume",
+		description = "Send a notification when resuming from a break",
+		position = 14,
+		title = notificationsTitle,
+		hidden = true,
+		unhide = "discordNotifications"
+	)
+	default boolean resume()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "plugin",
+		name = "Plugin transition",
+		description = "Send a notification when switching to a different plugin",
+		position = 15,
+		title = notificationsTitle,
+		hidden = true,
+		unhide = "discordNotifications"
+	)
+	default boolean plugin()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "level",
+		name = "Level up",
+		description = "Send a notification when leveling up",
+		position = 16,
+		title = notificationsTitle,
+		hidden = true,
+		unhide = "discordNotifications"
+	)
+	default boolean level()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "pet",
+		name = "Pet",
+		description = "Send a notification when receiving a pet",
+		position = 17,
+		title = notificationsTitle,
+		hidden = true,
+		unhide = "discordNotifications"
+	)
+	default boolean pet()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "collectionlog",
+		name = "Collection log",
+		description = "Send a notification when unlocking a new collection log item",
+		position = 18,
+		title = notificationsTitle,
+		hidden = true,
+		unhide = "discordNotifications"
+	)
+	default boolean collectionLog()
+	{
+		return true;
+	}
 }

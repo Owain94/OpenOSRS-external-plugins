@@ -4,7 +4,6 @@ import static com.owain.automation.ContainerUtils.*;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.ChinManagerPlugin.*;
-import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.Location;
 import com.owain.chinmanager.Runes;
@@ -29,6 +28,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -98,11 +98,17 @@ public class TeleportTask implements Task<Void>
 
 		tikkie = 10;
 
+		if (chinManagerPlugin.getExecutorService() == null || chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
+		{
+			chinManagerPlugin.setExecutorService(Executors.newSingleThreadExecutor());
+		}
+
 		eventBus.register(this);
 	}
 
 	public void unsubscribe()
 	{
+		chinManagerPlugin.getExecutorService().shutdownNow();
 		eventBus.unregister(this);
 		tikkie = 10;
 
@@ -493,7 +499,7 @@ public class TeleportTask implements Task<Void>
 			}
 			else
 			{
-				stateMachine.accept(ChinManagerStates.IDLE);
+				chinManagerPlugin.transition(ChinManagerStates.IDLE);
 			}
 		}
 		else if (teleportState == TeleportState.HANDLE_POH)

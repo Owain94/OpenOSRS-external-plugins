@@ -58,7 +58,7 @@ public class PluginStatusPanel extends JPanel
 			chinManager
 				.getExtraDataObservable()
 				.observeOn(swingScheduler)
-				.subscribe(this::extraData),
+				.subscribe((ignored) -> extraData()),
 
 			Observable
 				.interval(1, TimeUnit.SECONDS)
@@ -145,11 +145,6 @@ public class PluginStatusPanel extends JPanel
 	private void extraData()
 	{
 		Map<Plugin, Map<String, String>> allData = chinManager.getExtraData();
-		extraData(allData);
-	}
-
-	private void extraData(Map<Plugin, Map<String, String>> allData)
-	{
 		Map<String, String> pluginData = allData.get(plugin);
 
 		if (pluginData == null || pluginData.isEmpty())

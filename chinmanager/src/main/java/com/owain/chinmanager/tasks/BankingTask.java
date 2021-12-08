@@ -17,7 +17,6 @@ import static com.owain.chinmanager.ChinManagerPlugin.GAMES_NECKLACES;
 import static com.owain.chinmanager.ChinManagerPlugin.RINGS_OF_DUELING;
 import static com.owain.chinmanager.ChinManagerPlugin.RINGS_OF_WEALTH;
 import static com.owain.chinmanager.ChinManagerPlugin.SKILLS_NECKLACES;
-import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.Location;
 import com.owain.chinmanager.magicnumbers.MagicNumberVars;
@@ -44,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
@@ -173,11 +173,18 @@ public class BankingTask implements Task<Void>
 			bankingState = BankingState.DONE;
 		}
 
+		if (chinManagerPlugin.getExecutorService() == null || chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
+		{
+			chinManagerPlugin.setExecutorService(Executors.newSingleThreadExecutor());
+		}
+
 		eventBus.register(this);
 	}
 
 	public void unsubscribe()
 	{
+		chinManagerPlugin.getExecutorService().shutdownNow();
+
 		eventBus.unregister(this);
 		gearDone = false;
 
@@ -277,7 +284,7 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.DONE)
 		{
-			stateMachine.accept(ChinManagerStates.IDLE);
+			chinManagerPlugin.transition(ChinManagerStates.IDLE);
 		}
 	}
 

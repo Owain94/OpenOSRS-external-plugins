@@ -2,17 +2,21 @@ package com.owain.chinmanager.tasks;
 
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
-import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
 import com.owain.chinmanager.magicnumbers.MagicNumberWidgets;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
+import static com.owain.chinmanager.ui.utils.Time.formatDuration;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -67,16 +71,24 @@ public class LogoutTask implements Task<Void>
 	{
 		if (chinManager.getActivePlugins().isEmpty() || chinManager.getActiveBreaks().isEmpty())
 		{
-			ChinManagerState.stateMachine.accept(ChinManagerStates.IDLE);
+			chinManagerPlugin.transition(ChinManagerStates.IDLE);
 		}
 
 		tikkie = 10;
 
+		if (chinManagerPlugin.getExecutorService() == null || chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
+		{
+			chinManagerPlugin.setExecutorService(Executors.newSingleThreadExecutor());
+		}
+
 		eventBus.register(this);
+
+		breakNotification();
 	}
 
 	public void unsubscribe()
 	{
+		chinManagerPlugin.getExecutorService().shutdownNow();
 		eventBus.unregister(this);
 		tikkie = 10;
 
@@ -252,6 +264,34 @@ public class LogoutTask implements Task<Void>
 			chinManager.setAmountOfBreaks(0);
 		}
 
-		ChinManagerState.stateMachine.accept(ChinManagerStates.IDLE);
+		chinManagerPlugin.transition(ChinManagerStates.IDLE);
+	}
+
+	private void breakNotification()
+	{
+		Instant now = Instant.now();
+		Instant almost = Instant.MAX;
+
+		if (chinManager.getActiveBreaks().size() == chinManager.getActivePlugins().size())
+		{
+			for (Instant instant : chinManager.getActiveBreaks().values())
+			{
+				if (instant.isBefore(almost))
+				{
+					almost = instant;
+				}
+			}
+
+			if (now.isBefore(almost))
+			{
+				chinManagerPlugin.getNotificationsApi().sendNotification(
+					"break",
+					Map.of(
+						"time",
+						formatDuration(Duration.between(now, almost))
+					)
+				);
+			}
+		}
 	}
 }

@@ -2,7 +2,6 @@ package com.owain.chinmanager.tasks;
 
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
-import com.owain.chinmanager.ChinManagerState;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chintasks.Task;
@@ -14,7 +13,9 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,11 @@ public class LoginTask implements Task<Void>
 	@Override
 	public void routine(ObservableEmitter<Void> emitter)
 	{
+		if (chinManagerPlugin.getExecutorService() == null || chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
+		{
+			chinManagerPlugin.setExecutorService(Executors.newSingleThreadExecutor());
+		}
+
 		eventBus.register(this);
 
 		login();
@@ -59,6 +65,7 @@ public class LoginTask implements Task<Void>
 
 	public void unsubscribe()
 	{
+		chinManagerPlugin.getExecutorService().shutdownNow();
 		eventBus.unregister(this);
 
 		for (Disposable disposable : disposables)
@@ -73,7 +80,12 @@ public class LoginTask implements Task<Void>
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
-		ChinManagerState.stateMachine.accept(ChinManagerStates.LOGIN_SCREEN);
+		if (!ChinManagerPlugin.shouldSetup)
+		{
+			resumeNotification();
+		}
+
+		chinManagerPlugin.transition(ChinManagerStates.LOGIN_SCREEN);
 	}
 
 	private void login()
@@ -175,5 +187,13 @@ public class LoginTask implements Task<Void>
 		);
 
 		client.getCanvas().dispatchEvent(e);
+	}
+
+	private void resumeNotification()
+	{
+		chinManagerPlugin.getNotificationsApi().sendNotification(
+			"resume",
+			Map.of()
+		);
 	}
 }

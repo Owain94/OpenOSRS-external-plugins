@@ -37,6 +37,11 @@ public class SetupState
 	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> unsubscribe()
 	{
 		return (t1, state) -> {
+			if (setupTask != null)
+			{
+				setupTask.unsubscribe();
+			}
+
 			if (!disposable.isDisposed())
 			{
 				disposable.dispose();

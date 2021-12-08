@@ -31,9 +31,13 @@ public class ClickTask implements Task<Void>
 			return;
 		}
 
+		if (chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
+		{
+			return;
+		}
+
 		chinManagerPlugin.getExecutorService().submit(() ->
 		{
-
 			try
 			{
 				Point point = new Point(0, 0);

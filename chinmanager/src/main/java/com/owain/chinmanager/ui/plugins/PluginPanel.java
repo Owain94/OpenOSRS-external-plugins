@@ -255,6 +255,7 @@ public class PluginPanel extends JPanel
 			DISPOSABLES.add(
 				AbstractButtonSource.fromActionOf(startPluginsButton, swingScheduler)
 					.subscribe((e) -> {
+						chinManager.resetWarnings();
 						chinManager.setAmountOfBreaks(0);
 						chinManager.startPlugins(
 							Components.findComponents(contentPanel, JCheckBox.class)
@@ -380,41 +381,6 @@ public class PluginPanel extends JPanel
 	private void requiredItems()
 	{
 		requiredItemsPanel.removeAll();
-
-		Set<Plugin> selectedPlugins = Components.findComponents(contentPanel, JCheckBox.class)
-			.stream()
-			.filter(AbstractButton::isSelected)
-			.map(AbstractButton::getText)
-			.map(Plugins::sanitizedName)
-			.map(chinManager::getPlugin)
-			.collect(Collectors.toSet());
-
-//		if (items.size() > 0 &&
-//			selectedPlugins.size() > 1 &&
-//			selectedPlugins
-//				.stream()
-//				.map((plugin) -> chinManager.getPluginConfig().get(plugin).get("startLocation"))
-//				.collect(Collectors.toSet()).size() > 1)
-//		{
-//			int counter = 0;
-//
-//			GridBagHelper.addComponent(requiredItemsPanel,
-//				new Separator(),
-//				0, counter, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-//				new Insets(5, 0, 0, 0));
-//			counter++;
-//
-//			GridBagHelper.addComponent(requiredItemsPanel,
-//				new JLabel("Required transitioning items:"),
-//				0, counter, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-//				new Insets(5, 0, 0, 0));
-//			counter++;
-//
-//			GridBagHelper.addComponent(requiredItemsPanel,
-//				new JLabel(String.join(", ", items)),
-//				0, counter, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-//				new Insets(5, 0, 0, 0));
-//		}
 
 		requiredItemsPanel.revalidate();
 		requiredItemsPanel.repaint();

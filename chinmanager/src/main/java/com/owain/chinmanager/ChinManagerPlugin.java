@@ -7,9 +7,11 @@ import com.owain.automation.Banking;
 import static com.owain.automation.ContainerUtils.getBankInventoryWidgetItemForItemsPos;
 import static com.owain.automation.ContainerUtils.getBankWidgetItemForItemsPos;
 import static com.owain.automation.ContainerUtils.getInventoryWidgetItemForItemsPos;
+import static com.owain.automation.ContainerUtils.hasBankInventoryItem;
 import static com.owain.automation.ContainerUtils.hasBankItem;
 import static com.owain.automation.ContainerUtils.hasItem;
 import static com.owain.chinmanager.ChinManagerState.stateMachine;
+import com.owain.chinmanager.api.NotificationsApi;
 import com.owain.chinmanager.cookies.PersistentCookieJar;
 import com.owain.chinmanager.cookies.cache.SetCookieCache;
 import com.owain.chinmanager.cookies.persistence.OpenOSRSCookiePersistor;
@@ -56,6 +58,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Inject;
@@ -88,10 +92,12 @@ import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
 import net.runelite.api.TileObject;
 import net.runelite.api.VarClientInt;
+import net.runelite.api.Varbits;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.DecorativeObjectChanged;
 import net.runelite.api.events.DecorativeObjectDespawned;
 import net.runelite.api.events.DecorativeObjectSpawned;
@@ -117,11 +123,6 @@ import net.runelite.api.events.WallObjectChanged;
 import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.queries.DecorativeObjectQuery;
-import net.runelite.api.queries.GameObjectQuery;
-import net.runelite.api.queries.GroundObjectQuery;
-import net.runelite.api.queries.NPCQuery;
-import net.runelite.api.queries.WallObjectQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -144,6 +145,7 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.Text;
 import net.runelite.client.util.WorldUtil;
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 import net.runelite.http.api.worlds.World;
@@ -168,8 +170,23 @@ public class ChinManagerPlugin extends Plugin
 
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
+	private static final Pattern LEVEL_UP_PATTERN = Pattern.compile(".*Your ([a-zA-Z]+) (?:level is|are)? now (\\d+)\\.");
+	private static final String COLLECTION_LOG_TEXT = "New item added to your collection log: ";
+	private static final List<String> PET_MESSAGES = List.of("You have a funny feeling like you're being followed",
+	"You feel something weird sneaking into your backpack",
+	"You have a funny feeling like you would have been followed");
+
 	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
 	public static final Map<Plugin, CompositeDisposable> PLUGIN_DISPOSABLE_MAP = new HashMap<>();
+
+	private static final Varbits[] AMOUNT_VARBITS =
+		{
+			Varbits.RUNE_POUCH_AMOUNT1, Varbits.RUNE_POUCH_AMOUNT2, Varbits.RUNE_POUCH_AMOUNT3
+		};
+	private static final Varbits[] RUNE_VARBITS =
+		{
+			Varbits.RUNE_POUCH_RUNE1, Varbits.RUNE_POUCH_RUNE2, Varbits.RUNE_POUCH_RUNE3
+		};
 
 	public static final List<Integer> DIGSIDE_PENDANTS = List.of(
 		ItemID.DIGSITE_PENDANT_1,
@@ -353,6 +370,7 @@ public class ChinManagerPlugin extends Plugin
 	private OptionsConfig optionsConfig;
 
 	@Getter(AccessLevel.PUBLIC)
+	@Setter(AccessLevel.PUBLIC)
 	private ExecutorService executorService;
 
 	@Inject
@@ -376,6 +394,10 @@ public class ChinManagerPlugin extends Plugin
 
 	@Inject
 	private ManagerTileIndicatorsOverlay managerTileIndicatorsOverlay;
+
+	@Inject
+	@Getter(AccessLevel.PUBLIC)
+	private NotificationsApi notificationsApi;
 
 	private NavigationButton navButton;
 
@@ -529,12 +551,7 @@ public class ChinManagerPlugin extends Plugin
 					.getWorldLocation()
 					.distanceTo(locatable.getWorldLocation())
 			))
-			.orElse(
-				new NPCQuery()
-					.idEquals(ids)
-					.result(client)
-					.nearestTo(client.getLocalPlayer())
-			);
+			.orElse(null);
 	}
 
 	public static TileObject getObject(Client client, int id)
@@ -560,7 +577,7 @@ public class ChinManagerPlugin extends Plugin
 					.getWorldLocation()
 					.distanceTo(locatable.getWorldLocation())
 			))
-			.orElse(getObjectAlt(client, ids, locatable));
+			.orElse(null);
 	}
 
 	public static TileObject getObject(Client client, int id, int x, int y)
@@ -603,7 +620,7 @@ public class ChinManagerPlugin extends Plugin
 							.getWorldLocation()
 					)
 			))
-			.orElse(getObjectAlt(client, id, wp));
+			.orElse(null);
 	}
 
 	public static TileObject getObject(Client client, WorldPoint wp)
@@ -623,146 +640,7 @@ public class ChinManagerPlugin extends Plugin
 							.getWorldLocation()
 					)
 			))
-			.orElse(getObjectAlt(client, wp));
-	}
-
-	public static TileObject getObjectAlt(Client client, List<Integer> ids, Locatable locatable)
-	{
-		GameObject gameObject = new GameObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(locatable);
-
-		if (gameObject != null)
-		{
-			return gameObject;
-		}
-
-		DecorativeObject decorativeObject = new DecorativeObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(locatable);
-
-		if (decorativeObject != null)
-		{
-			return decorativeObject;
-		}
-
-		GroundObject groundObject = new GroundObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(locatable);
-
-		if (groundObject != null)
-		{
-			return groundObject;
-		}
-
-		WallObject wallObject = new WallObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(locatable);
-
-		if (wallObject != null)
-		{
-			return wallObject;
-		}
-
-		return null;
-	}
-
-	public static TileObject getObjectAlt(Client client, int id, WorldPoint wp)
-	{
-		GameObject gameObject = new GameObjectQuery()
-			.idEquals(id)
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (gameObject != null)
-		{
-			return gameObject;
-		}
-
-		DecorativeObject decorativeObject = new DecorativeObjectQuery()
-			.idEquals(id)
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (decorativeObject != null)
-		{
-			return decorativeObject;
-		}
-
-		GroundObject groundObject = new GroundObjectQuery()
-			.idEquals(id)
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (groundObject != null)
-		{
-			return groundObject;
-		}
-
-		WallObject wallObject = new WallObjectQuery()
-			.idEquals(id)
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (wallObject != null)
-		{
-			return wallObject;
-		}
-
-		return null;
-	}
-
-	public static TileObject getObjectAlt(Client client, WorldPoint wp)
-	{
-		GameObject gameObject = new GameObjectQuery()
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (gameObject != null)
-		{
-			return gameObject;
-		}
-
-		DecorativeObject decorativeObject = new DecorativeObjectQuery()
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (decorativeObject != null)
-		{
-			return decorativeObject;
-		}
-
-		GroundObject groundObject = new GroundObjectQuery()
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (groundObject != null)
-		{
-			return groundObject;
-		}
-
-		WallObject wallObject = new WallObjectQuery()
-			.atWorldLocation(wp)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
-
-		if (wallObject != null)
-		{
-			return wallObject;
-		}
-
-		return null;
+			.orElse(null);
 	}
 
 	public static TileObject getBankObject(Client client)
@@ -1281,18 +1159,18 @@ public class ChinManagerPlugin extends Plugin
 
 			chinManager
 				.getActiveObservable()
-				.subscribe((plugins) -> {
-					if (plugins.isEmpty())
+				.subscribe((ignored) -> {
+					if (chinManager.getActivePlugins().isEmpty())
 					{
 						shouldSetup = true;
 						Banking.ITEMS = Set.of();
 						delay = -1;
 						logout = false;
-						stateMachine.accept(ChinManagerStates.IDLE);
+						transition(ChinManagerStates.IDLE);
 					}
 					else
 					{
-						Banking.ITEMS = plugins
+						Banking.ITEMS = chinManager.getActivePlugins()
 							.stream()
 							.map((plugin) -> {
 								Set<Integer> items = new HashSet<>();
@@ -1343,7 +1221,7 @@ public class ChinManagerPlugin extends Plugin
 					{
 						if (plugin != null)
 						{
-							stateMachine.accept(ChinManagerStates.LOGOUT);
+							transition(ChinManagerStates.LOGOUT);
 						}
 					}
 				),
@@ -1362,18 +1240,18 @@ public class ChinManagerPlugin extends Plugin
 
 			chinManager
 				.getActiveBreaksObservable()
-				.subscribe(this::breakActivated),
+				.subscribe((ignored) -> breakActivated()),
 
 			chinManager
 				.getCurrentlyActiveObservable()
-				.subscribe(this::currentlyActive),
+				.subscribe((ignored) -> currentlyActive()),
 
 			chinManager
 				.getBankingObservable()
 				.subscribe((plugin) -> {
 					if (stateMachine.getState() != ChinManagerState.BANKING)
 					{
-						stateMachine.accept(ChinManagerStates.BANKING);
+						transition(ChinManagerStates.BANKING);
 					}
 				}),
 
@@ -1382,7 +1260,7 @@ public class ChinManagerPlugin extends Plugin
 				.subscribe((plugin) -> {
 					if (stateMachine.getState() != ChinManagerState.TELEPORTING)
 					{
-						stateMachine.accept(ChinManagerStates.TELEPORTING);
+						transition(ChinManagerStates.TELEPORTING);
 					}
 				}),
 
@@ -1402,7 +1280,7 @@ public class ChinManagerPlugin extends Plugin
 								if (client.getGameState() == GameState.LOGIN_SCREEN)
 								{
 									shouldSetup = true;
-									stateMachine.accept(ChinManagerStates.LOGIN);
+									transition(ChinManagerStates.LOGIN);
 								}
 							}
 						}
@@ -1454,11 +1332,11 @@ public class ChinManagerPlugin extends Plugin
 		compositeDisposableSet.addAll(PLUGIN_DISPOSABLE_MAP.values());
 
 		compositeDisposableSet.forEach(compositeDisposable -> {
-				if (compositeDisposable != null && !compositeDisposable.isDisposed())
-				{
-					compositeDisposable.clear();
-				}
-			});
+			if (compositeDisposable != null && !compositeDisposable.isDisposed())
+			{
+				compositeDisposable.clear();
+			}
+		});
 
 		Set.copyOf(chinManager.getManagerPlugins()).forEach((plugin) ->
 			chinManager.unregisterManagerPlugin(plugin)
@@ -1468,26 +1346,46 @@ public class ChinManagerPlugin extends Plugin
 		Banking.ITEMS = Set.of();
 	}
 
-	private void currentlyActive(String plugin)
+	private void currentlyActive()
 	{
+		String plugin = Plugins.sanitizedName(chinManager.getCurrentlyActive());
+
 		if (chinManager.isCurrentlyActive(this) && stateMachine.getState() == ChinManagerState.IDLE)
 		{
 			if (client.getGameState() == GameState.LOGIN_SCREEN)
 			{
 				shouldSetup = true;
-				stateMachine.accept(ChinManagerStates.LOGIN);
+				transition(ChinManagerStates.LOGIN);
 			}
 			else if (shouldSetup)
 			{
-				stateMachine.accept(ChinManagerStates.SETUP);
+				transition(ChinManagerStates.SETUP);
 			}
 			else if (chinManager.getHandover().contains(chinManager.getPlugin(plugin)))
 			{
-				stateMachine.accept(ChinManagerStates.IDLE);
+				transition(ChinManagerStates.IDLE);
 			}
 			else
 			{
-				stateMachine.accept(ChinManagerStates.RESUME);
+				transition(ChinManagerStates.RESUME);
+			}
+		}
+		else if (chinManager.getCurrentlyActive() != null && !chinManager.isCurrentlyActive(this))
+		{
+			String current = chinManager.getCurrentlyActive().getName();
+
+			if (!notificationsApi.cachedPlugin.equals(current))
+			{
+				notificationsApi.sendNotification(
+					"plugin",
+					Map.of(
+						"previousPlugin", notificationsApi.cachedPlugin,
+						"nextPlugin", current
+					)
+				);
+
+				notificationsApi.previousPlugin = notificationsApi.cachedPlugin;
+				notificationsApi.cachedPlugin = current;
 			}
 		}
 	}
@@ -1509,7 +1407,7 @@ public class ChinManagerPlugin extends Plugin
 		chinManager.planBreak(plugin, thresholdInstant, breakRandom);
 	}
 
-	private void breakActivated(Map<Plugin, Instant> pluginInstantMap)
+	private void breakActivated()
 	{
 		if (!chinManager.getActivePlugins().isEmpty() && chinManager.getActiveBreaks().size() == chinManager.getActivePlugins().size())
 		{
@@ -1575,7 +1473,7 @@ public class ChinManagerPlugin extends Plugin
 					clientThread.invoke(() -> {
 						if (client.getGameState() == GameState.LOGIN_SCREEN)
 						{
-							stateMachine.accept(ChinManagerStates.LOGIN);
+							transition(ChinManagerStates.LOGIN);
 						}
 						else
 						{
@@ -1614,7 +1512,7 @@ public class ChinManagerPlugin extends Plugin
 
 				if (chinManager.getActiveBreaks().isEmpty() && stateMachine.getState() == ChinManagerState.IDLE)
 				{
-					stateMachine.accept(ChinManagerStates.LOGIN);
+					transition(ChinManagerStates.LOGIN);
 				}
 			}
 		}
@@ -1623,6 +1521,19 @@ public class ChinManagerPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick gameTick)
 	{
+		if (client.getWidget(WidgetInfo.LEVEL_UP_LEVEL) != null)
+		{
+			parseLevelUpWidget(WidgetInfo.LEVEL_UP_LEVEL);
+		}
+		else if (client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT) != null)
+		{
+			String text = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT).getText();
+			if (!Text.removeTags(text).contains("High level gamble"))
+			{
+				parseLevelUpWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
+			}
+		}
+
 		if (chinManager.getActivePlugins().size() > 0 && stateMachine.getState() != ChinManagerState.BANK_PIN &&
 			client.getWidget(WidgetID.BANK_PIN_GROUP_ID, BANK_PIN_INSTRUCTION_TEXT.getChildId()) != null &&
 			(client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("First click the FIRST digit.") ||
@@ -1630,13 +1541,13 @@ public class ChinManagerPlugin extends Plugin
 				client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Time for the THIRD digit.") ||
 				client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Finally, the FOURTH digit.")))
 		{
-			stateMachine.accept(ChinManagerStates.BANK_PIN);
+			transition(ChinManagerStates.BANK_PIN);
 		}
 		else if (stateMachine.getState() == ChinManagerState.IDLE && logout && delay == 0)
 		{
 			if (!chinManager.getActivePlugins().isEmpty() && chinManager.getActiveBreaks().size() == chinManager.getActivePlugins().size())
 			{
-				stateMachine.accept(ChinManagerStates.LOGOUT);
+				transition(ChinManagerStates.LOGOUT);
 			}
 			else
 			{
@@ -1684,7 +1595,7 @@ public class ChinManagerPlugin extends Plugin
 						client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 3);
 					}
 
-					stateMachine.accept(ChinManagerStates.RESUME);
+					transition(ChinManagerStates.RESUME);
 				}
 			}
 		}
@@ -1988,6 +1899,18 @@ public class ChinManagerPlugin extends Plugin
 		configManager.setConfiguration(CONFIG_GROUP, "gsongear", json);
 	}
 
+	public void transition(ChinManagerStates state)
+	{
+		if (!chinManager.getActivePlugins().isEmpty())
+		{
+			stateMachine.accept(state);
+		}
+		else if (stateMachine.getState() != ChinManagerState.IDLE)
+		{
+			stateMachine.accept(ChinManagerStates.IDLE);
+		}
+	}
+
 	@Subscribe
 	public void onWallObjectSpawned(WallObjectSpawned wallObjectSpawned)
 	{
@@ -2101,6 +2024,48 @@ public class ChinManagerPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onChatMessage(ChatMessage chatMessage)
+	{
+		if (chatMessage.getType() != ChatMessageType.GAMEMESSAGE
+			&& chatMessage.getType() != ChatMessageType.SPAM
+			&& chatMessage.getType() != ChatMessageType.TRADE
+			&& chatMessage.getType() != ChatMessageType.FRIENDSCHATNOTIFICATION)
+		{
+			return;
+		}
+
+		if (chinManager.getCurrentlyActive() == null || chinManager.isCurrentlyActive(this))
+		{
+			return;
+		}
+
+		String message = chatMessage.getMessage();
+
+		if (PET_MESSAGES.stream().anyMatch(message::contains))
+		{
+			notificationsApi.sendNotification(
+				"pet",
+				Map.of(
+					"plugin", chinManager.getCurrentlyActive().getName()
+				)
+			);
+		}
+
+		if (message.startsWith(COLLECTION_LOG_TEXT) && client.getVar(Varbits.COLLECTION_LOG_NOTIFICATION) == 1)
+		{
+			String entry = Text.removeTags(message).substring(COLLECTION_LOG_TEXT.length());
+
+			notificationsApi.sendNotification(
+				"collectionlog",
+				Map.of(
+					"plugin", chinManager.getCurrentlyActive().getName(),
+					"entry", entry
+				)
+			);
+		}
+	}
+
+	@Subscribe
 	public void onNpcSpawned(NpcSpawned npcSpawned)
 	{
 		actors.add(npcSpawned.getNpc());
@@ -2158,6 +2123,32 @@ public class ChinManagerPlugin extends Plugin
 		{
 			highlightItemLayer = null;
 		}
+	}
+
+	private void parseLevelUpWidget(WidgetInfo levelUpLevel)
+	{
+		Widget levelChild = client.getWidget(levelUpLevel);
+		if (levelChild == null)
+		{
+			return;
+		}
+
+		Matcher m = LEVEL_UP_PATTERN.matcher(levelChild.getText());
+		if (!m.matches())
+		{
+			return;
+		}
+
+		String skillName = m.group(1);
+		String skillLevel = m.group(2);
+
+		notificationsApi.sendNotification(
+			"level",
+			Map.of(
+				"skill", skillName,
+				"level", skillLevel
+			)
+		);
 	}
 
 	public MenuOptionClicked menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int actionParam, int widgetId)
@@ -2252,5 +2243,81 @@ public class ChinManagerPlugin extends Plugin
 		}
 
 		return -1;
+	}
+
+	public static int runeOrRunepouch(Runes runes, Client client)
+	{
+		if (!hasItem(ItemID.RUNE_POUCH, client) && !hasBankInventoryItem(ItemID.RUNE_POUCH, client) && !hasBankItem(ItemID.RUNE_POUCH, client))
+		{
+			return runes.getItemId();
+		}
+
+		for (int i = 0; i < AMOUNT_VARBITS.length; i++)
+		{
+			Varbits amountVarbit = AMOUNT_VARBITS[i];
+
+			int amount = client.getVar(amountVarbit);
+			if (amount <= 0)
+			{
+				continue;
+			}
+
+			Varbits runeVarbit = RUNE_VARBITS[i];
+			int runeId = client.getVar(runeVarbit);
+			Runes rune = Runes.getRune(runeId);
+			if (rune == null)
+			{
+				continue;
+			}
+
+			if (rune.getItemId() == runes.getItemId())
+			{
+				return ItemID.RUNE_POUCH;
+			}
+			else
+			{
+				switch (rune)
+				{
+					case MIST:
+						if (runes == Runes.AIR || runes == Runes.WATER)
+						{
+							return ItemID.RUNE_POUCH;
+						}
+						break;
+					case DUST:
+						if (runes == Runes.AIR || runes == Runes.EARTH)
+						{
+							return ItemID.RUNE_POUCH;
+						}
+						break;
+					case MUD:
+						if (runes == Runes.EARTH || runes == Runes.WATER)
+						{
+							return ItemID.RUNE_POUCH;
+						}
+						break;
+					case SMOKE:
+						if (runes == Runes.AIR || runes == Runes.FIRE)
+						{
+							return ItemID.RUNE_POUCH;
+						}
+						break;
+					case STEAM:
+						if (runes == Runes.FIRE || runes == Runes.WATER)
+						{
+							return ItemID.RUNE_POUCH;
+						}
+						break;
+					case LAVA:
+						if (runes == Runes.EARTH || runes == Runes.FIRE)
+						{
+							return ItemID.RUNE_POUCH;
+						}
+						break;
+				}
+			}
+		}
+
+		return runes.getItemId();
 	}
 }

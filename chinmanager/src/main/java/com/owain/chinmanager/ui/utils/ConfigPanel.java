@@ -183,7 +183,7 @@ public class ConfigPanel extends FixedWidthPanel
 			item.setMinimumSize(new Dimension(PANEL_WIDTH, 0));
 			String name = cid.getItem().name();
 
-			if (!name.isEmpty() && !cid.getType().isAssignableFrom(Consumer.class))
+			if (!name.isEmpty() && cid.getType() instanceof Class && ((Class<?>) cid.getType()).isAssignableFrom(Consumer.class))
 			{
 				JLabel configEntryName = new JLabel(name);
 				configEntryName.setForeground(Color.WHITE);
@@ -200,7 +200,7 @@ public class ConfigPanel extends FixedWidthPanel
 				item.add(checkbox, BorderLayout.EAST);
 			}
 
-			if (cid.getType().isAssignableFrom(Consumer.class))
+			if (cid.getType() instanceof Class && ((Class<?>) cid.getType()).isAssignableFrom(Consumer.class))
 			{
 				JButton button = new JButton(cid.getItem().name());
 				button.addActionListener((e) ->
@@ -240,7 +240,7 @@ public class ConfigPanel extends FixedWidthPanel
 				item.add(spinner, BorderLayout.EAST);
 			}
 
-			if (cid.getType().isEnum())
+			if (cid.getType() instanceof Class && ((Class<?>) cid.getType()).isEnum())
 			{
 				Class<? extends Enum> type = (Class<? extends Enum>) cid.getType();
 
@@ -343,7 +343,7 @@ public class ConfigPanel extends FixedWidthPanel
 					{
 						show = Boolean.parseBoolean(configManager.getConfiguration(cd.getGroup().value(), cid2.getItem().keyName()));
 					}
-					else if (cid2.getType().isEnum())
+					else if (cid2.getType() instanceof Class && ((Class<?>) cid2.getType()).isEnum())
 					{
 						Class<? extends Enum> type = (Class<? extends Enum>) cid2.getType();
 						try

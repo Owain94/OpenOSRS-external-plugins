@@ -408,6 +408,8 @@ public class ChinManagerPlugin extends Plugin
 	private net.runelite.api.World quickHopTargetWorld;
 	private int displaySwitcherAttempts = 0;
 
+	private Set<String> notifyLevels = new HashSet<>();
+
 	public static void resetHighlight()
 	{
 		highlightActor = null;
@@ -2141,14 +2143,19 @@ public class ChinManagerPlugin extends Plugin
 
 		String skillName = m.group(1);
 		String skillLevel = m.group(2);
+		String combined = skillName + " " + skillLevel;
 
-		notificationsApi.sendNotification(
-			"level",
-			Map.of(
-				"skill", skillName,
-				"level", skillLevel
-			)
-		);
+		if (!notifyLevels.contains(combined))
+		{
+			notificationsApi.sendNotification(
+				"level",
+				Map.of(
+					"skill", skillName,
+					"level", skillLevel
+				)
+			);
+			notifyLevels.add(combined);
+		}
 	}
 
 	public MenuOptionClicked menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int actionParam, int widgetId)

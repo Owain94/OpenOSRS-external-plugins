@@ -40,8 +40,8 @@ public class ChinManager
 		@Override
 		public int compare(Plugin plugin1, Plugin plugin2)
 		{
-			Long p1 = (long) Integer.parseInt(pluginConfig.get(plugin1).get("combiningPriority"), 10);
-			Long p2 = (long) Integer.parseInt(pluginConfig.get(plugin2).get("combiningPriority"), 10);
+			Long p1 = (long) Integer.parseInt(pluginConfig.get(plugin1).get("combiningPriority"));
+			Long p2 = (long) Integer.parseInt(pluginConfig.get(plugin2).get("combiningPriority"));
 
 			return p2.compareTo(p1);
 		}

@@ -790,9 +790,8 @@ public class TeleportTask implements Task<Void>
 					client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 6);
 				}
 			}
-
-			teleportState = TeleportState.TELEPORTING;
 		}
+		teleportState = TeleportState.TELEPORTING;
 	}
 
 	@Subscribe

@@ -42,7 +42,7 @@ public class NotificationsApi
 
 	public void sendNotification(String type, Map<String, String> content)
 	{
-		if (chinManager.getActivePlugins().isEmpty() || !shouldSendNotification(type))
+		if (chinManager.getActiveSortedPlugins().isEmpty() || !shouldSendNotification(type))
 		{
 			return;
 		}

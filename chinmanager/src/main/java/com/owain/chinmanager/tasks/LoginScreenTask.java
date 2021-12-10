@@ -70,7 +70,7 @@ public class LoginScreenTask implements Task<Void>
 	@Subscribe
 	public void onGameTick(GameTick gameTick)
 	{
-		if (chinManager.getActivePlugins().isEmpty())
+		if (chinManager.getActiveSortedPlugins().isEmpty())
 		{
 			return;
 		}

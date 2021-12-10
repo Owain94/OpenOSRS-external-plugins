@@ -35,7 +35,7 @@ public class ManagerClickboxOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (modelOutliner == null || chinManager.getActivePlugins().size() == 0 || !optionsConfig.showOverlays())
+		if (modelOutliner == null || chinManager.getActiveSortedPlugins().size() == 0 || !optionsConfig.showOverlays())
 		{
 			return null;
 		}

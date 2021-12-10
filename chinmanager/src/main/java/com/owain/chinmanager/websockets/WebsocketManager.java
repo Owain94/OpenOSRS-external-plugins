@@ -145,7 +145,7 @@ public class WebsocketManager extends WebSocketListener
 			jsonGeneralData.addProperty("active", chinManager.getCurrentlyActive().getName());
 		}
 
-		for (Plugin plugin : chinManager.getActivePlugins())
+		for (Plugin plugin : chinManager.getActiveSortedPlugins())
 		{
 			if (chinManager.getExtraData().containsKey(plugin))
 			{
@@ -303,7 +303,7 @@ public class WebsocketManager extends WebSocketListener
 
 	private void activePlugins()
 	{
-		Set<Plugin> plugins = chinManager.getActivePlugins();
+		Set<Plugin> plugins = chinManager.getActiveSortedPlugins();
 
 		if (token == null || token.isEmpty())
 		{

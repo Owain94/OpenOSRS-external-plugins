@@ -64,7 +64,7 @@ public class ManagerTileIndicatorsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (chinManager.getActivePlugins().size() == 0 || !optionsConfig.showOverlays())
+		if (chinManager.getActiveSortedPlugins().size() == 0 || !optionsConfig.showOverlays())
 		{
 			return null;
 		}

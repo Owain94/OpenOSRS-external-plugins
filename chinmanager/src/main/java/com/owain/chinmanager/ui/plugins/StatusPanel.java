@@ -129,7 +129,7 @@ public class StatusPanel extends JPanel
 
 			AbstractButtonSource.fromActionOf(stopPluginsButton, swingScheduler)
 				.subscribe((e) -> {
-					for (Plugin plugin : Set.copyOf(chinManager.getActivePlugins()))
+					for (Plugin plugin : Set.copyOf(chinManager.getActiveSortedPlugins()))
 					{
 						chinManager.stopPlugin(plugin);
 					}
@@ -148,7 +148,7 @@ public class StatusPanel extends JPanel
 
 	private boolean unlockAccountsPanel()
 	{
-		Set<Plugin> activePlugins = chinManager.getActivePlugins();
+		Set<Plugin> activePlugins = chinManager.getActiveSortedPlugins();
 
 		boolean manual = Boolean.parseBoolean(configManager.getConfiguration(ChinManagerPlugin.CONFIG_GROUP, "accountselection"));
 
@@ -284,7 +284,7 @@ public class StatusPanel extends JPanel
 
 	private void pluginsPanel()
 	{
-		Set<Plugin> plugins = chinManager.getActivePlugins();
+		Set<Plugin> plugins = chinManager.getActiveSortedPlugins();
 		pluginsPanel(plugins);
 	}
 

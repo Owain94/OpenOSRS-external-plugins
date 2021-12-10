@@ -94,7 +94,7 @@ public class LoginTask implements Task<Void>
 			Observable.timer(3, TimeUnit.SECONDS)
 				.observeOn(Schedulers.from(clientThread))
 				.subscribe((a) -> {
-					if (chinManager.getActivePlugins().isEmpty())
+					if (chinManager.getActiveSortedPlugins().isEmpty())
 					{
 						return;
 					}

@@ -69,7 +69,7 @@ public class LogoutTask implements Task<Void>
 	@Override
 	public void routine(ObservableEmitter<Void> emitter)
 	{
-		if (chinManager.getActivePlugins().isEmpty() || chinManager.getActiveBreaks().isEmpty())
+		if (chinManager.getActiveSortedPlugins().isEmpty() || chinManager.getActiveBreaks().isEmpty())
 		{
 			chinManagerPlugin.transition(ChinManagerStates.IDLE);
 		}
@@ -255,7 +255,7 @@ public class LogoutTask implements Task<Void>
 
 		if (optionsConfig.stopAfterBreaks() != 0 && chinManager.getAmountOfBreaks() >= optionsConfig.stopAfterBreaks())
 		{
-			for (Plugin plugin : Set.copyOf(chinManager.getActivePlugins()))
+			for (Plugin plugin : Set.copyOf(chinManager.getActiveSortedPlugins()))
 			{
 				chinManager.stopPlugin(plugin);
 			}
@@ -272,7 +272,7 @@ public class LogoutTask implements Task<Void>
 		Instant now = Instant.now();
 		Instant almost = Instant.MAX;
 
-		if (chinManager.getActiveBreaks().size() == chinManager.getActivePlugins().size())
+		if (chinManager.getActiveBreaks().size() == chinManager.getActiveSortedPlugins().size())
 		{
 			for (Instant instant : chinManager.getActiveBreaks().values())
 			{

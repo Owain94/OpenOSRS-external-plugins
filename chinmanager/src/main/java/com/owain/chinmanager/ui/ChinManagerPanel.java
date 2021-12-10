@@ -101,7 +101,7 @@ public class ChinManagerPanel extends net.runelite.client.ui.PluginPanel
 
 	private void tabbedPane()
 	{
-		Set<Plugin> plugins = chinManager.getActivePlugins();
+		Set<Plugin> plugins = chinManager.getActiveSortedPlugins();
 
 		MAIN_TABBED_PANE.removeAll();
 

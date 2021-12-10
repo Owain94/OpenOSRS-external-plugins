@@ -52,7 +52,7 @@ public class ManagerClickboxDebugOverlay extends Overlay
 			return null;
 		}
 
-		if (modelOutliner == null || chinManager.getActivePlugins().size() == 0 || !optionsConfig.showOverlays())
+		if (modelOutliner == null || chinManager.getActiveSortedPlugins().size() == 0 || !optionsConfig.showOverlays())
 		{
 			return null;
 		}

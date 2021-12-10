@@ -177,7 +177,15 @@ public class ChinManager
 		return pluginsSubject.hide();
 	}
 
-	public SortedSet<Plugin> getActivePlugins()
+	public Set<Plugin> getActivePlugins()
+	{
+		return activePlugins
+			.stream()
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
+	}
+
+	public SortedSet<Plugin> getActiveSortedPlugins()
 	{
 		Supplier<TreeSet<Plugin>> plugins = () -> new TreeSet<>(pluginComparable);
 		return activePlugins
@@ -203,7 +211,7 @@ public class ChinManager
 	public void startPlugin(Plugin plugin)
 	{
 		activePlugins.add(plugin);
-		activePluginsSubject.onNext(getActivePlugins());
+		activePluginsSubject.onNext(getActiveSortedPlugins());
 
 		startTimes.put(plugin, Instant.now());
 	}
@@ -216,7 +224,7 @@ public class ChinManager
 			startTimes.put(plugin, Instant.now());
 		}
 
-		activePluginsSubject.onNext(getActivePlugins());
+		activePluginsSubject.onNext(getActiveSortedPlugins());
 	}
 
 	public void stopPlugin(Plugin plugin)
@@ -534,7 +542,7 @@ public class ChinManager
 	@Nullable
 	public Plugin getNextActive(Plugin plugin, Instant instant)
 	{
-		SortedSet<Plugin> activePlugins = getActivePlugins();
+		SortedSet<Plugin> activePlugins = getActiveSortedPlugins();
 
 		if (activePlugins.size() == 1)
 		{

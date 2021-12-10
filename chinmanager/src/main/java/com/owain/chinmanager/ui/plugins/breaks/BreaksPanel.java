@@ -104,7 +104,7 @@ public class BreaksPanel extends JPanel
 		add(titleWrapper, BorderLayout.NORTH);
 
 		add(breakPanel(), BorderLayout.CENTER);
-		if (chinManager.getActivePlugins().size() == 1)
+		if (chinManager.getActiveSortedPlugins().size() == 1)
 		{
 			add(typePanel(), BorderLayout.SOUTH);
 		}

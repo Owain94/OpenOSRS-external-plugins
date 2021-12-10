@@ -75,7 +75,7 @@ public class BreakOptionsPanel extends JPanel
 		contentPanel.removeAll();
 		BREAK_OPTIONS_DISPOSABLES.clear();
 
-		for (Plugin plugin : chinManager.getActivePlugins())
+		for (Plugin plugin : chinManager.getActiveSortedPlugins())
 		{
 			Map<Plugin, Boolean> plugins = chinManager.getPlugins();
 

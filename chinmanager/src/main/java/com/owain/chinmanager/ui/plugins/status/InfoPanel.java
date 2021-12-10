@@ -96,7 +96,7 @@ public class InfoPanel extends JPanel
 
 	private void milliseconds(Long aLong)
 	{
-		Set<Plugin> activePlugins = chinManager.getActivePlugins();
+		Set<Plugin> activePlugins = chinManager.getActiveSortedPlugins();
 
 		if (activePlugins.size() == 0)
 		{
@@ -139,7 +139,7 @@ public class InfoPanel extends JPanel
 		breaksLabel.setText(String.valueOf(chinManager.getAmountOfBreaks()));
 
 		Instant almost = Instant.MAX;
-		if (chinManager.getActiveBreaks().size() == chinManager.getActivePlugins().size())
+		if (chinManager.getActiveBreaks().size() == chinManager.getActiveSortedPlugins().size())
 		{
 			for (Instant instant : chinManager.getActiveBreaks().values())
 			{
@@ -198,7 +198,7 @@ public class InfoPanel extends JPanel
 			scheduledTimeLabel.setText("00:00:00");
 		}
 
-		for (Plugin plugin : chinManager.getActivePlugins())
+		for (Plugin plugin : chinManager.getActiveSortedPlugins())
 		{
 			Map<Plugin, Boolean> plugins = chinManager.getPlugins();
 
@@ -232,7 +232,7 @@ public class InfoPanel extends JPanel
 	{
 		contentPanel.removeAll();
 
-		if (chinManager.getActiveBreaks().size() == chinManager.getActivePlugins().size() && (chinManager.getCurrentlyActive() == null || chinManager.getActivePlugins().size() == 1))
+		if (chinManager.getActiveBreaks().size() == chinManager.getActiveSortedPlugins().size() && (chinManager.getCurrentlyActive() == null || chinManager.getActiveSortedPlugins().size() == 1))
 		{
 			breaking = true;
 

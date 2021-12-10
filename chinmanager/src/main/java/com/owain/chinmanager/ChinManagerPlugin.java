@@ -1311,7 +1311,7 @@ public class ChinManagerPlugin extends Plugin
 			chinManager
 				.getActiveObservable()
 				.subscribe((ignored) -> {
-					if (chinManager.getActivePlugins().isEmpty())
+					if (chinManager.getActiveSortedPlugins().isEmpty())
 					{
 						shouldSetup = true;
 						Banking.ITEMS = Set.of();
@@ -1321,7 +1321,7 @@ public class ChinManagerPlugin extends Plugin
 					}
 					else
 					{
-						Banking.ITEMS = chinManager.getActivePlugins()
+						Banking.ITEMS = chinManager.getActiveSortedPlugins()
 							.stream()
 							.map((plugin) -> {
 								Set<Integer> items = new HashSet<>();
@@ -1560,11 +1560,11 @@ public class ChinManagerPlugin extends Plugin
 
 	private void breakActivated()
 	{
-		if (!chinManager.getActivePlugins().isEmpty() && chinManager.getActiveBreaks().size() == chinManager.getActivePlugins().size())
+		if (!chinManager.getActiveSortedPlugins().isEmpty() && chinManager.getActiveBreaks().size() == chinManager.getActiveSortedPlugins().size())
 		{
 			chinManager.addAmountOfBreaks();
 			chinManager.setCurrentlyActive(null);
-			if (chinManager.getActivePlugins().size() > 1)
+			if (chinManager.getActiveSortedPlugins().size() > 1)
 			{
 				logout = true;
 				delay = 0;
@@ -1654,7 +1654,7 @@ public class ChinManagerPlugin extends Plugin
 
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
 		{
-			if (!chinManager.getActivePlugins().isEmpty())
+			if (!chinManager.getActiveSortedPlugins().isEmpty())
 			{
 				if (optionsConfig.hopAfterBreak() && (optionsConfig.american() || optionsConfig.unitedKingdom() || optionsConfig.german() || optionsConfig.australian()))
 				{
@@ -1685,7 +1685,7 @@ public class ChinManagerPlugin extends Plugin
 			}
 		}
 
-		if (chinManager.getActivePlugins().size() > 0 && stateMachine.getState() != ChinManagerState.BANK_PIN &&
+		if (chinManager.getActiveSortedPlugins().size() > 0 && stateMachine.getState() != ChinManagerState.BANK_PIN &&
 			client.getWidget(WidgetID.BANK_PIN_GROUP_ID, BANK_PIN_INSTRUCTION_TEXT.getChildId()) != null &&
 			(client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("First click the FIRST digit.") ||
 				client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Now click the SECOND digit.") ||
@@ -1696,7 +1696,7 @@ public class ChinManagerPlugin extends Plugin
 		}
 		else if (stateMachine.getState() == ChinManagerState.IDLE && logout && delay == 0)
 		{
-			if (!chinManager.getActivePlugins().isEmpty() && chinManager.getActiveBreaks().size() == chinManager.getActivePlugins().size())
+			if (!chinManager.getActiveSortedPlugins().isEmpty() && chinManager.getActiveBreaks().size() == chinManager.getActiveSortedPlugins().size())
 			{
 				transition(ChinManagerStates.LOGOUT);
 			}
@@ -2052,7 +2052,7 @@ public class ChinManagerPlugin extends Plugin
 
 	public void transition(ChinManagerStates state)
 	{
-		if (!chinManager.getActivePlugins().isEmpty())
+		if (!chinManager.getActiveSortedPlugins().isEmpty())
 		{
 			stateMachine.accept(state);
 		}

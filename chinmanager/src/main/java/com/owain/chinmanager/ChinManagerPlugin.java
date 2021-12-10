@@ -824,8 +824,8 @@ public class ChinManagerPlugin extends Plugin
 					}
 				}
 
-				return actions.contains("Bank") || actions.contains("Collect") ||
-					imposterActions.contains("Bank") || imposterActions.contains("Collect");
+				return actions.contains("Bank") || (actions.contains("Collect") && !objectComposition.getName().contains("Grand")) ||
+					imposterActions.contains("Bank") || (imposterActions.contains("Collect") && !objectComposition.getImpostor().getName().contains("Grand"));
 			})
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
 			.min(Comparator.comparing(npc -> {

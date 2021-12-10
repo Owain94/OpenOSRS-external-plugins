@@ -123,6 +123,11 @@ import net.runelite.api.events.WallObjectChanged;
 import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.queries.DecorativeObjectQuery;
+import net.runelite.api.queries.GameObjectQuery;
+import net.runelite.api.queries.GroundObjectQuery;
+import net.runelite.api.queries.NPCQuery;
+import net.runelite.api.queries.WallObjectQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -553,7 +558,12 @@ public class ChinManagerPlugin extends Plugin
 					.getWorldLocation()
 					.distanceTo(locatable.getWorldLocation())
 			))
-			.orElse(null);
+			.orElse(
+				new NPCQuery()
+					.idEquals(ids)
+					.result(client)
+					.nearestTo(client.getLocalPlayer())
+			);
 	}
 
 	public static TileObject getObject(Client client, int id)
@@ -579,7 +589,7 @@ public class ChinManagerPlugin extends Plugin
 					.getWorldLocation()
 					.distanceTo(locatable.getWorldLocation())
 			))
-			.orElse(null);
+			.orElse(getObjectAlt(client, ids, locatable));
 	}
 
 	public static TileObject getObject(Client client, int id, int x, int y)
@@ -622,7 +632,7 @@ public class ChinManagerPlugin extends Plugin
 							.getWorldLocation()
 					)
 			))
-			.orElse(null);
+			.orElse(getObjectAlt(client, id, wp));
 	}
 
 	public static TileObject getObject(Client client, WorldPoint wp)
@@ -642,7 +652,146 @@ public class ChinManagerPlugin extends Plugin
 							.getWorldLocation()
 					)
 			))
-			.orElse(null);
+			.orElse(getObjectAlt(client, wp));
+	}
+
+	public static TileObject getObjectAlt(Client client, List<Integer> ids, Locatable locatable)
+	{
+		GameObject gameObject = new GameObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(locatable);
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		DecorativeObject decorativeObject = new DecorativeObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(locatable);
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		GroundObject groundObject = new GroundObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(locatable);
+
+		if (groundObject != null)
+		{
+			return groundObject;
+		}
+
+		WallObject wallObject = new WallObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(locatable);
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+
+		return null;
+	}
+
+	public static TileObject getObjectAlt(Client client, int id, WorldPoint wp)
+	{
+		GameObject gameObject = new GameObjectQuery()
+			.idEquals(id)
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		DecorativeObject decorativeObject = new DecorativeObjectQuery()
+			.idEquals(id)
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		GroundObject groundObject = new GroundObjectQuery()
+			.idEquals(id)
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (groundObject != null)
+		{
+			return groundObject;
+		}
+
+		WallObject wallObject = new WallObjectQuery()
+			.idEquals(id)
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+
+		return null;
+	}
+
+	public static TileObject getObjectAlt(Client client, WorldPoint wp)
+	{
+		GameObject gameObject = new GameObjectQuery()
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		DecorativeObject decorativeObject = new DecorativeObjectQuery()
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		GroundObject groundObject = new GroundObjectQuery()
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (groundObject != null)
+		{
+			return groundObject;
+		}
+
+		WallObject wallObject = new WallObjectQuery()
+			.atWorldLocation(wp)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+
+		return null;
 	}
 
 	public static TileObject getBankObject(Client client)

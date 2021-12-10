@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Singleton;
@@ -40,8 +41,8 @@ public class ChinManager
 		@Override
 		public int compare(Plugin plugin1, Plugin plugin2)
 		{
-			Long p1 = (long) Integer.parseInt(pluginConfig.get(plugin1).get("combiningPriority"));
-			Long p2 = (long) Integer.parseInt(pluginConfig.get(plugin2).get("combiningPriority"));
+			Long p1 = (long) Integer.parseInt(pluginConfig.get(plugin1).get("combiningPriority"), 10);
+			Long p2 = (long) Integer.parseInt(pluginConfig.get(plugin2).get("combiningPriority"), 10);
 
 			return p2.compareTo(p1);
 		}
@@ -176,12 +177,13 @@ public class ChinManager
 		return pluginsSubject.hide();
 	}
 
-	public Set<Plugin> getActivePlugins()
+	public SortedSet<Plugin> getActivePlugins()
 	{
+		Supplier<TreeSet<Plugin>> plugins = () -> new TreeSet<>(pluginComparable);
 		return activePlugins
 			.stream()
 			.filter(Objects::nonNull)
-			.collect(Collectors.toSet());
+			.collect(Collectors.toCollection(plugins));
 	}
 
 	@Nullable
@@ -201,7 +203,7 @@ public class ChinManager
 	public void startPlugin(Plugin plugin)
 	{
 		activePlugins.add(plugin);
-		activePluginsSubject.onNext(activePlugins);
+		activePluginsSubject.onNext(getActivePlugins());
 
 		startTimes.put(plugin, Instant.now());
 	}
@@ -214,7 +216,7 @@ public class ChinManager
 			startTimes.put(plugin, Instant.now());
 		}
 
-		activePluginsSubject.onNext(activePlugins);
+		activePluginsSubject.onNext(getActivePlugins());
 	}
 
 	public void stopPlugin(Plugin plugin)
@@ -532,6 +534,8 @@ public class ChinManager
 	@Nullable
 	public Plugin getNextActive(Plugin plugin, Instant instant)
 	{
+		SortedSet<Plugin> activePlugins = getActivePlugins();
+
 		if (activePlugins.size() == 1)
 		{
 			return activePlugins.first();

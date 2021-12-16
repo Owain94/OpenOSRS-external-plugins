@@ -8,7 +8,7 @@ plugins {
     checkstyle
     java
     kotlin("jvm") version "1.3.71"
-    id("com.github.andygoossens.gradle-modernizer-plugin") version "1.4.0" apply false
+    id("com.github.andygoossens.gradle-modernizer-plugin") version "1.6.1"
 }
 
 apply<BootstrapPlugin>()
@@ -57,9 +57,9 @@ subprojects {
     apply(plugin = "com.github.andygoossens.gradle-modernizer-plugin")
 
     dependencies {
-        compileOnly(group = "com.openosrs", name = "http-api", version = "4.16.2")
-        compileOnly(group = "com.openosrs", name = "runelite-api", version = "4.16.2")
-        compileOnly(group = "com.openosrs", name = "runelite-client", version = "4.16.2")
+        compileOnly(group = "com.openosrs", name = "http-api", version = "4.17.0")
+        compileOnly(group = "com.openosrs", name = "runelite-api", version = "4.17.0")
+        compileOnly(group = "com.openosrs", name = "runelite-client", version = "4.17.0")
 
         compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.9")
         compileOnly(group = "com.google.guava", name = "guava", version = "30.1.1-jre") {
@@ -75,6 +75,7 @@ subprojects {
     }
 
     if (this.name != "oshi") {
+        apply(plugin = "com.github.andygoossens.gradle-modernizer-plugin")
         apply(plugin = "checkstyle")
 
         checkstyle {

@@ -14,6 +14,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -183,12 +184,14 @@ public class ConfigPanel extends FixedWidthPanel
 			item.setMinimumSize(new Dimension(PANEL_WIDTH, 0));
 			String name = cid.getItem().name();
 
-			if (!name.isEmpty() && !cid.getType().isAssignableFrom(Consumer.class))
+			JLabel configEntryName = new JLabel(name);
+			configEntryName.setForeground(Color.WHITE);
+			configEntryName.setToolTipText("<html>" + name + ":<br>" + cid.getItem().description() + "</html>");
+			item.add(configEntryName, BorderLayout.CENTER);
+
+			if (name.isEmpty())
 			{
-				JLabel configEntryName = new JLabel(name);
-				configEntryName.setForeground(Color.WHITE);
-				configEntryName.setToolTipText("<html>" + name + ":<br>" + cid.getItem().description() + "</html>");
-				item.add(configEntryName, BorderLayout.CENTER);
+				item.remove(configEntryName);
 			}
 
 			if (cid.getType() == boolean.class)
@@ -200,13 +203,18 @@ public class ConfigPanel extends FixedWidthPanel
 				item.add(checkbox, BorderLayout.EAST);
 			}
 
-			if (cid.getType().isAssignableFrom(Consumer.class))
+			if (cid.getType() instanceof ParameterizedType)
 			{
-				JButton button = new JButton(cid.getItem().name());
-				button.addActionListener((e) ->
-					configManager.getConsumer(pluginConfig.getGroup().value(), cid.getItem().keyName()).accept(chinManagerPlugin));
+				ParameterizedType parameterizedType = (ParameterizedType) cid.getType();
+				if (parameterizedType.getRawType() == Consumer.class)
+				{
+					item.remove(configEntryName);
+					JButton button = new JButton(cid.getItem().name());
+					button.addActionListener((e) ->
+						configManager.getConsumer(pluginConfig.getGroup().value(), cid.getItem().keyName()).accept(chinManagerPlugin));
 
-				item.add(button, BorderLayout.SOUTH);
+					item.add(button, BorderLayout.SOUTH);
+				}
 			}
 
 			if (cid.getType() == int.class)
@@ -240,7 +248,7 @@ public class ConfigPanel extends FixedWidthPanel
 				item.add(spinner, BorderLayout.EAST);
 			}
 
-			if (cid.getType().isEnum())
+			if (cid.getType() instanceof Class && ((Class<?>) cid.getType()).isEnum())
 			{
 				Class<? extends Enum> type = (Class<? extends Enum>) cid.getType();
 
@@ -343,7 +351,7 @@ public class ConfigPanel extends FixedWidthPanel
 					{
 						show = Boolean.parseBoolean(configManager.getConfiguration(cd.getGroup().value(), cid2.getItem().keyName()));
 					}
-					else if (cid2.getType().isEnum())
+					else if (cid2.getType() instanceof Class && ((Class<?>) cid2.getType()).isEnum())
 					{
 						Class<? extends Enum> type = (Class<? extends Enum>) cid2.getType();
 						try

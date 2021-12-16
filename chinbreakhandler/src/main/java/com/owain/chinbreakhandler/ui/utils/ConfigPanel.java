@@ -217,7 +217,7 @@ public class ConfigPanel extends FixedWidthPanel
 				item.add(spinner, BorderLayout.EAST);
 			}
 
-			if (cid.getType().isEnum())
+			if (cid.getType() instanceof Class && ((Class<?>) cid.getType()).isEnum())
 			{
 				Class<? extends Enum> type = (Class<? extends Enum>) cid.getType();
 
@@ -320,7 +320,7 @@ public class ConfigPanel extends FixedWidthPanel
 					{
 						show = Boolean.parseBoolean(configManager.getConfiguration(cd.getGroup().value(), cid2.getItem().keyName()));
 					}
-					else if (cid2.getType().isEnum())
+					else if (cid2.getType() instanceof Class && ((Class<?>) cid2.getType()).isEnum())
 					{
 						Class<? extends Enum> type = (Class<? extends Enum>) cid2.getType();
 						try

@@ -2052,6 +2052,11 @@ public class ChinManagerPlugin extends Plugin
 
 	public void transition(ChinManagerStates state)
 	{
+		if (stateMachine.getState() == ChinManagerState.LOGOUT && client.getGameState() != GameState.LOGIN_SCREEN)
+		{
+			return;
+		}
+
 		if (!chinManager.getActiveSortedPlugins().isEmpty())
 		{
 			stateMachine.accept(state);

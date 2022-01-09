@@ -2002,7 +2002,7 @@ public class ChinManagerPlugin extends Plugin
 
 		String chatMessage = new ChatMessageBuilder()
 			.append(ChatColorType.NORMAL)
-			.append("Hopping away from a player. New world: ")
+			.append("Hopping.... New world: ")
 			.append(ChatColorType.HIGHLIGHT)
 			.append(Integer.toString(world.getId()))
 			.append(ChatColorType.NORMAL)

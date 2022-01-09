@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2020-2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -288,7 +288,7 @@ public interface CentralProcessor {
          */
         STEAL(7);
 
-        private int index;
+        private final int index;
 
         TickType(int value) {
             this.index = value;

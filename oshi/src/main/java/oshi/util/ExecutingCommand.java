@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2020-2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,13 +29,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import oshi.PlatformEnum;
-import oshi.SystemInfo;
+import com.sun.jna.Platform;
+
 import oshi.annotation.concurrent.ThreadSafe;
 
 /**
@@ -53,13 +54,10 @@ public final class ExecutingCommand {
     }
 
     private static String[] getDefaultEnv() {
-        PlatformEnum platform = SystemInfo.getCurrentPlatform();
-        if (platform == PlatformEnum.WINDOWS) {
+        if (Platform.isWindows()) {
             return new String[] { "LANGUAGE=C" };
-        } else if (platform != PlatformEnum.UNKNOWN) {
-            return new String[] { "LC_ALL=C" };
         } else {
-            return null; // NOSONAR squid:S1168
+            return new String[] { "LC_ALL=C" };
         }
     }
 
@@ -118,11 +116,38 @@ public final class ExecutingCommand {
         Process p = null;
         try {
             p = Runtime.getRuntime().exec(cmdToRunWithArgs, envp);
+            return getProcessOutput(p, cmdToRunWithArgs);
         } catch (SecurityException | IOException e) {
             LOG.trace("Couldn't run command {}: {}", Arrays.toString(cmdToRunWithArgs), e.getMessage());
-            return new ArrayList<>(0);
+        } finally {
+            // Ensure all resources are released
+            if (p != null) {
+                // Windows and Solaris don't close descriptors on destroy,
+                // so we must handle separately
+                if (Platform.isWindows() || Platform.isSolaris()) {
+                    try {
+                        p.getOutputStream().close();
+                    } catch (IOException e) {
+                        // do nothing on failure
+                    }
+                    try {
+                        p.getInputStream().close();
+                    } catch (IOException e) {
+                        // do nothing on failure
+                    }
+                    try {
+                        p.getErrorStream().close();
+                    } catch (IOException e) {
+                        // do nothing on failure
+                    }
+                }
+                p.destroy();
+            }
         }
+        return Collections.emptyList();
+    }
 
+    private static List<String> getProcessOutput(Process p, String[] cmd) {
         ArrayList<String> sa = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(p.getInputStream(), Charset.defaultCharset()))) {
@@ -132,11 +157,9 @@ public final class ExecutingCommand {
             }
             p.waitFor();
         } catch (IOException e) {
-            LOG.trace("Problem reading output from {}: {}", Arrays.toString(cmdToRunWithArgs), e.getMessage());
-            return new ArrayList<>(0);
+            LOG.trace("Problem reading output from {}: {}", Arrays.toString(cmd), e.getMessage());
         } catch (InterruptedException ie) {
-            LOG.trace("Interrupted while reading output from {}: {}", Arrays.toString(cmdToRunWithArgs),
-                    ie.getMessage());
+            LOG.trace("Interrupted while reading output from {}: {}", Arrays.toString(cmd), ie.getMessage());
             Thread.currentThread().interrupt();
         }
         return sa;

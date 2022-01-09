@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2020-2022 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package oshi.driver.linux.proc;
+package oshi.util;
 
 import static oshi.util.Memoizer.memoize;
 
@@ -31,21 +31,21 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import com.sun.jna.Platform;
+
 import oshi.annotation.concurrent.ThreadSafe;
-import oshi.util.Constants;
-import oshi.util.ExecutingCommand;
 
 /**
- * Utility class to temporarily cache the userID and group maps in Linux, for
+ * Utility class to temporarily cache the userID and group maps in *nix, for
  * parsing process ownership. Cache expires after one minute.
  */
 @ThreadSafe
 public final class UserGroupInfo {
 
     // Temporarily cache users and groups, update each minute
-    private static final Supplier<Map<String, String>> usersIdMap = memoize(UserGroupInfo::getUserMap,
+    private static final Supplier<Map<String, String>> USERS_ID_MAP = memoize(UserGroupInfo::getUserMap,
             TimeUnit.MINUTES.toNanos(1));
-    private static final Supplier<Map<String, String>> groupsIdMap = memoize(UserGroupInfo::getGroupMap,
+    private static final Supplier<Map<String, String>> GROUPS_ID_MAP = memoize(UserGroupInfo::getGroupMap,
             TimeUnit.MINUTES.toNanos(1));
 
     private UserGroupInfo() {
@@ -60,7 +60,7 @@ public final class UserGroupInfo {
      *         as the second
      */
     public static String getUser(String userId) {
-        return usersIdMap.get().getOrDefault(userId, Constants.UNKNOWN);
+        return USERS_ID_MAP.get().getOrDefault(userId, Constants.UNKNOWN);
     }
 
     /**
@@ -71,12 +71,17 @@ public final class UserGroupInfo {
      * @return a {@link String} object.
      */
     public static String getGroupName(String groupId) {
-        return groupsIdMap.get().getOrDefault(groupId, Constants.UNKNOWN);
+        return GROUPS_ID_MAP.get().getOrDefault(groupId, Constants.UNKNOWN);
     }
 
     private static Map<String, String> getUserMap() {
         HashMap<String, String> userMap = new HashMap<>();
-        List<String> passwd = ExecutingCommand.runNative("getent passwd");
+        List<String> passwd;
+        if (Platform.isAIX()) {
+            passwd = FileUtil.readFile("/etc/passwd");
+        } else {
+            passwd = ExecutingCommand.runNative("getent passwd");
+        }
         // see man 5 passwd for the fields
         for (String entry : passwd) {
             String[] split = entry.split(":");
@@ -93,7 +98,12 @@ public final class UserGroupInfo {
 
     private static Map<String, String> getGroupMap() {
         Map<String, String> groupMap = new HashMap<>();
-        List<String> group = ExecutingCommand.runNative("getent group");
+        List<String> group;
+        if (Platform.isAIX()) {
+            group = FileUtil.readFile("/etc/group");
+        } else {
+            group = ExecutingCommand.runNative("getent group");
+        }
         // see man 5 group for the fields
         for (String entry : group) {
             String[] split = entry.split(":");

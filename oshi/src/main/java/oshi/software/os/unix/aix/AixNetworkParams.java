@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2020-2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import static com.sun.jna.platform.unix.LibCAPI.HOST_NAME_MAX; // NOSONAR squid:
 import com.sun.jna.Native;
 
 import oshi.annotation.concurrent.ThreadSafe;
-import oshi.jna.platform.unix.aix.AixLibc;
+import oshi.jna.platform.unix.AixLibc;
 import oshi.software.common.AbstractNetworkParams;
 import oshi.util.Constants;
 import oshi.util.ExecutingCommand;

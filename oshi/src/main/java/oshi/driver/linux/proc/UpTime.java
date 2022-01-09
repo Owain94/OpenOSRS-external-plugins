@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2020-2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,9 +48,8 @@ public final class UpTime {
             if (spaceIndex < 0) {
                 // No space, error
                 return 0d;
-            } else {
-                return Double.parseDouble(uptime.substring(0, spaceIndex));
             }
+            return Double.parseDouble(uptime.substring(0, spaceIndex));
         } catch (NumberFormatException nfe) {
             return 0d;
         }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2020-2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -253,8 +253,8 @@ public final class KstatUtil {
         }
         Pointer p = KS.kstat_data_lookup(ksp, name);
         if (p == null) {
-            if (LOG.isErrorEnabled()) {
-                LOG.error("Failed lo lookup kstat value on {}:{}:{} for key {}",
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Failed lo lookup kstat value on {}:{}:{} for key {}",
                         Native.toString(ksp.ks_module, StandardCharsets.US_ASCII), ksp.ks_instance,
                         Native.toString(ksp.ks_name, StandardCharsets.US_ASCII), name);
             }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2020-2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,7 +61,7 @@ public final class SysctlUtil {
         size_t.ByReference size = new size_t.ByReference(com.sun.jna.platform.mac.SystemB.INT_SIZE);
         Pointer p = new Memory(size.longValue());
         if (0 != SystemB.INSTANCE.sysctlbyname(name, p, size, null, size_t.ZERO)) {
-            LOG.error(SYSCTL_FAIL, name, Native.getLastError());
+            LOG.warn(SYSCTL_FAIL, name, Native.getLastError());
             return def;
         }
         return p.getInt(0);

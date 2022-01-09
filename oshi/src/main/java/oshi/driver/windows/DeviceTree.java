@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -91,7 +91,7 @@ public final class DeviceTree {
         Map<Integer, String> mfgMap = new HashMap<>();
         // Get device IDs for the top level devices
         HANDLE hDevInfo = SA.SetupDiGetClassDevs(guidDevInterface, null, null, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
-        if (hDevInfo != INVALID_HANDLE_VALUE) {
+        if (!INVALID_HANDLE_VALUE.equals(hDevInfo)) {
             try {
                 // Create re-usable native allocations
                 Memory buf = new Memory(MAX_PATH);

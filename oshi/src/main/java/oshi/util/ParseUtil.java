@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2010 - 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
+ * Copyright (c) 2021 The OSHI Project Contributors: https://github.com/oshi/oshi/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -575,7 +575,9 @@ public final class ParseUtil {
                 milliseconds += parseLongOrDefault(m.group(3), 0L) * 60_000L;
             }
             milliseconds += parseLongOrDefault(m.group(4), 0L) * 1000L;
-            milliseconds += (long) (1000 * parseDoubleOrDefault("0." + m.group(5), 0d));
+            if (m.group(5) != null) {
+                milliseconds += (long) (1000 * parseDoubleOrDefault("0." + m.group(5), 0d));
+            }
             return milliseconds;
         }
         return defaultLong;
@@ -996,7 +998,7 @@ public final class ParseUtil {
 
         double number = ParseUtil.parseDoubleOrDefault(mem[0], 0L);
         if (mem.length == 2 && mem[1] != null && mem[1].length() >= 1) {
-            switch ((mem[1].charAt(0))) {
+            switch (mem[1].charAt(0)) {
             case 'T':
                 number *= 1_000_000_000_000L;
                 break;
@@ -1344,7 +1346,7 @@ public final class ParseUtil {
                 }
                 // Otherwise add string and reset start
                 // Intentionally using platform default charset
-                strList.add(new String(bytes, start, end - start));
+                strList.add(new String(bytes, start, end - start, StandardCharsets.UTF_8));
                 start = end + 1;
             }
         } while (end++ < bytes.length);
@@ -1378,11 +1380,11 @@ public final class ParseUtil {
                 }
                 // Otherwise add string (possibly empty) and reset start
                 // Intentionally using platform default charset
-                strMap.put(key, new String(bytes, start, end - start));
+                strMap.put(key, new String(bytes, start, end - start, StandardCharsets.UTF_8));
                 key = null;
                 start = end + 1;
             } else if (bytes[end] == '=' && key == null) {
-                key = new String(bytes, start, end - start);
+                key = new String(bytes, start, end - start, StandardCharsets.UTF_8);
                 start = end + 1;
             }
         } while (end++ < bytes.length);

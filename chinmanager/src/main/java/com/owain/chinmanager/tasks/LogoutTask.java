@@ -240,6 +240,10 @@ public class LogoutTask implements Task<Void>
 				-1,
 				param1
 			);
+
+			menuOptionClicked.setConsumed(false);
+
+			return;
 		}
 
 		if (!menuOptionClicked.isConsumed() && menuOptionClicked.getMenuAction() == MenuAction.WALK && menuOptionClicked.getParam0() == 0 && menuOptionClicked.getParam1() == 0)

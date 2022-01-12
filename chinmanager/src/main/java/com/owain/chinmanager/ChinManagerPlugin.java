@@ -129,9 +129,7 @@ import net.runelite.api.queries.GroundObjectQuery;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.queries.WallObjectQuery;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
-import static net.runelite.api.widgets.WidgetInfo.BANK_PIN_INSTRUCTION_TEXT;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
@@ -178,8 +176,8 @@ public class ChinManagerPlugin extends Plugin
 	private static final Pattern LEVEL_UP_PATTERN = Pattern.compile(".*Your ([a-zA-Z]+) (?:level is|are)? now (\\d+)\\.");
 	private static final String COLLECTION_LOG_TEXT = "New item added to your collection log: ";
 	private static final List<String> PET_MESSAGES = List.of("You have a funny feeling like you're being followed",
-	"You feel something weird sneaking into your backpack",
-	"You have a funny feeling like you would have been followed");
+		"You feel something weird sneaking into your backpack",
+		"You have a funny feeling like you would have been followed");
 
 	public static final CompositeDisposable DISPOSABLES = new CompositeDisposable();
 	public static final Map<Plugin, CompositeDisposable> PLUGIN_DISPOSABLE_MAP = new HashMap<>();
@@ -1686,11 +1684,7 @@ public class ChinManagerPlugin extends Plugin
 		}
 
 		if (chinManager.getActiveSortedPlugins().size() > 0 && stateMachine.getState() != ChinManagerState.BANK_PIN &&
-			client.getWidget(WidgetID.BANK_PIN_GROUP_ID, BANK_PIN_INSTRUCTION_TEXT.getChildId()) != null &&
-			(client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("First click the FIRST digit.") ||
-				client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Now click the SECOND digit.") ||
-				client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Time for the THIRD digit.") ||
-				client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Finally, the FOURTH digit.")))
+			client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) != null)
 		{
 			transition(ChinManagerStates.BANK_PIN);
 		}

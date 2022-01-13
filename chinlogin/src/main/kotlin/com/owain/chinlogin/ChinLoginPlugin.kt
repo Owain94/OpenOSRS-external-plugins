@@ -1,6 +1,7 @@
 package com.owain.chinlogin
 
 import com.google.inject.Provides
+import lombok.extern.slf4j.Slf4j
 import net.runelite.api.Client
 import net.runelite.api.GameState
 import net.runelite.api.Point
@@ -19,6 +20,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import javax.inject.Inject
+import kotlin.math.log
 
 @Extension
 @PluginDescriptor(
@@ -38,6 +40,7 @@ class ChinLoginPlugin : Plugin() {
 
     private var executorService: ExecutorService? = null
     private var loginClicked: Boolean = false
+    private var pending: Boolean = false
 
     @Provides
     fun provideConfig(configManager: ConfigManager): ChinLoginConfig {
@@ -48,6 +51,10 @@ class ChinLoginPlugin : Plugin() {
         configManager.setConfiguration("loginscreen", "hideDisconnect", true)
         client.setHideDisconnect(true)
         executorService = Executors.newSingleThreadExecutor()
+
+        if (client.gameState == GameState.LOGIN_SCREEN) {
+            pending = true
+        }
     }
 
     override fun shutDown() {
@@ -73,7 +80,13 @@ class ChinLoginPlugin : Plugin() {
 
         executorService!!.submit {
             try {
-                if (client.gameState == GameState.LOGIN_SCREEN) {
+                if (gameStateChanged.gameState == GameState.LOGIN_SCREEN) {
+                    if (pending && config.startup()) {
+                        waitDelayTime(config.startupDelay(), config.startupDelay() + 500)
+                    }
+
+                    pending = false
+
                     val username = config.email()
                     val password = config.password()
                     if (username != "" && password != "") {

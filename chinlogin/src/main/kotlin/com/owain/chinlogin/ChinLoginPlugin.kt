@@ -1,7 +1,6 @@
 package com.owain.chinlogin
 
 import com.google.inject.Provides
-import lombok.extern.slf4j.Slf4j
 import net.runelite.api.Client
 import net.runelite.api.GameState
 import net.runelite.api.Point
@@ -20,7 +19,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import javax.inject.Inject
-import kotlin.math.log
 
 @Extension
 @PluginDescriptor(

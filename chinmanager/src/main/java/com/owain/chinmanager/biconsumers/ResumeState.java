@@ -24,7 +24,7 @@ public class ResumeState
 	public BiConsumer<ChinManagerContext, StateMachine.State<ChinManagerContext, ChinManagerStates>> resume()
 	{
 		return (t1, state) -> {
-			if (ChinManagerPlugin.shouldSetup)
+			if (ChinManagerPlugin.isShouldSetup())
 			{
 				chinManagerPlugin.transition(ChinManagerStates.SETUP);
 			}

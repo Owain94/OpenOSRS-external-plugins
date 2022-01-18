@@ -57,9 +57,13 @@ public class ManagerClickboxDebugOverlay extends Overlay
 			return null;
 		}
 
-		if (!ChinManagerPlugin.debugReachableWorldAreas.isEmpty())
+		Set<WorldPoint> reachableWorldAreas = ChinManagerPlugin.getDebugReachableWorldAreas();
+		Map<WorldPoint, Integer> reachableTiles = ChinManagerPlugin.getDebugReachableTiles();
+		Map<TileObject, Integer> tileObjectMap = ChinManagerPlugin.getDebugTileObjectMap();
+
+		if (!reachableWorldAreas.isEmpty())
 		{
-			for (WorldPoint worldPoint : Set.copyOf(ChinManagerPlugin.debugReachableWorldAreas))
+			for (WorldPoint worldPoint : Set.copyOf(reachableWorldAreas))
 			{
 				LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
 				if (lp == null)
@@ -76,9 +80,9 @@ public class ManagerClickboxDebugOverlay extends Overlay
 			}
 		}
 
-		if (!ChinManagerPlugin.debugReachableTiles.isEmpty())
+		if (!reachableTiles.isEmpty())
 		{
-			for (Map.Entry<WorldPoint, Integer> objectMap : Map.copyOf(ChinManagerPlugin.debugReachableTiles).entrySet())
+			for (Map.Entry<WorldPoint, Integer> objectMap : Map.copyOf(reachableTiles).entrySet())
 			{
 				LocalPoint lp = LocalPoint.fromWorld(client, objectMap.getKey());
 				if (lp == null)
@@ -102,9 +106,9 @@ public class ManagerClickboxDebugOverlay extends Overlay
 			}
 		}
 
-		if (!ChinManagerPlugin.debugTileObjectMap.isEmpty())
+		if (!tileObjectMap.isEmpty())
 		{
-			for (Map.Entry<TileObject, Integer> objectMap : Map.copyOf(ChinManagerPlugin.debugTileObjectMap).entrySet())
+			for (Map.Entry<TileObject, Integer> objectMap : Map.copyOf(tileObjectMap).entrySet())
 			{
 				modelOutliner.drawOutline(objectMap.getKey(), 1, new Color(255, 0, 255), 4);
 

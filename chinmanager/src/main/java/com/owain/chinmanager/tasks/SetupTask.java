@@ -4,15 +4,13 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ChinManagerStates;
 import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
-import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
-import java.awt.event.KeyEvent;
-import static java.awt.event.KeyEvent.KEY_TYPED;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientInt;
 import net.runelite.client.callback.ClientThread;
 
@@ -41,58 +39,23 @@ public class SetupTask implements Task<Void>
 			chinManagerPlugin.setExecutorService(Executors.newSingleThreadExecutor());
 		}
 
-		chinManagerPlugin.getExecutorService().submit(() ->
-		{
-			ChinManagerPlugin.shouldSetup = false;
+		clientThread.invoke(() -> {
+			client.runScript(ScriptID.CAMERA_DO_ZOOM, 200, 200);
+			client.runScript(MagicNumberScripts.TOPLEVEL_COMPASS.getId(), 1); // North
+			client.runScript(MagicNumberScripts.FORCE_CAMERA_ANGLE.getId(), 512, client.getMapAngle());
 
-			try
+			if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
 			{
-				keyEvent(KeyEvent.KEY_PRESSED, KeyEvent.VK_UP);
-
-				int j = 0;
-
-				do
-				{
-					Thread.sleep(new IntRandomNumberGenerator(120, 240).nextInt());
-					j++;
-				}
-				while (j < 10);
-
-				keyEvent(KeyEvent.KEY_RELEASED, KeyEvent.VK_UP);
-
-				clientThread.invoke(() -> {
-					chinManagerPlugin.transition(ChinManagerStates.IDLE);
-
-					if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
-					{
-						client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 3);
-					}
-					chinManager.setCurrentlyActive(chinManager.getNextActive());
-				});
+				client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 3);
 			}
-			catch (InterruptedException e)
-			{
-				log.error("Oops!", e);
-			}
+
+			chinManagerPlugin.transition(ChinManagerStates.IDLE);
+			chinManager.setCurrentlyActive(chinManager.getNextActive());
 		});
 	}
 
 	public void unsubscribe()
 	{
 		chinManagerPlugin.getExecutorService().shutdownNow();
-	}
-
-	public void keyEvent(int id, int key)
-	{
-		KeyEvent e = new KeyEvent(
-			client.getCanvas(),
-			id,
-			System.currentTimeMillis(),
-			0,
-			id == KEY_TYPED ? KeyEvent.VK_UNDEFINED : key,
-			id == KEY_TYPED ? (char) key : KeyEvent.CHAR_UNDEFINED
-		);
-
-		client.getCanvas().dispatchEvent(e);
 	}
 }

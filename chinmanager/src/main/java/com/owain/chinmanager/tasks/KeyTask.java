@@ -41,6 +41,11 @@ public class KeyTask implements Task<Void>
 					Automation.randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
 					Automation.sendKey(KeyEvent.VK_SPACE, client, false);
 				}
+				else if (input.equals("\n"))
+				{
+					Automation.randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
+					Automation.sendKey(KeyEvent.VK_ENTER, client, false);
+				}
 				else
 				{
 					for (char ch : input.toCharArray())

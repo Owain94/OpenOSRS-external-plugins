@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +72,11 @@ public class BankPinTask implements Task<Void>
 			chinManager.addWarning("Manager: Bank pin", "Bank pin is not set / profile data not unlocked");
 			chinManagerPlugin.transition(ChinManagerStates.IDLE);
 
+			chinManagerPlugin.getNotificationsApi().sendNotification(
+				"bankpin",
+				Map.of()
+			);
+
 			return;
 		}
 
@@ -121,6 +127,11 @@ public class BankPinTask implements Task<Void>
 			return null;
 		}
 
+		if (bankpin == null || bankpin.isEmpty())
+		{
+			return null;
+		}
+
 		if (bankpin.length() != 4)
 		{
 			return null;
@@ -139,7 +150,7 @@ public class BankPinTask implements Task<Void>
 		}
 
 		Widget instructionTextWidget = client.getWidget(BANK_PIN_INSTRUCTION_TEXT);
-		if (client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) == null || instructionTextWidget == null || getBankPin() == null)
+		if (client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) == null || instructionTextWidget == null)
 		{
 			chinManagerPlugin.transition(ChinManagerStates.IDLE);
 			return;
@@ -149,6 +160,11 @@ public class BankPinTask implements Task<Void>
 		{
 			instruction = instructionTextWidget.getText();
 			bankPinState = BankPinState.NONE;
+		}
+
+		if (getBankPin() == null)
+		{
+			return;
 		}
 
 		if (bankPinState == BankPinState.NONE || instruction == null)
@@ -247,16 +263,13 @@ public class BankPinTask implements Task<Void>
 				0,
 				digitWidget.getId()
 			);
+			tikkie = 0;
 		}
 
 		if (!menuOptionClicked.isConsumed() && menuOptionClicked.getMenuAction() == MenuAction.WALK && menuOptionClicked.getParam0() == 0 && menuOptionClicked.getParam1() == 0)
 		{
 			instruction = null;
 			menuOptionClicked.consume();
-		}
-		else
-		{
-			tikkie = 0;
 		}
 	}
 }

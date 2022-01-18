@@ -47,7 +47,7 @@ public class ClickTask implements Task<Void>
 			}
 			catch (InterruptedException e)
 			{
-				log.error("", e);
+				// ignore
 			}
 		});
 	}

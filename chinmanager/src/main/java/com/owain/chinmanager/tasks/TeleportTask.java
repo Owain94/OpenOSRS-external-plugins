@@ -808,6 +808,7 @@ public class TeleportTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Default quantity: 1",
@@ -831,6 +832,7 @@ public class TeleportTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"menu",
@@ -854,6 +856,7 @@ public class TeleportTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Show",
@@ -900,6 +903,7 @@ public class TeleportTask implements Task<Void>
 					index++;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Bank",
@@ -925,6 +929,7 @@ public class TeleportTask implements Task<Void>
 					index++;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Bank",
@@ -954,6 +959,7 @@ public class TeleportTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Close",
@@ -1013,6 +1019,7 @@ public class TeleportTask implements Task<Void>
 
 				log.debug("Fetch item: {} - stack: {}", itemComposition.getName(), itemComposition.isStackable());
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Withdraw-All",
@@ -1038,6 +1045,7 @@ public class TeleportTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -1072,6 +1080,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1093,6 +1102,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1114,6 +1124,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1135,6 +1146,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1156,6 +1168,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1177,6 +1190,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1198,6 +1212,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1219,6 +1234,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1245,6 +1261,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Break",
@@ -1266,6 +1283,7 @@ public class TeleportTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Cast",
@@ -1289,6 +1307,7 @@ public class TeleportTask implements Task<Void>
 						return;
 					}
 
+					tikkie = 0;
 					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Teleport",
@@ -1310,6 +1329,7 @@ public class TeleportTask implements Task<Void>
 						return;
 					}
 
+					tikkie = 0;
 					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Tele to POH",
@@ -1497,6 +1517,7 @@ public class TeleportTask implements Task<Void>
 				menuAction = MenuAction.CC_OP_LOW_PRIORITY;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"",
@@ -1522,6 +1543,7 @@ public class TeleportTask implements Task<Void>
 
 			teleportState = TeleportState.POH_WAIT_TELEPORT_MENU;
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Teleport menu",
@@ -1542,6 +1564,7 @@ public class TeleportTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Grouping",
@@ -1593,6 +1616,7 @@ public class TeleportTask implements Task<Void>
 
 			teleportState = TeleportState.MINIGAME_TELEPORT_WAIT;
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Teleport",

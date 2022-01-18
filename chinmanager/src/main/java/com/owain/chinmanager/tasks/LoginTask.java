@@ -3,18 +3,17 @@ package com.owain.chinmanager.tasks;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ChinManagerStates;
-import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -26,6 +25,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.plugins.Plugin;
 
 @Slf4j
 public class LoginTask implements Task<Void>
@@ -80,7 +80,7 @@ public class LoginTask implements Task<Void>
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
-		if (!ChinManagerPlugin.shouldSetup)
+		if (!ChinManagerPlugin.isShouldSetup())
 		{
 			resumeNotification();
 		}
@@ -149,44 +149,52 @@ public class LoginTask implements Task<Void>
 
 			clientThread.invoke(() ->
 				{
+					if (client.isWorldSelectOpen())
+					{
+						client.setWorldSelectOpen(false);
+					}
+
+					if (client.getLoginIndex() == 4)
+					{
+						chinManagerPlugin.getNotificationsApi().sendNotification(
+							"auth",
+							Map.of()
+						);
+
+						for (Plugin plugin : Set.copyOf(chinManager.getActiveSortedPlugins()))
+						{
+							chinManager.stopPlugin(plugin);
+						}
+
+						chinManager.setCurrentlyActive(null);
+						chinManager.setAmountOfBreaks(0);
+					}
+
 					client.setUsername(finalUsername);
 					client.setPassword(finalPassword);
 
-					chinManagerPlugin.getExecutorService().submit(() ->
+					int count = 3;
+
+					if (client.getLoginIndex() == 0)
 					{
-						try
-						{
-							sendKey(KeyEvent.VK_ENTER);
-							Thread.sleep(new IntRandomNumberGenerator(80, 160).nextInt());
-							sendKey(KeyEvent.VK_ENTER);
-							Thread.sleep(new IntRandomNumberGenerator(80, 160).nextInt());
-							sendKey(KeyEvent.VK_ENTER);
-						}
-						catch (InterruptedException e)
-						{
-							log.error("", e);
-						}
-					});
+						count = 3;
+					}
+					else if (client.getLoginIndex() == 2 && client.getCurrentLoginField() == 0)
+					{
+						count = 2;
+					}
+					else if (client.getLoginIndex() == 2 && client.getCurrentLoginField() == 1)
+					{
+						count = 1;
+					}
+
+					for (int i = 0; i < count; i++)
+					{
+						disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new KeyTask(chinManagerPlugin, "\n")).ignoreElements().subscribe());
+					}
 				}
 			);
 		}
-	}
-
-	@SuppressWarnings("SameParameterValue")
-	private void sendKey(int key)
-	{
-		keyEvent(KeyEvent.KEY_PRESSED, key);
-		keyEvent(KeyEvent.KEY_RELEASED, key);
-	}
-
-	private void keyEvent(int id, int key)
-	{
-		KeyEvent e = new KeyEvent(
-			client.getCanvas(), id, System.currentTimeMillis(),
-			0, key, KeyEvent.CHAR_UNDEFINED
-		);
-
-		client.getCanvas().dispatchEvent(e);
 	}
 
 	private void resumeNotification()

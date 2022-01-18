@@ -67,6 +67,56 @@ import net.runelite.client.eventbus.Subscribe;
 
 public class BankingTask implements Task<Void>
 {
+	enum BankingState
+	{
+		NONE,
+		CLICK_BANK,
+		WAIT_BANK,
+		QUANTITY,
+		BANK_TAB,
+		SETTINGS,
+		ITEM_OPTIONS,
+		DEPOSIT_ALL,
+		SHOW_WORN_ITEMS,
+		DETERMINE_STATE,
+		BANK_HEAD,
+		BANK_CAPE,
+		BANK_AMULET,
+		BANK_AMMO,
+		BANK_WEAPON,
+		BANK_BODY,
+		BANK_SHIELD,
+		BANK_LEGS,
+		BANK_GLOVES,
+		BANK_BOOTS,
+		BANK_RING,
+		HIDE_WORN_ITEMS,
+		GET_HEAD,
+		GET_CAPE,
+		GET_AMULET,
+		GET_AMMO,
+		GET_WEAPON,
+		GET_BODY,
+		GET_SHIELD,
+		GET_LEGS,
+		GET_GLOVES,
+		GET_BOOTS,
+		GET_RING,
+		EQUIP_HEAD,
+		EQUIP_CAPE,
+		EQUIP_AMULET,
+		EQUIP_AMMO,
+		EQUIP_WEAPON,
+		EQUIP_BODY,
+		EQUIP_SHIELD,
+		EQUIP_LEGS,
+		EQUIP_GLOVES,
+		EQUIP_BOOTS,
+		EQUIP_RING,
+		FETCH_EXTRA,
+		DONE,
+	}
+
 	private static final Map<Integer, Integer> WORN_ITEMS = new HashMap<>()
 	{{
 		put(BOOTS_OF_LIGHTNESS_89, BOOTS_OF_LIGHTNESS);
@@ -135,15 +185,17 @@ public class BankingTask implements Task<Void>
 		put(AGILITY_CAPET_13341, AGILITY_CAPET);
 		put(AGILITY_CAPE_13340, AGILITY_CAPE);
 	}};
+
 	private final ChinManager chinManager;
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final TeleportsConfig teleportsConfig;
 	private final Client client;
 	private final EventBus eventBus;
 	private final List<Disposable> disposables = new ArrayList<>();
-	Equipment equipmentSetup;
+	private Equipment equipmentSetup;
 	private BankingState bankingState;
 	private boolean gearDone = false;
+	private int tikkie = 0;
 
 	@Inject
 	BankingTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus, ConfigManager configManager)
@@ -160,6 +212,7 @@ public class BankingTask implements Task<Void>
 	{
 		bankingState = BankingState.NONE;
 		gearDone = false;
+		tikkie = 0;
 
 		equipmentSetup = ChinManagerPlugin
 			.getEquipmentList()
@@ -187,6 +240,7 @@ public class BankingTask implements Task<Void>
 
 		eventBus.unregister(this);
 		gearDone = false;
+		tikkie = 0;
 
 		bankingState = BankingState.NONE;
 
@@ -206,6 +260,17 @@ public class BankingTask implements Task<Void>
 	@Subscribe
 	public void onGameTick(GameTick gameTick)
 	{
+		if (tikkie >= 10)
+		{
+			determineStates();
+
+			tikkie = 0;
+		}
+		else
+		{
+			tikkie++;
+		}
+
 		Widget bankTitleBar = client.getWidget(WidgetInfo.BANK_TITLE_BAR);
 
 		if (bankTitleBar == null && client.getItemContainer(InventoryID.BANK) == null && bankingState != BankingState.WAIT_BANK)
@@ -262,20 +327,17 @@ public class BankingTask implements Task<Void>
 				.anyMatch((item) -> item.getId() != 6512))
 			{
 				bankingState = BankingState.DEPOSIT_ALL;
+				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 			}
 			else
 			{
 				bankingState = BankingState.DETERMINE_STATE;
+				determineStates();
 			}
 		}
 		else if (bankingState == BankingState.DETERMINE_STATE)
 		{
 			determineStates();
-		}
-		else if (bankingState == BankingState.DEPOSIT_ALL)
-		{
-			bankingState = BankingState.DEPOSIT_ALL_CLICK;
-			disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 		}
 		else if (bankingState == BankingState.SHOW_WORN_ITEMS ||
 			bankingState == BankingState.HIDE_WORN_ITEMS)
@@ -311,6 +373,7 @@ public class BankingTask implements Task<Void>
 
 				bankingState = BankingState.WAIT_BANK;
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Bank",
@@ -336,6 +399,7 @@ public class BankingTask implements Task<Void>
 
 				bankingState = BankingState.WAIT_BANK;
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Bank",
@@ -358,6 +422,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Default quantity: 1",
@@ -381,6 +446,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"View all items",
@@ -404,6 +470,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"menu",
@@ -427,6 +494,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Show",
@@ -439,7 +507,7 @@ public class BankingTask implements Task<Void>
 
 			bankingState = BankingState.NONE;
 		}
-		else if (bankingState == BankingState.DEPOSIT_ALL_CLICK)
+		else if (bankingState == BankingState.DEPOSIT_ALL)
 		{
 			Widget deposit = client.getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
 
@@ -452,6 +520,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Deposit inventory",
@@ -474,6 +543,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Show worn items",
@@ -496,6 +566,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -518,6 +589,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -540,6 +612,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -562,6 +635,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -584,6 +658,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -606,6 +681,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -628,6 +704,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -650,6 +727,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -672,6 +750,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -694,6 +773,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -716,6 +796,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Bank",
@@ -738,6 +819,7 @@ public class BankingTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Hide worn items",
@@ -763,6 +845,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(0);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -788,6 +871,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(1);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -813,6 +897,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(2);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -838,6 +923,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(3);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -863,6 +949,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(4);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -888,6 +975,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(5);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -913,6 +1001,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(7);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -938,6 +1027,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(9);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -963,6 +1053,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(10);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -988,6 +1079,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(12);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -1013,6 +1105,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(13);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Withdraw-1",
@@ -1038,6 +1131,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(0);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1063,6 +1157,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(1);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1088,6 +1183,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(2);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1113,6 +1209,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(3);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1138,6 +1235,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(4);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1163,6 +1261,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(5);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1188,6 +1287,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(7);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1213,6 +1313,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(9);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1238,6 +1339,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(10);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1263,6 +1365,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(12);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1288,6 +1391,7 @@ public class BankingTask implements Task<Void>
 			EquipmentItem savedItem = equipmentSetup.getEquipment().get(13);
 			int savedItemId = WORN_ITEMS.getOrDefault(savedItem.getId(), savedItem.getId());
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Wear",
@@ -1323,6 +1427,7 @@ public class BankingTask implements Task<Void>
 					return;
 				}
 
+				tikkie = 0;
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Withdraw-1",
@@ -1373,6 +1478,7 @@ public class BankingTask implements Task<Void>
 						return;
 					}
 
+					tikkie = 0;
 					chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Withdraw-1",
@@ -1426,7 +1532,9 @@ public class BankingTask implements Task<Void>
 			}
 		}
 
-		if (!gearDone && geartab && client.getWidget(WidgetInfo.BANK_TITLE_BAR) != null && !client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
+		Widget bankTitleBar = client.getWidget(WidgetInfo.BANK_TITLE_BAR);
+
+		if (!gearDone && geartab && bankTitleBar != null && !bankTitleBar.getText().contains("character"))
 		{
 			bankingState = BankingState.SHOW_WORN_ITEMS;
 			return;
@@ -1504,11 +1612,11 @@ public class BankingTask implements Task<Void>
 			gearDone = true;
 		}
 
-		if (client.getWidget(WidgetInfo.BANK_TITLE_BAR) != null && client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
+		if (bankTitleBar != null && bankTitleBar.getText().contains("character"))
 		{
 			bankingState = BankingState.HIDE_WORN_ITEMS;
 		}
-		else if (client.getWidget(WidgetInfo.BANK_TITLE_BAR) != null && !client.getWidget(WidgetInfo.BANK_TITLE_BAR).getText().contains("character"))
+		else if (bankTitleBar != null && !bankTitleBar.getText().contains("character"))
 		{
 			for (final EquipmentInventorySlot slot : EquipmentInventorySlot.values())
 			{
@@ -1701,6 +1809,7 @@ public class BankingTask implements Task<Void>
 					if (location == null)
 					{
 						bankingState = BankingState.DONE;
+						return;
 					}
 					else if (needRingOfDueling(location) ||
 						needGamesNecklace(location) ||
@@ -1714,6 +1823,7 @@ public class BankingTask implements Task<Void>
 						if (hasAnyBankInventoryItem(getTeleportJewellery(location), client))
 						{
 							bankingState = BankingState.DONE;
+							return;
 						}
 						else if (chinManagerPlugin.getLowestItemMatch(getTeleportJewellery(location)) != -1)
 						{
@@ -1749,6 +1859,7 @@ public class BankingTask implements Task<Void>
 						if (hasBankInventoryItems(items, client))
 						{
 							bankingState = BankingState.DONE;
+							return;
 						}
 						else if (hasBankItems(items, client))
 						{
@@ -2000,56 +2111,5 @@ public class BankingTask implements Task<Void>
 			default:
 				return Collections.emptyList();
 		}
-	}
-
-	enum BankingState
-	{
-		NONE,
-		CLICK_BANK,
-		WAIT_BANK,
-		QUANTITY,
-		BANK_TAB,
-		SETTINGS,
-		ITEM_OPTIONS,
-		DEPOSIT_ALL,
-		DEPOSIT_ALL_CLICK,
-		SHOW_WORN_ITEMS,
-		DETERMINE_STATE,
-		BANK_HEAD,
-		BANK_CAPE,
-		BANK_AMULET,
-		BANK_AMMO,
-		BANK_WEAPON,
-		BANK_BODY,
-		BANK_SHIELD,
-		BANK_LEGS,
-		BANK_GLOVES,
-		BANK_BOOTS,
-		BANK_RING,
-		HIDE_WORN_ITEMS,
-		GET_HEAD,
-		GET_CAPE,
-		GET_AMULET,
-		GET_AMMO,
-		GET_WEAPON,
-		GET_BODY,
-		GET_SHIELD,
-		GET_LEGS,
-		GET_GLOVES,
-		GET_BOOTS,
-		GET_RING,
-		EQUIP_HEAD,
-		EQUIP_CAPE,
-		EQUIP_AMULET,
-		EQUIP_AMMO,
-		EQUIP_WEAPON,
-		EQUIP_BODY,
-		EQUIP_SHIELD,
-		EQUIP_LEGS,
-		EQUIP_GLOVES,
-		EQUIP_BOOTS,
-		EQUIP_RING,
-		FETCH_EXTRA,
-		DONE,
 	}
 }

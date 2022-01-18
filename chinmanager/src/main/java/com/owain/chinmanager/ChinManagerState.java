@@ -1,6 +1,7 @@
 package com.owain.chinmanager;
 
 
+import com.owain.chinmanager.biconsumers.BankPinConfirmState;
 import com.owain.chinmanager.biconsumers.BankPinState;
 import com.owain.chinmanager.biconsumers.BankingState;
 import com.owain.chinmanager.biconsumers.LoginScreenState;
@@ -25,13 +26,14 @@ public class ChinManagerState
 	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> SETUP = new StateMachine.State<>(ChinManagerStates.SETUP.toString());
 	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> BANKING = new StateMachine.State<>(ChinManagerStates.BANKING.toString());
 	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> BANK_PIN = new StateMachine.State<>(ChinManagerStates.BANK_PIN.toString());
+	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> BANK_PIN_CONFIRM = new StateMachine.State<>(ChinManagerStates.BANK_PIN_CONFIRM.toString());
 	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> TELEPORTING = new StateMachine.State<>(ChinManagerStates.TELEPORTING.toString());
 	public static final StateMachine.State<ChinManagerContext, ChinManagerStates> LOGOUT = new StateMachine.State<>(ChinManagerStates.LOGOUT.toString());
 
 	@Inject
-	public ChinManagerState(BankingState bankingState, BankPinState bankPinState, SetupState setupState,
-							LoginState loginState, LoginScreenState loginScreenState, ResumeState resumeState,
-							LogoutState logoutState, TeleportState teleportState)
+	public ChinManagerState(BankingState bankingState, BankPinState bankPinState, BankPinConfirmState bankPinConfirmState,
+							SetupState setupState, LoginState loginState, LoginScreenState loginScreenState,
+							ResumeState resumeState, LogoutState logoutState, TeleportState teleportState)
 	{
 		stateMachine = new StateMachine<>(new ChinManagerContext(), IDLE);
 
@@ -42,6 +44,7 @@ public class ChinManagerState
 			.transition(ChinManagerStates.RESUME, RESUME)
 			.transition(ChinManagerStates.SETUP, SETUP)
 			.transition(ChinManagerStates.BANK_PIN, BANK_PIN)
+			.transition(ChinManagerStates.BANK_PIN_CONFIRM, BANK_PIN_CONFIRM)
 			.transition(ChinManagerStates.BANKING, BANKING)
 			.transition(ChinManagerStates.TELEPORTING, TELEPORTING)
 			.transition(ChinManagerStates.LOGOUT, LOGOUT);
@@ -80,11 +83,17 @@ public class ChinManagerState
 			.onEnter(teleportState.teleport())
 			.onExit(teleportState.unsubscribe())
 			.transition(ChinManagerStates.BANK_PIN, BANK_PIN)
+			.transition(ChinManagerStates.BANK_PIN_CONFIRM, BANK_PIN_CONFIRM)
 			.transition(ChinManagerStates.IDLE, IDLE);
 
 		BANK_PIN
 			.onEnter(bankPinState.pin())
 			.onExit(bankPinState.unsubscribe())
+			.transition(ChinManagerStates.IDLE, IDLE);
+
+		BANK_PIN_CONFIRM
+			.onEnter(bankPinConfirmState.confirm())
+			.onExit(bankPinConfirmState.unsubscribe())
 			.transition(ChinManagerStates.IDLE, IDLE);
 
 		LOGOUT

@@ -42,6 +42,10 @@ public final class MagicNumberWidget
 	public static final int CONTINUE = 4;
 
 
+	public static final int BANK_PIN_CONFIRM_GROUP = 14;
+	public static final int BANK_PIN_CONFIRM_BUTTON = 33;
+
+
 	public static final int BANK_DEPOSIT_BOX_CONTAINER = 192;
 	public static final int BANK_DEPOSIT_BOX_CONTAINER_MAIN = 1;
 	public static final int BANK_DEPOSIT_BOX_WITHDRAW_ONE = 11;

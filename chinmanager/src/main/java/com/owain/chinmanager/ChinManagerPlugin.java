@@ -16,6 +16,7 @@ import com.owain.chinmanager.cookies.PersistentCookieJar;
 import com.owain.chinmanager.cookies.cache.SetCookieCache;
 import com.owain.chinmanager.cookies.persistence.OpenOSRSCookiePersistor;
 import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
+import com.owain.chinmanager.magicnumbers.MagicNumberWidgets;
 import com.owain.chinmanager.overlay.ManagerClickboxDebugOverlay;
 import com.owain.chinmanager.overlay.ManagerClickboxOverlay;
 import com.owain.chinmanager.overlay.ManagerTileIndicatorsOverlay;
@@ -305,8 +306,11 @@ public class ChinManagerPlugin extends Plugin
 	@Getter(AccessLevel.PUBLIC)
 	private final static Set<Actor> actors = new HashSet<>();
 
-	public static boolean logout;
-	public static boolean shouldSetup;
+	@Setter(AccessLevel.PUBLIC)
+	private static boolean logout;
+	@Getter(AccessLevel.PUBLIC)
+	@Setter(AccessLevel.PUBLIC)
+	private static boolean shouldSetup;
 
 	@Getter(AccessLevel.PUBLIC)
 	private static List<Equipment> equipmentList;
@@ -332,7 +336,7 @@ public class ChinManagerPlugin extends Plugin
 	private static Widget highlightWidget = null;
 
 	@Getter(AccessLevel.PUBLIC)
-	public OkHttpClient okHttpClient;
+	private OkHttpClient okHttpClient;
 
 	@Inject
 	private ClientToolbar clientToolbar;
@@ -1296,7 +1300,6 @@ public class ChinManagerPlugin extends Plugin
 		overlayManager.add(managerWidgetOverlay);
 		overlayManager.add(managerTileIndicatorsOverlay);
 
-		configManager.setConfiguration("bank", "bankPinKeyboard", true);
 		client.setHideDisconnect(true);
 
 		Banking.ITEMS = Set.of();
@@ -1398,7 +1401,7 @@ public class ChinManagerPlugin extends Plugin
 			chinManager
 				.getBankingObservable()
 				.subscribe((plugin) -> {
-					if (stateMachine.getState() != ChinManagerState.BANKING)
+					if (stateMachine.getState() != ChinManagerState.BANKING && stateMachine.getState() != ChinManagerState.BANK_PIN && stateMachine.getState() != ChinManagerState.BANK_PIN_CONFIRM)
 					{
 						transition(ChinManagerStates.BANKING);
 					}
@@ -1407,7 +1410,7 @@ public class ChinManagerPlugin extends Plugin
 			chinManager
 				.getTeleportingObservable()
 				.subscribe((plugin) -> {
-					if (stateMachine.getState() != ChinManagerState.TELEPORTING)
+					if (stateMachine.getState() != ChinManagerState.TELEPORTING && stateMachine.getState() != ChinManagerState.BANK_PIN && stateMachine.getState() != ChinManagerState.BANK_PIN_CONFIRM)
 					{
 						transition(ChinManagerStates.TELEPORTING);
 					}
@@ -1683,10 +1686,17 @@ public class ChinManagerPlugin extends Plugin
 			}
 		}
 
+		Widget bankPinConfirm = client.getWidget(MagicNumberWidgets.BANK_PIN_CONFIRM_BUTTON.getGroupId(), MagicNumberWidgets.BANK_PIN_CONFIRM_BUTTON.getChildId());
+
 		if (chinManager.getActiveSortedPlugins().size() > 0 && stateMachine.getState() != ChinManagerState.BANK_PIN &&
 			client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) != null)
 		{
 			transition(ChinManagerStates.BANK_PIN);
+		}
+		else if (chinManager.getActiveSortedPlugins().size() > 0 && stateMachine.getState() != ChinManagerState.BANK_PIN_CONFIRM &&
+			bankPinConfirm != null && bankPinConfirm.getText().contains("I want this PIN"))
+		{
+			transition(ChinManagerStates.BANK_PIN_CONFIRM);
 		}
 		else if (stateMachine.getState() == ChinManagerState.IDLE && logout && delay == 0)
 		{

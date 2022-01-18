@@ -87,6 +87,10 @@ public class NotificationsApi
 
 		switch (type)
 		{
+			case "auth":
+				return true;
+			case "bankpin":
+				return true;
 			case "break":
 				return optionsConfig.breaks();
 			case "resume":

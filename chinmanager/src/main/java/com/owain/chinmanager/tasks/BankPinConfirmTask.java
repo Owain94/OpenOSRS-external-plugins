@@ -3,7 +3,6 @@ package com.owain.chinmanager.tasks;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ChinManagerStates;
-import com.owain.chinmanager.magicnumbers.MagicNumberScripts;
 import com.owain.chinmanager.magicnumbers.MagicNumberWidgets;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
@@ -15,21 +14,19 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
-import net.runelite.api.VarClientInt;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 
 @Slf4j
-public class LoginScreenTask implements Task<Void>
+public class BankPinConfirmTask implements Task<Void>
 {
-	enum LoginScreenState
+	enum BankPinConfirm
 	{
 		WAIT,
-		PLAY,
+		CONFIRM,
 	}
 
 	private final ChinManager chinManager;
@@ -37,13 +34,13 @@ public class LoginScreenTask implements Task<Void>
 	private final Client client;
 	private final EventBus eventBus;
 
-	private LoginScreenState loginScreenState;
+	private BankPinConfirm bankPinConfirm;
 	private int tikkie = 0;
 
 	private final List<Disposable> disposables = new ArrayList<>();
 
 	@Inject
-	LoginScreenTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus)
+	BankPinConfirmTask(ChinManager chinManager, ChinManagerPlugin chinManagerPlugin, EventBus eventBus)
 	{
 		this.chinManager = chinManager;
 		this.chinManagerPlugin = chinManagerPlugin;
@@ -55,7 +52,7 @@ public class LoginScreenTask implements Task<Void>
 	public void routine(ObservableEmitter<Void> emitter)
 	{
 		tikkie = 0;
-		loginScreenState = LoginScreenState.PLAY;
+		bankPinConfirm = BankPinConfirm.CONFIRM;
 
 		if (chinManagerPlugin.getExecutorService() == null || chinManagerPlugin.getExecutorService().isShutdown() || chinManagerPlugin.getExecutorService().isTerminated())
 		{
@@ -70,7 +67,7 @@ public class LoginScreenTask implements Task<Void>
 		chinManagerPlugin.getExecutorService().shutdownNow();
 		eventBus.unregister(this);
 		tikkie = 0;
-		loginScreenState = LoginScreenState.PLAY;
+		bankPinConfirm = BankPinConfirm.CONFIRM;
 
 		for (Disposable disposable : disposables)
 		{
@@ -91,7 +88,7 @@ public class LoginScreenTask implements Task<Void>
 
 		if (tikkie >= 5)
 		{
-			loginScreenState = LoginScreenState.PLAY;
+			bankPinConfirm = BankPinConfirm.CONFIRM;
 
 			tikkie = 0;
 		}
@@ -100,53 +97,45 @@ public class LoginScreenTask implements Task<Void>
 			tikkie++;
 		}
 
-		Widget loginScreen = client.getWidget(WidgetInfo.LOGIN_CLICK_TO_PLAY_SCREEN);
+		Widget bankPinConfirmWidget = client.getWidget(MagicNumberWidgets.BANK_PIN_CONFIRM_BUTTON.getGroupId(), MagicNumberWidgets.BANK_PIN_CONFIRM_BUTTON.getChildId());
 
-		if (loginScreenState == LoginScreenState.PLAY)
+		if (bankPinConfirm == BankPinConfirm.CONFIRM)
 		{
-			ChinManagerPlugin.setLogout(false);
-
-			Widget playButtonText = client.getWidget(MagicNumberWidgets.LOGIN_SCREEN_PLAY_NOW_TEXT.getGroupId(), MagicNumberWidgets.LOGIN_SCREEN_PLAY_NOW_TEXT.getChildId());
-
-			if (playButtonText != null && playButtonText.getText().equals("CLICK HERE TO PLAY"))
+			if (bankPinConfirmWidget != null && bankPinConfirmWidget.getText().contains("I want this PIN"))
 			{
 				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 			}
 		}
 
-		if (loginScreen == null)
+		if (bankPinConfirmWidget == null)
 		{
-			if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
-			{
-				client.runScript(MagicNumberScripts.ACTIVE_TAB.getId(), 3);
-			}
-			chinManagerPlugin.transition(ChinManagerStates.RESUME);
+			chinManagerPlugin.transition(ChinManagerStates.IDLE);
 		}
 	}
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
-		if (loginScreenState == LoginScreenState.PLAY)
+		if (bankPinConfirm == BankPinConfirm.CONFIRM)
 		{
-			Widget playButton = client.getWidget(MagicNumberWidgets.LOGIN_SCREEN_PLAY_NOW.getGroupId(), MagicNumberWidgets.LOGIN_SCREEN_PLAY_NOW.getChildId());
+			Widget bankPinConfirmWidget = client.getWidget(MagicNumberWidgets.BANK_PIN_CONFIRM_BUTTON.getGroupId(), MagicNumberWidgets.BANK_PIN_CONFIRM_BUTTON.getChildId());
 
-			if (playButton == null)
+			if (bankPinConfirmWidget == null)
 			{
 				menuOptionClicked.consume();
 				return;
 			}
 
-			loginScreenState = LoginScreenState.WAIT;
+			bankPinConfirm = BankPinConfirm.WAIT;
 
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
-				"Play",
+				"Continue",
 				"",
-				1,
-				MenuAction.CC_OP,
+				0,
+				MenuAction.WIDGET_TYPE_6,
 				-1,
-				playButton.getId()
+				bankPinConfirmWidget.getId()
 			);
 
 			tikkie = 0;

@@ -176,6 +176,7 @@ public class LogoutTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Close",
@@ -198,6 +199,7 @@ public class LogoutTask implements Task<Void>
 				return;
 			}
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Close",
@@ -231,6 +233,7 @@ public class LogoutTask implements Task<Void>
 
 			logoutState = LogoutState.NONE;
 
+			tikkie = 0;
 			menuOptionClicked = chinManagerPlugin.menuAction(
 				menuOptionClicked,
 				"Logout",
@@ -255,7 +258,7 @@ public class LogoutTask implements Task<Void>
 	@Subscribe
 	public void onGamestateChanged(GameStateChanged gameStateChanged)
 	{
-		ChinManagerPlugin.logout = false;
+		ChinManagerPlugin.setLogout(false);
 
 		if (optionsConfig.stopAfterBreaks() != 0 && chinManager.getAmountOfBreaks() >= optionsConfig.stopAfterBreaks())
 		{

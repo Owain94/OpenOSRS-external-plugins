@@ -8,6 +8,7 @@ public enum ChinManagerStates
 	RESUME("Resume"),
 	SETUP("Setup"),
 	BANK_PIN("Bank pin"),
+	BANK_PIN_CONFIRM("Bank pin confirm"),
 	BANKING("Banking"),
 	TELEPORTING("Teleporting"),
 	LOGOUT("Log out"),

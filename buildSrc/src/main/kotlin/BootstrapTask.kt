@@ -68,7 +68,7 @@ open class BootstrapTask : DefaultTask() {
                             "id" to nameToId(it.project.extra.get("PluginName") as String),
                             "description" to it.project.extra.get("PluginDescription"),
                             "provider" to "Owain94",
-                            "projectUrl" to "https://discord.gg/HVjnT6R",
+                            "projectUrl" to "https://discord.gg/chinplugins",
                             "releases" to releases.toTypedArray()
                     ).jsonObject()
 

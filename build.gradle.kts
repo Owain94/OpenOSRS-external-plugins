@@ -32,7 +32,7 @@ subprojects {
     group = "com.owain.externals"
 
     project.extra["PluginProvider"] = "Owain94"
-    project.extra["ProjectUrl"] = "https://discord.gg/HVjnT6R"
+    project.extra["ProjectUrl"] = "https://discord.gg/chinplugins"
     project.extra["PluginLicense"] = "3-Clause BSD License"
 
     repositories {
@@ -57,9 +57,9 @@ subprojects {
     apply(plugin = "com.github.andygoossens.gradle-modernizer-plugin")
 
     dependencies {
-        compileOnly(group = "com.openosrs", name = "http-api", version = "4.18.2")
-        compileOnly(group = "com.openosrs", name = "runelite-api", version = "4.18.2")
-        compileOnly(group = "com.openosrs", name = "runelite-client", version = "4.18.2")
+        compileOnly(group = "com.openosrs", name = "http-api", version = "4.19.0")
+        compileOnly(group = "com.openosrs", name = "runelite-api", version = "4.19.0")
+        compileOnly(group = "com.openosrs", name = "runelite-client", version = "4.19.0")
 
         compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.9")
         compileOnly(group = "com.google.guava", name = "guava", version = "30.1.1-jre") {

@@ -35,6 +35,7 @@ import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import static com.owain.chinmanager.utils.Integers.isNumeric;
 import com.owain.chinmanager.utils.Plugins;
 import static com.owain.chinmanager.utils.Plugins.sanitizedName;
+import com.owain.chinmanager.utils.RegionManager;
 import com.owain.chinmanager.websockets.WebsocketManager;
 import com.owain.chintasks.TaskExecutor;
 import io.reactivex.rxjava3.core.Observable;
@@ -406,6 +407,9 @@ public class ChinManagerPlugin extends Plugin
 	@Getter(AccessLevel.PUBLIC)
 	private NotificationsApi notificationsApi;
 
+	@Inject
+	private RegionManager regionManager;
+
 	private NavigationButton navButton;
 
 	@Getter(AccessLevel.PUBLIC)
@@ -414,8 +418,9 @@ public class ChinManagerPlugin extends Plugin
 	private int delay = -1;
 	private net.runelite.api.World quickHopTargetWorld;
 	private int displaySwitcherAttempts = 0;
+	private int plane = -1;
 
-	private Set<String> notifyLevels = new HashSet<>();
+	private final Set<String> notifyLevels = new HashSet<>();
 
 	public static void resetHighlight()
 	{
@@ -1646,6 +1651,12 @@ public class ChinManagerPlugin extends Plugin
 	{
 		chinManager.gameStateChanged.onNext(gameStateChanged);
 
+		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
+		{
+			regionManager.sendRegion();
+		}
+
+
 		if (gameStateChanged.getGameState() != GameState.LOGGED_IN && gameStateChanged.getGameState() != GameState.CONNECTION_LOST)
 		{
 			tileItems.clear();
@@ -1655,6 +1666,8 @@ public class ChinManagerPlugin extends Plugin
 
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
 		{
+			plane = -1;
+
 			if (!chinManager.getActiveSortedPlugins().isEmpty())
 			{
 				if (optionsConfig.hopAfterBreak() && (optionsConfig.american() || optionsConfig.unitedKingdom() || optionsConfig.german() || optionsConfig.australian()))
@@ -1673,6 +1686,21 @@ public class ChinManagerPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick gameTick)
 	{
+		Player localPlayer = client.getLocalPlayer();
+
+		if (localPlayer != null)
+		{
+			if (plane == -1)
+			{
+				plane = localPlayer.getWorldLocation().getPlane();
+			}
+			else if (plane != localPlayer.getWorldLocation().getPlane())
+			{
+				plane = localPlayer.getWorldLocation().getPlane();
+				regionManager.sendRegion();
+			}
+		}
+
 		if (client.getWidget(WidgetInfo.LEVEL_UP_LEVEL) != null)
 		{
 			parseLevelUpWidget(WidgetInfo.LEVEL_UP_LEVEL);

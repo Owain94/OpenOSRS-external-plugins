@@ -346,7 +346,20 @@ public class BankingTask implements Task<Void>
 		}
 		else if (bankingState == BankingState.DONE)
 		{
-			chinManagerPlugin.transition(ChinManagerStates.IDLE);
+			Collection<WidgetItem> bankInventoryItems = getBankInventoryItems(client);
+
+			if (chinManager.bankingPlugin() == chinManager.getCurrentlyActive() &&
+				bankInventoryItems != null && bankInventoryItems
+				.stream()
+				.anyMatch((item) -> item.getId() != 6512))
+			{
+				bankingState = BankingState.DEPOSIT_ALL;
+				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
+			}
+			else
+			{
+				chinManagerPlugin.transition(ChinManagerStates.IDLE);
+			}
 		}
 	}
 

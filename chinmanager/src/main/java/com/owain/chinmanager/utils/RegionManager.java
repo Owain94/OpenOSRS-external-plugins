@@ -19,6 +19,7 @@ import net.runelite.api.CollisionDataFlag;
 import net.runelite.api.GameState;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.Direction;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -51,35 +52,6 @@ public class RegionManager
 			return;
 		}
 
-		if (client.isInInstancedRegion())
-		{
-			executorService.schedule(() -> {
-				try
-				{
-					Request request = new Request.Builder()
-						.get()
-						.url(API_URL + "/regions/instance/" + client.getLocalPlayer().getWorldLocation().getRegionID())
-						.build();
-					Response response = okHttpClient.newCall(request)
-						.execute();
-					int code = response.code();
-					response.close();
-
-					if (code != 200)
-					{
-						log.error("Instance store request was unsuccessful: {}", code);
-					}
-				}
-				catch (Exception e)
-				{
-					log.error("Failed to POST: {}", e.getMessage());
-					e.printStackTrace();
-				}
-			}, 5_000, TimeUnit.MILLISECONDS);
-
-			return;
-		}
-
 		CollisionData[] col = client.getCollisionMaps();
 		if (col == null)
 		{
@@ -100,8 +72,12 @@ public class RegionManager
 		{
 			for (int y = 0; y < flags.length; y++)
 			{
-				int tileX = x + client.getBaseX();
-				int tileY = y + client.getBaseY();
+				LocalPoint localPoint = LocalPoint.fromScene(x, y);
+				WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, localPoint);
+
+				int tileX = worldPoint.getX();
+				int tileY = worldPoint.getY();
+
 				int flag = flags[x][y];
 
 				// Stop if we reach any tiles which dont have collision data loaded
@@ -115,7 +91,7 @@ public class RegionManager
 
 				// Set the full block flag in case tiles are null (ex. on upper levels)
 				TileFlag tileFlag = new TileFlag(tileX, tileY, plane, CollisionDataFlag.BLOCK_MOVEMENT_FULL, regionId);
-				Tile tile = Reachable.getAt(client, tileX, tileY, plane);
+				Tile tile = Reachable.getAt(client, x + client.getBaseX(), y + client.getBaseY(), plane);
 				if (tile == null)
 				{
 					tileFlags.add(tileFlag);
@@ -163,7 +139,7 @@ public class RegionManager
 						{
 							case NORTH:
 								if ((Reachable.hasDoor(client, tile, direction) || Reachable.hasDoor(client, northernTile, Direction.SOUTH))
-									&& !isTransport(transports, tileCoords, northernTile))
+									&& notTransport(transports, tileCoords, northernTile))
 								{
 									tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
 								}
@@ -171,7 +147,7 @@ public class RegionManager
 								break;
 							case EAST:
 								if ((Reachable.hasDoor(client, tile, direction) || Reachable.hasDoor(client, easternTile, Direction.WEST))
-									&& !isTransport(transports, tileCoords, easternTile))
+									&& notTransport(transports, tileCoords, easternTile))
 								{
 									tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
 								}
@@ -189,7 +165,8 @@ public class RegionManager
 			try
 			{
 				String json = GSON.toJson(tileFlags);
-				RequestBody body = RequestBody.create(JSON_MEDIATYPE, json);
+
+				RequestBody body = RequestBody.create(json, JSON_MEDIATYPE);
 				Request request = new Request.Builder()
 					.post(body)
 					.url(API_URL + "/regions/" + VERSION)
@@ -223,13 +200,13 @@ public class RegionManager
 		return out;
 	}
 
-	public boolean isTransport(List<Transport> transports, WorldPoint from, WorldPoint to)
+	public boolean notTransport(List<Transport> transports, WorldPoint from, WorldPoint to)
 	{
 		if (transports == null)
 		{
-			return false;
+			return true;
 		}
 
-		return transports.stream().anyMatch(t -> t.getSource().equals(from) && t.getDestination().equals(to));
+		return transports.stream().noneMatch(t -> t.getSource().equals(from) && t.getDestination().equals(to));
 	}
 }

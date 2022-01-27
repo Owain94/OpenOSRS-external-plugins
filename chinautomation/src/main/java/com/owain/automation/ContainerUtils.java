@@ -144,6 +144,35 @@ public class ContainerUtils
 		}
 	}
 
+	public static int getLastInventoryItemsPos(final Integer itemId, Client client)
+	{
+		if (itemId == null)
+		{
+			return -1;
+		}
+
+		return getLastInventoryItemsPos(List.of(itemId), client);
+	}
+
+	public static int getLastInventoryItemsPos(final List<Integer> itemIds, Client client)
+	{
+		if (itemIds == null)
+		{
+			return -1;
+		}
+
+		Map<Integer, Integer> items = getInventoryItemsMap(itemIds, client);
+
+		if (items == null || items.isEmpty())
+		{
+			return -1;
+		}
+		else
+		{
+			return items.entrySet().stream().reduce((first, second) -> second).get().getValue();
+		}
+	}
+
 	public static Map<Integer, Integer> getInventoryItemsMap(final List<Integer> itemIds, Client client)
 	{
 		if (itemIds == null)

@@ -15,7 +15,7 @@ import java.util.*
 
 open class BootstrapTask : DefaultTask() {
 
-    private val EXTERNALS = listOf("chinautohop-plugin", "chinglassblow-plugin", "chinnmz-plugin", "chincursealch-plugin", "chingiantseaweed-plugin", "chinourania-plugin", "chinbirdhouse-plugin", "chinmta-plugin", "chinarceuuslibrary-plugin", "chintellyhoplog-plugin", "chinfarmrun-plugin", "chinamethyst-plugin", "chinagilitypyramid-plugin", "chinmahoganyhomes-plugin", "chinzeahrunecrafting-plugin")
+    private val EXTERNALS = listOf("chinautohop-plugin", "chinglassblow-plugin", "chinnmz-plugin", "chincursealch-plugin", "chingiantseaweed-plugin", "chinourania-plugin", "chinbirdhouse-plugin", "chinmta-plugin", "chinarceuuslibrary-plugin", "chintellyhoplog-plugin", "chinfarmrun-plugin", "chinamethyst-plugin", "chinagilitypyramid-plugin", "chinmahoganyhomes-plugin", "chinzeahrunecrafting-plugin", "chinanglerfish-plugin", "chinmonkfish-plugin")
 
     private fun formatDate(date: Date?) = with(date ?: Date()) {
         SimpleDateFormat("yyyy-MM-dd").format(this)

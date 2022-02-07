@@ -37,6 +37,7 @@ import com.owain.chinmanager.utils.Plugins;
 import static com.owain.chinmanager.utils.Plugins.sanitizedName;
 import com.owain.chinmanager.utils.RegionManager;
 import com.owain.chinmanager.websockets.WebsocketManager;
+import com.owain.chinstatemachine.StateMachine;
 import com.owain.chintasks.TaskExecutor;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -231,6 +232,7 @@ public class ChinManagerPlugin extends Plugin
 		ItemID.COMBAT_BRACELET5,
 		ItemID.COMBAT_BRACELET6
 	);
+
 	public static final List<Integer> SKILLS_NECKLACES = List.of(
 		ItemID.SKILLS_NECKLACE1,
 		ItemID.SKILLS_NECKLACE2,
@@ -2011,6 +2013,11 @@ public class ChinManagerPlugin extends Plugin
 	private void hop(int worldId)
 	{
 		WorldResult worldResult = worldService.getWorlds();
+		if (worldResult == null)
+		{
+			return;
+		}
+
 		// Don't try to hop if the world doesn't exist
 		World world = worldResult.findWorld(worldId);
 		if (world == null)
@@ -2084,7 +2091,9 @@ public class ChinManagerPlugin extends Plugin
 
 	public void transition(ChinManagerStates state)
 	{
-		if (stateMachine.getState() == ChinManagerState.LOGOUT && client.getGameState() != GameState.LOGIN_SCREEN)
+		StateMachine.State<ChinManagerContext, ChinManagerStates> currentState = stateMachine.getState();
+
+		if (currentState == ChinManagerState.LOGOUT && client.getGameState() != GameState.LOGIN_SCREEN)
 		{
 			return;
 		}

@@ -1815,7 +1815,7 @@ public class BankingTask implements Task<Void>
 
 			if (chinManager.bankingPlugin() != chinManager.getCurrentlyActive())
 			{
-				if (!chinManager.getPluginConfig().get(chinManager.bankingPlugin()).get("startLocation").equals(chinManager.getPluginConfig().get(chinManager.getCurrentlyActive()).get("startLocation")))
+				if (chinManager.getStartLocation(chinManager.bankingPlugin()) != chinManager.getStartLocation(chinManager.getCurrentlyActive()))
 				{
 					Location location = chinManager.getStartLocation(chinManager.bankingPlugin());
 

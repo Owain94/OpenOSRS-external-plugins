@@ -3,6 +3,7 @@ package com.owain.chinmanager.ui.plugins;
 import com.openosrs.client.events.OPRSPluginChanged;
 import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
+import com.owain.chinmanager.ChinManagerStates;
 import static com.owain.chinmanager.ui.ChinManagerPanel.PANEL_BACKGROUND_COLOR;
 import static com.owain.chinmanager.ui.ChinManagerPanel.SMALL_FONT;
 import com.owain.chinmanager.ui.utils.AbstractButtonSource;
@@ -269,6 +270,7 @@ public class PluginPanel extends JPanel
 						);
 
 						chinManager.setCurrentlyActive(chinManagerPlugin);
+						chinManagerPlugin.transition(ChinManagerStates.SETUP);
 					})
 			);
 

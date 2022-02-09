@@ -39,7 +39,7 @@ public final class MagicNumberWidget
 	public static final int CONTACT_NPC_AMY = 62;
 
 
-	public static final int CONTINUE = 4;
+	public static final int CONTINUE = 5;
 
 
 	public static final int BANK_PIN_CONFIRM_GROUP = 14;

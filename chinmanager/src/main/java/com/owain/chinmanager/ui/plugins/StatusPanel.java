@@ -159,6 +159,11 @@ public class StatusPanel extends JPanel
 
 	private JPanel warningPanel(String titleText, String descriptionText, boolean border)
 	{
+		return warningPanel(titleText.replace("[WARN]", ""), descriptionText, border, !titleText.contains("[WARN]"));
+	}
+
+	private JPanel warningPanel(String titleText, String descriptionText, boolean border, boolean red)
+	{
 		JPanel warningPanel = new JPanel(new BorderLayout());
 		if (border)
 		{
@@ -166,10 +171,10 @@ public class StatusPanel extends JPanel
 		}
 
 		JPanel titleWrapper = new JPanel(new BorderLayout());
-		titleWrapper.setBackground(new Color(125, 40, 40));
+		titleWrapper.setBackground(red ? new Color(125, 40, 40) : new Color(170, 60, 0));
 		titleWrapper.setBorder(new CompoundBorder(
-			BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(115, 30, 30)),
-			BorderFactory.createLineBorder(new Color(125, 40, 40))
+			BorderFactory.createMatteBorder(0, 0, 1, 0, red ? new Color(115, 30, 30) : new Color(140, 50, 0)),
+			BorderFactory.createLineBorder(red ? new Color(125, 40, 40) : new Color(170, 60, 0))
 		));
 
 		JLabel title = new JLabel();
@@ -184,7 +189,7 @@ public class StatusPanel extends JPanel
 		if (border)
 		{
 			JPanel titleActions = new JPanel(new BorderLayout(3, 0));
-			titleActions.setBackground(new Color(125, 40, 40));
+			titleActions.setBackground(red ? new Color(125, 40, 40) : new Color(170, 60, 0));
 			titleActions.setBorder(new EmptyBorder(0, 0, 0, 8));
 
 			JLabel delete = new JLabel();
@@ -219,7 +224,7 @@ public class StatusPanel extends JPanel
 		warningPanel.add(titleWrapper, BorderLayout.NORTH);
 
 		JPanel contentPanel = new JPanel(new BorderLayout());
-		contentPanel.setBackground(new Color(125, 40, 40));
+		contentPanel.setBackground(red ? new Color(125, 40, 40) : new Color(170, 60, 0));
 		contentPanel.setBorder(new EmptyBorder(0, 0, 5, 0));
 
 		JMultilineLabel description = new JMultilineLabel();
@@ -227,7 +232,7 @@ public class StatusPanel extends JPanel
 		description.setText(descriptionText);
 		description.setFont(SMALL_FONT);
 		description.setDisabledTextColor(Color.WHITE);
-		description.setBackground(new Color(115, 30, 30));
+		description.setBackground(red ? new Color(115, 30, 30) : new Color(140, 50, 0));
 
 		description.setBorder(new EmptyBorder(5, 5, 10, 5));
 

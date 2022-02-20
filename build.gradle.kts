@@ -57,9 +57,9 @@ subprojects {
     apply(plugin = "com.github.andygoossens.gradle-modernizer-plugin")
 
     dependencies {
-        compileOnly(group = "com.openosrs", name = "http-api", version = "4.20.0")
-        compileOnly(group = "com.openosrs", name = "runelite-api", version = "4.20.0")
-        compileOnly(group = "com.openosrs", name = "runelite-client", version = "4.20.0")
+        compileOnly(group = "com.openosrs", name = "http-api", version = "4.20.1")
+        compileOnly(group = "com.openosrs", name = "runelite-api", version = "4.20.1")
+        compileOnly(group = "com.openosrs", name = "runelite-client", version = "4.20.1")
 
         compileOnly(group = "org.apache.commons", name = "commons-text", version = "1.9")
         compileOnly(group = "com.google.guava", name = "guava", version = "30.1.1-jre") {

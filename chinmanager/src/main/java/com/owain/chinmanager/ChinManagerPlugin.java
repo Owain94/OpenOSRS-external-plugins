@@ -35,6 +35,7 @@ import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import static com.owain.chinmanager.utils.Integers.isNumeric;
 import com.owain.chinmanager.utils.Plugins;
 import static com.owain.chinmanager.utils.Plugins.sanitizedName;
+import com.owain.chinmanager.utils.Reachable;
 import com.owain.chinmanager.utils.RegionManager;
 import com.owain.chinmanager.websockets.WebsocketManager;
 import com.owain.chinstatemachine.StateMachine;
@@ -1014,70 +1015,20 @@ public class ChinManagerPlugin extends Plugin
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3589, 0)) != 0)
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3599, 0)) != 0)
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(3255, 3463, 0)) != 0)
+			.filter(tileObject -> Reachable.isInteractable(client, tileObject))
 			.parallel()
 			.map(tileObject -> {
-				int width = 1;
-				int height = 1;
+				Tile startTile = tile(client, locatable.getWorldLocation());
+				Tile endTile = tile(client, tileObject.getWorldLocation());
 
-				if (tileObject instanceof GameObject)
+				if (startTile == null || endTile == null)
 				{
-					width = ((GameObject) tileObject).sizeX();
-					height = ((GameObject) tileObject).sizeY();
+					return Pair.of(tileObject, Integer.MAX_VALUE);
 				}
 
-				WorldPoint objectWorldPoint;
-				objectWorldPoint = tileObject.getWorldLocation();
+				List<Tile> path = startTile.pathTo(endTile);
 
-				if (width == 3 || height == 3)
-				{
-					objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
-				}
-
-				List<WorldPoint> originalArea = new WorldArea(objectWorldPoint.getX(), objectWorldPoint.getY(), width, height, objectWorldPoint.getPlane()).toWorldPointList();
-				Set<WorldPoint> possibleWorldPoints = new HashSet<>(originalArea);
-
-				for (WorldPoint worldPoint : new WorldArea(objectWorldPoint.getX(), objectWorldPoint.getY(), width, height, objectWorldPoint.getPlane()).toWorldPointList())
-				{
-					possibleWorldPoints.add(new WorldPoint(worldPoint.getX() + 1, worldPoint.getY(), worldPoint.getPlane()));
-					possibleWorldPoints.add(new WorldPoint(worldPoint.getX(), worldPoint.getY() + 1, worldPoint.getPlane()));
-					possibleWorldPoints.add(new WorldPoint(worldPoint.getX() - 1, worldPoint.getY(), worldPoint.getPlane()));
-					possibleWorldPoints.add(new WorldPoint(worldPoint.getX(), worldPoint.getY() - 1, worldPoint.getPlane()));
-				}
-
-				originalArea.forEach(possibleWorldPoints::remove);
-				debugReachableWorldAreas.addAll(possibleWorldPoints);
-
-				Pair<TileObject, Integer> closest = Pair.of(tileObject, Integer.MAX_VALUE);
-
-				for (WorldPoint wp : possibleWorldPoints)
-				{
-					if (wp.distanceTo(locatable.getWorldLocation()) == 0)
-					{
-						return Pair.of(tileObject, 0);
-					}
-
-					Tile startTile = tile(client, locatable.getWorldLocation());
-					Tile endTile = tile(client, wp);
-
-					if (startTile == null || endTile == null)
-					{
-						continue;
-					}
-
-					List<Tile> path = startTile.pathTo(endTile);
-
-					if (path != null && path.get(path.size() - 1).getWorldLocation().distanceTo(wp) == 0)
-					{
-						debugReachableTiles.put(wp, path.size());
-
-						if (path.size() < closest.getValue())
-						{
-							closest = Pair.of(tileObject, path.size());
-						}
-					}
-				}
-
-				return closest;
+				return Pair.of(tileObject, path.size());
 			})
 			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
 			.peek(pair -> debugTileObjectMap.put(pair.getKey(), pair.getValue()))

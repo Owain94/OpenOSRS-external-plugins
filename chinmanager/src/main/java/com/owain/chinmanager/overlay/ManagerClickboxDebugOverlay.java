@@ -13,6 +13,7 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
+import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
@@ -80,6 +81,8 @@ public class ManagerClickboxDebugOverlay extends Overlay
 			}
 		}
 
+		Player localPlayer = client.getLocalPlayer();
+
 		if (!reachableTiles.isEmpty())
 		{
 			for (Map.Entry<WorldPoint, Integer> objectMap : Map.copyOf(reachableTiles).entrySet())
@@ -97,11 +100,16 @@ public class ManagerClickboxDebugOverlay extends Overlay
 					OverlayUtil.renderPolygon(graphics, poly, Color.RED);
 				}
 
-				Point canvasTextLocation = Perspective.getCanvasTextLocation(client, graphics, lp, objectMap.getValue() + "(" + objectMap.getKey().distanceTo(client.getLocalPlayer().getWorldLocation()) + ")", 0);
+				if (localPlayer == null)
+				{
+					continue;
+				}
+
+				Point canvasTextLocation = Perspective.getCanvasTextLocation(client, graphics, lp, objectMap.getValue() + "(" + objectMap.getKey().distanceTo(localPlayer.getWorldLocation()) + ")", 0);
 
 				if (canvasTextLocation != null)
 				{
-					OverlayUtil.renderTextLocation(graphics, canvasTextLocation, objectMap.getValue() + "(" + objectMap.getKey().distanceTo(client.getLocalPlayer().getWorldLocation()) + ")", Color.WHITE);
+					OverlayUtil.renderTextLocation(graphics, canvasTextLocation, objectMap.getValue() + "(" + objectMap.getKey().distanceTo(localPlayer.getWorldLocation()) + ")", Color.WHITE);
 				}
 			}
 		}
@@ -114,11 +122,16 @@ public class ManagerClickboxDebugOverlay extends Overlay
 
 				LocalPoint lp = LocalPoint.fromWorld(client, objectMap.getKey().getWorldLocation());
 
-				Point canvasTextLocation = Perspective.getCanvasTextLocation(client, graphics, lp, objectMap.getValue() + "(" + objectMap.getKey().getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) + ")", 0);
+				if (lp == null || localPlayer == null)
+				{
+					continue;
+				}
+
+				Point canvasTextLocation = Perspective.getCanvasTextLocation(client, graphics, lp, objectMap.getValue() + "(" + objectMap.getKey().getWorldLocation().distanceTo(localPlayer.getWorldLocation()) + ")", 0);
 
 				if (canvasTextLocation != null)
 				{
-					OverlayUtil.renderTextLocation(graphics, canvasTextLocation, objectMap.getValue() + "(" + objectMap.getKey().getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) + ")", Color.WHITE);
+					OverlayUtil.renderTextLocation(graphics, canvasTextLocation, objectMap.getValue() + "(" + objectMap.getKey().getWorldLocation().distanceTo(localPlayer.getWorldLocation()) + ")", Color.WHITE);
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package com.owain.chinmanager.cookies;
 
 import com.owain.chinmanager.cookies.cache.CookieCache;
 import com.owain.chinmanager.cookies.persistence.CookiePersistor;
+import io.reactivex.rxjava3.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +42,7 @@ public class PersistentCookieJar implements ClearableCookieJar
 	}
 
 	@Override
-	synchronized public List<Cookie> loadForRequest(HttpUrl url)
+	synchronized public @NonNull List<Cookie> loadForRequest(@NonNull HttpUrl url)
 	{
 		List<Cookie> validCookies = new ArrayList<>();
 
@@ -65,7 +66,7 @@ public class PersistentCookieJar implements ClearableCookieJar
 	}
 
 	@Override
-	synchronized public void saveFromResponse(HttpUrl url, List<Cookie> cookies)
+	synchronized public void saveFromResponse(@NonNull HttpUrl url, @NonNull List<Cookie> cookies)
 	{
 		cache.addAll(cookies);
 		persistor.saveAll(filterPersistentCookies(cookies));

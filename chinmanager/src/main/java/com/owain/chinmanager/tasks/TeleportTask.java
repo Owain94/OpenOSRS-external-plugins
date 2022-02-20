@@ -44,6 +44,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectComposition;
 import net.runelite.api.ObjectID;
+import net.runelite.api.Player;
 import net.runelite.api.TileObject;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.Varbits;
@@ -141,7 +142,9 @@ public class TeleportTask implements Task<Void>
 			teleportState = TeleportState.NONE;
 		}
 
-		if (teleportState == TeleportState.MINIGAME_TELEPORT_WAIT || client.getLocalPlayer().isMoving())
+		Player localPlayer = client.getLocalPlayer();
+
+		if (teleportState == TeleportState.MINIGAME_TELEPORT_WAIT || (localPlayer != null && localPlayer.isMoving()))
 		{
 			tikkie = 0;
 		}

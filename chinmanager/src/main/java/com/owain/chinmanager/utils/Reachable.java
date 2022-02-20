@@ -16,6 +16,7 @@ import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 
 public class Reachable
@@ -200,7 +201,19 @@ public class Reachable
 				boolean containsPoint;
 				if (targetObject instanceof GameObject)
 				{
-					containsPoint = targetObject.getWorldLocation().toWorldArea().contains(neighbour);
+					int width = ((GameObject) targetObject).sizeX();
+					int height = ((GameObject) targetObject).sizeY();
+
+					WorldPoint objectWorldPoint;
+					objectWorldPoint = targetObject.getWorldLocation();
+
+					if (width == 3 || height == 3)
+					{
+						objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
+					}
+
+					List<WorldPoint> area = new WorldArea(objectWorldPoint.getX() - 1, objectWorldPoint.getY() - 1, width + 2, height + 2, objectWorldPoint.getPlane()).toWorldPointList();
+					containsPoint = area.contains(neighbour);
 				}
 				else
 				{

@@ -7,14 +7,11 @@ import com.owain.chinmanager.ChinManager;
 import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.api.BaseApi.DEBUG;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 import javax.inject.Inject;
@@ -42,7 +39,6 @@ public class WebsocketManager extends WebSocketListener
 	private final InfoPanel infoPanel;
 	public String token = null;
 	private Boolean isSocketConnected = false;
-	private Boolean broadcasting = false;
 
 	private WebSocket socket;
 
@@ -53,18 +49,10 @@ public class WebsocketManager extends WebSocketListener
 		this.chinManager = chinManager;
 		this.infoPanel = infoPanel;
 
-		DISPOSABLES.addAll(
+		DISPOSABLES.add(
 			chinManager
 				.getActiveObservable()
-				.subscribe((ignored) -> activePlugins()),
-			Observable
-				.interval(300, TimeUnit.MILLISECONDS)
-				.observeOn(Schedulers.io())
-				.subscribe(this::millisecondsstatus),
-			Observable
-				.interval(500, TimeUnit.MILLISECONDS)
-				.observeOn(Schedulers.io())
-				.subscribe(this::milliseconds)
+				.subscribe((ignored) -> activePlugins())
 		);
 	}
 
@@ -84,29 +72,6 @@ public class WebsocketManager extends WebSocketListener
 				.url("wss://chinplugins.xyz/status")
 				.build();
 		}
-	}
-
-	private void milliseconds(Long aLong)
-	{
-		if (!broadcasting)
-		{
-			return;
-		}
-
-		location();
-
-		inventory(InventoryID.INVENTORY);
-		inventory(InventoryID.EQUIPMENT);
-	}
-
-	private void millisecondsstatus(Long aLong)
-	{
-		if (!broadcasting)
-		{
-			return;
-		}
-
-		status();
 	}
 
 	private void status()
@@ -377,7 +342,6 @@ public class WebsocketManager extends WebSocketListener
 	{
 		isSocketConnected = false;
 		socket = null;
-		broadcasting = false;
 	}
 
 	@Override
@@ -385,7 +349,6 @@ public class WebsocketManager extends WebSocketListener
 	{
 		isSocketConnected = false;
 		socket = null;
-		broadcasting = false;
 		createSocket();
 	}
 
@@ -405,11 +368,12 @@ public class WebsocketManager extends WebSocketListener
 				case "auth":
 					sendAuth();
 					break;
-				case "broadcast":
-					broadcasting = true;
-					break;
-				case "stopbroadcast":
-					broadcasting = false;
+				case "request-status":
+					status();
+					location();
+
+					inventory(InventoryID.INVENTORY);
+					inventory(InventoryID.EQUIPMENT);
 					break;
 			}
 		}
@@ -419,6 +383,5 @@ public class WebsocketManager extends WebSocketListener
 	public void onOpen(WebSocket webSocket, Response response)
 	{
 		isSocketConnected = true;
-		broadcasting = false;
 	}
 }

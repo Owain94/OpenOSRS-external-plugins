@@ -277,7 +277,7 @@ public class WebsocketManager extends WebSocketListener
 		}
 	}
 
-	private void activePlugins()
+	public void activePlugins()
 	{
 		Set<Plugin> plugins = chinManager.getActiveSortedPlugins();
 

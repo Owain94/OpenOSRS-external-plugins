@@ -135,6 +135,7 @@ public class WebAccountPanel extends JPanel
 				if (checkLogin != null && !checkLogin.isEmpty())
 				{
 					loggedIn();
+					websocketManager.activePlugins();
 				}
 				else
 				{

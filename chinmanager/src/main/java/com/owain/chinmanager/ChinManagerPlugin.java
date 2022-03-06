@@ -1016,6 +1016,16 @@ public class ChinManagerPlugin extends Plugin
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3599, 0)) != 0)
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(3255, 3463, 0)) != 0)
 			.filter(tileObject -> Reachable.isInteractable(client, tileObject))
+			.filter(tileObject -> {
+				Set<WorldPoint> possibleWorldPoints = new HashSet<>();
+
+				possibleWorldPoints.add(new WorldPoint(tileObject.getWorldLocation().getX() + 1, tileObject.getWorldLocation().getY(), tileObject.getWorldLocation().getPlane()));
+				possibleWorldPoints.add(new WorldPoint(tileObject.getWorldLocation().getX(), tileObject.getWorldLocation().getY() + 1, tileObject.getWorldLocation().getPlane()));
+				possibleWorldPoints.add(new WorldPoint(tileObject.getWorldLocation().getX() - 1, tileObject.getWorldLocation().getY(), tileObject.getWorldLocation().getPlane()));
+				possibleWorldPoints.add(new WorldPoint(tileObject.getWorldLocation().getX(), tileObject.getWorldLocation().getY() - 1, tileObject.getWorldLocation().getPlane()));
+
+				return possibleWorldPoints.stream().anyMatch((worldPoint -> Reachable.isWalkable(client, worldPoint)));
+			})
 			.parallel()
 			.map(tileObject -> {
 				Tile startTile = tile(client, locatable.getWorldLocation());

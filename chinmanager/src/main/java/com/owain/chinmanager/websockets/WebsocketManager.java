@@ -8,12 +8,20 @@ import com.owain.chinmanager.ChinManagerPlugin;
 import static com.owain.chinmanager.api.BaseApi.DEBUG;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -23,6 +31,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.ui.DrawManager;
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -37,17 +46,19 @@ public class WebsocketManager extends WebSocketListener
 	private final ChinManagerPlugin chinManagerPlugin;
 	private final ChinManager chinManager;
 	private final InfoPanel infoPanel;
+	private final DrawManager drawManager;
 	public String token = null;
 	private Boolean isSocketConnected = false;
 
 	private WebSocket socket;
 
 	@Inject
-	WebsocketManager(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager, InfoPanel infoPanel)
+	WebsocketManager(ChinManagerPlugin chinManagerPlugin, ChinManager chinManager, InfoPanel infoPanel, DrawManager drawManager)
 	{
 		this.chinManagerPlugin = chinManagerPlugin;
 		this.chinManager = chinManager;
 		this.infoPanel = infoPanel;
+		this.drawManager = drawManager;
 
 		DISPOSABLES.add(
 			chinManager
@@ -329,6 +340,84 @@ public class WebsocketManager extends WebSocketListener
 		socket.send(payloadObject.toString());
 	}
 
+	private void stopPlugins(String client)
+	{
+		if (!OpenOSRS.uuid.equals(client))
+		{
+			return;
+		}
+
+		for (Plugin plugin : Set.copyOf(chinManager.getActiveSortedPlugins()))
+		{
+			chinManager.stopPlugin(plugin);
+		}
+
+		chinManager.setCurrentlyActive(null);
+		chinManager.setAmountOfBreaks(0);
+	}
+
+	void takeScreenshot(String client)
+	{
+		if (!OpenOSRS.uuid.equals(client))
+		{
+			return;
+		}
+
+		log.debug("requestNextFrameListener");
+
+		Consumer<Image> imageCallback = (img) ->
+		{
+			log.debug("requestNextFrameListener callback");
+			JsonObject payloadObject = new JsonObject();
+			JsonObject dataObject = new JsonObject();
+
+			payloadObject.addProperty("event", "screenshot");
+			payloadObject.add("data", dataObject);
+
+			dataObject.addProperty("client", OpenOSRS.uuid);
+			dataObject.addProperty("image", encodeToString(img, "JPG"));
+
+			sendMessage(payloadObject);
+		};
+
+		drawManager.requestNextFrameListener(imageCallback);
+	}
+
+	public static BufferedImage toBufferedImage(Image img)
+	{
+		if (img instanceof BufferedImage)
+		{
+			return (BufferedImage) img;
+		}
+
+		BufferedImage bufferedImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+		Graphics2D graphics = bufferedImage.createGraphics();
+		graphics.drawImage(img, 0, 0, null);
+		graphics.dispose();
+
+		return bufferedImage;
+	}
+
+	public static String encodeToString(Image image, String type)
+	{
+		try
+		{
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ImageIO.write(toBufferedImage(image), type, bos);
+			byte[] imageBytes = bos.toByteArray();
+			bos.close();
+
+			Base64.Encoder encoder = Base64.getEncoder();
+
+			return encoder.encodeToString(imageBytes);
+		}
+		catch (IOException e)
+		{
+			return "";
+		}
+	}
+
 	private void closeSocket()
 	{
 		if (socket != null && isSocketConnected)
@@ -366,15 +455,40 @@ public class WebsocketManager extends WebSocketListener
 			switch (event)
 			{
 				case "auth":
+				{
 					sendAuth();
 					break;
+				}
+
 				case "request-status":
+				{
 					status();
 					location();
 
 					inventory(InventoryID.INVENTORY);
 					inventory(InventoryID.EQUIPMENT);
 					break;
+				}
+
+				case "request-screenshot":
+				{
+					JsonObject data = message.get("data").getAsJsonObject();
+					String client = data.get("client").getAsString();
+
+					takeScreenshot(client);
+
+					break;
+				}
+
+				case "stop-plugins":
+				{
+					JsonObject data = message.get("data").getAsJsonObject();
+					String client = data.get("client").getAsString();
+
+					stopPlugins(client);
+
+					break;
+				}
 			}
 		}
 	}

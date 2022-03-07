@@ -24,6 +24,7 @@ import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +54,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -61,6 +63,37 @@ import net.runelite.client.game.ItemManager;
 @Slf4j
 public class TeleportTask implements Task<Void>
 {
+	enum TeleportState
+	{
+		NONE,
+		OPEN_BANK,
+		OPENING_BANK,
+		QUANTITY,
+		SETTINGS,
+		ITEM_OPTIONS,
+		DEPOSIT_ALL,
+		CLOSE_BANK,
+		FETCH_POH,
+		FETCH_TELEPORT,
+		SELECT_MINIGAME,
+		MINIGAME_TELEPORT,
+		MINIGAME_TELEPORT_WAIT,
+		TELEPORT_POH,
+		TELEPORT_POH_WAIT,
+		TELEPORT_MENU,
+		TELEPORT_MENU_CLICK,
+		TELEPORT_DIALOG,
+		TELEPORT_WAIT,
+		EQUIPMENT,
+		TELEPORT_EQUIPMENT,
+		TELEPORT_EQUIPMENT_CLICK,
+		TELEPORTING,
+		HANDLE_POH,
+		CLICK_POH_TELEPORT,
+		POH_WAIT_TELEPORT_MENU,
+		POH_TELEPORT_MENU,
+	}
+
 	private static final Varbits[] AMOUNT_VARBITS =
 		{
 			Varbits.RUNE_POUCH_AMOUNT1, Varbits.RUNE_POUCH_AMOUNT2, Varbits.RUNE_POUCH_AMOUNT3
@@ -950,6 +983,29 @@ public class TeleportTask implements Task<Void>
 				menuOptionClicked.consume();
 			}
 		}
+		else if (teleportState == TeleportState.DEPOSIT_ALL)
+		{
+			Widget deposit = client.getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
+
+			teleportState = TeleportState.NONE;
+
+			if (deposit == null)
+			{
+				menuOptionClicked.consume();
+				return;
+			}
+
+			tikkie = 0;
+			menuOptionClicked = chinManagerPlugin.menuAction(
+				menuOptionClicked,
+				"Deposit inventory",
+				"",
+				1,
+				MenuAction.CC_OP,
+				-1,
+				deposit.getId()
+			);
+		}
 		else if (teleportState == TeleportState.CLOSE_BANK)
 		{
 			Widget bankContainerChild = client.getWidget(MagicNumberWidgets.BANK_CONTAINER_CONTAINER.getGroupId(), MagicNumberWidgets.BANK_CONTAINER_CONTAINER.getChildId());
@@ -1643,7 +1699,14 @@ public class TeleportTask implements Task<Void>
 
 		if (client.getItemContainer(InventoryID.BANK) != null)
 		{
-			if (!hasAnyBankInventoryItem(items, client))
+			Collection<WidgetItem> bankInventoryItems = getBankInventoryItems(client);
+
+			if (bankInventoryItems != null && bankInventoryItems.stream().noneMatch((item) -> item.getId() == 6512))
+			{
+				teleportState = TeleportState.DEPOSIT_ALL;
+				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
+			}
+			else if (!hasAnyBankInventoryItem(items, client))
 			{
 				if (hasAnyBankItem(items, client))
 				{
@@ -1698,6 +1761,15 @@ public class TeleportTask implements Task<Void>
 
 		if (client.getItemContainer(InventoryID.BANK) != null)
 		{
+			Collection<WidgetItem> bankInventoryItems = getBankInventoryItems(client);
+			if (bankInventoryItems != null && bankInventoryItems.stream().noneMatch((item) -> item.getId() == 6512))
+			{
+				teleportState = TeleportState.DEPOSIT_ALL;
+				disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
+
+				return;
+			}
+
 			for (int item : items)
 			{
 				if (!hasAnyBankInventoryItem(item, client))
@@ -2332,36 +2404,5 @@ public class TeleportTask implements Task<Void>
 		}
 
 		return equipmentItems;
-	}
-
-	enum TeleportState
-	{
-		NONE,
-		OPEN_BANK,
-		OPENING_BANK,
-		QUANTITY,
-		SETTINGS,
-		ITEM_OPTIONS,
-		CLOSE_BANK,
-		FETCH_POH,
-		FETCH_TELEPORT,
-		SELECT_MINIGAME,
-		MINIGAME_TELEPORT,
-		MINIGAME_TELEPORT_WAIT,
-		TELEPORT_POH,
-		TELEPORT_POH_WAIT,
-		TELEPORT_MENU,
-		TELEPORT_MENU_CLICK,
-		TELEPORT_DIALOG,
-		TELEPORT_WAIT,
-		EQUIPMENT,
-		TELEPORT_EQUIPMENT,
-		TELEPORT_EQUIPMENT_CLICK,
-		TELEPORTING,
-		HANDLE_POH,
-		CLICK_POH_TELEPORT,
-		POH_WAIT_TELEPORT_MENU,
-		POH_TELEPORT_MENU,
-
 	}
 }

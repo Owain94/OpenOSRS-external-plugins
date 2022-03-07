@@ -127,7 +127,7 @@ public class TeleportTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGameTick(GameTick gameTick)
 	{
 		if (teleportState != cachedTeleportState)
@@ -781,7 +781,7 @@ public class TeleportTask implements Task<Void>
 		tikkie += 1;
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN && (teleportState == TeleportState.TELEPORT_POH_WAIT || teleportState == TeleportState.MINIGAME_TELEPORT_WAIT || teleportState == TeleportState.TELEPORT_WAIT))
@@ -797,7 +797,7 @@ public class TeleportTask implements Task<Void>
 		teleportState = TeleportState.TELEPORTING;
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (teleportState == TeleportState.QUANTITY)

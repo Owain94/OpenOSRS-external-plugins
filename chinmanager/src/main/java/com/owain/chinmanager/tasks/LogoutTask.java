@@ -103,7 +103,7 @@ public class LogoutTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGameTick(GameTick gameTick)
 	{
 		if (tikkie >= 10)
@@ -161,7 +161,7 @@ public class LogoutTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (logoutState == LogoutState.CLOSE_BANK)
@@ -255,7 +255,7 @@ public class LogoutTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGamestateChanged(GameStateChanged gameStateChanged)
 	{
 		ChinManagerPlugin.setLogout(false);

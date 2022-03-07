@@ -78,7 +78,7 @@ public class BankPinConfirmTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGameTick(GameTick gameTick)
 	{
 		if (chinManager.getActiveSortedPlugins().isEmpty())
@@ -113,7 +113,7 @@ public class BankPinConfirmTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (bankPinConfirm == BankPinConfirm.CONFIRM)

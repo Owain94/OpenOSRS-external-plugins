@@ -140,7 +140,7 @@ public class BankPinTask implements Task<Void>
 		return bankpin;
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGameTick(GameTick gameTick)
 	{
 		if (tikkie >= 5)
@@ -233,7 +233,7 @@ public class BankPinTask implements Task<Void>
 		return null;
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (digit == null)

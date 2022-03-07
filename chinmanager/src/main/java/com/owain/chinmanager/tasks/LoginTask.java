@@ -77,7 +77,7 @@ public class LoginTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		if (!ChinManagerPlugin.isShouldSetup())

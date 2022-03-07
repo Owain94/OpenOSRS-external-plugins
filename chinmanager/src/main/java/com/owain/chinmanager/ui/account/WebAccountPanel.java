@@ -104,7 +104,7 @@ public class WebAccountPanel extends JPanel
 		return new Dimension(PANEL_WIDTH, super.getPreferredSize().height);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onConfigChanged(ConfigChanged configChanged)
 	{
 		if (!configChanged.getKey().equals("token"))

@@ -1609,7 +1609,7 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		chinManager.gameStateChanged.onNext(gameStateChanged);
@@ -1646,7 +1646,7 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onGameTick(GameTick gameTick)
 	{
 		Player localPlayer = client.getLocalPlayer();
@@ -1820,7 +1820,7 @@ public class ChinManagerPlugin extends Plugin
 			Integer.parseInt(breakfrom) <= Integer.parseInt(breakto);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onWidgetLoaded(final WidgetLoaded widgetLoaded)
 	{
 		if (Banking.ITEMS.isEmpty())
@@ -1831,7 +1831,7 @@ public class ChinManagerPlugin extends Plugin
 		Banking.onWidgetLoaded(widgetLoaded, client, clientThread);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onScriptPreFired(final ScriptPreFired scriptPreFired)
 	{
 		if (Banking.ITEMS.isEmpty())
@@ -1842,7 +1842,7 @@ public class ChinManagerPlugin extends Plugin
 		Banking.onScriptPreFired(scriptPreFired, client);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onScriptCallbackEvent(final ScriptCallbackEvent scriptCallbackEvent)
 	{
 		if (Banking.ITEMS.isEmpty())
@@ -1853,7 +1853,7 @@ public class ChinManagerPlugin extends Plugin
 		Banking.onScriptCallbackEvent(scriptCallbackEvent, client, itemManager);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onScriptPostFired(final ScriptPostFired scriptPostFired)
 	{
 		if (Banking.ITEMS.isEmpty())
@@ -1864,7 +1864,7 @@ public class ChinManagerPlugin extends Plugin
 		Banking.onScriptPostFired(scriptPostFired, client);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onConfigChanged(ConfigChanged configChanged)
 	{
 		chinManager.configChanged.onNext(configChanged);
@@ -2069,20 +2069,20 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onWallObjectSpawned(WallObjectSpawned wallObjectSpawned)
 	{
 		objects.add(wallObjectSpawned.getWallObject());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onWallObjectChanged(WallObjectChanged wallObjectChanged)
 	{
 		objects.remove(wallObjectChanged.getPrevious());
 		objects.add(wallObjectChanged.getWallObject());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onWallObjectDespawned(WallObjectDespawned wallObjectDespawned)
 	{
 		TileObject tileObject = wallObjectDespawned.getWallObject();
@@ -2097,20 +2097,20 @@ public class ChinManagerPlugin extends Plugin
 		debugTileObjectMap.remove(tileObject);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onGameObjectSpawned(GameObjectSpawned gameObjectSpawned)
 	{
 		objects.add(gameObjectSpawned.getGameObject());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onGameObjectChanged(GameObjectChanged gameObjectChanged)
 	{
 		objects.remove(gameObjectChanged.getPrevious());
 		objects.add(gameObjectChanged.getGameObject());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onGameObjectDespawned(GameObjectDespawned gameObjectDespawned)
 	{
 		TileObject tileObject = gameObjectDespawned.getGameObject();
@@ -2125,20 +2125,20 @@ public class ChinManagerPlugin extends Plugin
 		debugTileObjectMap.remove(tileObject);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onDecorativeObjectSpawned(DecorativeObjectSpawned decorativeObjectSpawned)
 	{
 		objects.add(decorativeObjectSpawned.getDecorativeObject());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onDecorativeObjectChanged(DecorativeObjectChanged decorativeObjectChanged)
 	{
 		objects.remove(decorativeObjectChanged.getPrevious());
 		objects.add(decorativeObjectChanged.getDecorativeObject());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onDecorativeObjectDespawned(DecorativeObjectDespawned decorativeObjectDespawned)
 	{
 		TileObject tileObject = decorativeObjectDespawned.getDecorativeObject();
@@ -2153,20 +2153,20 @@ public class ChinManagerPlugin extends Plugin
 		debugTileObjectMap.remove(tileObject);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onGroundObjectSpawned(GroundObjectSpawned groundObjectSpawned)
 	{
 		objects.add(groundObjectSpawned.getGroundObject());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onGroundObjectChanged(GroundObjectChanged groundObjectChanged)
 	{
 		objects.remove(groundObjectChanged.getPrevious());
 		objects.add(groundObjectChanged.getGroundObject());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onGroundObjectDespawned(GroundObjectDespawned groundObjectDespawned)
 	{
 		TileObject tileObject = groundObjectDespawned.getGroundObject();
@@ -2181,7 +2181,7 @@ public class ChinManagerPlugin extends Plugin
 		debugTileObjectMap.remove(tileObject);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onChatMessage(ChatMessage chatMessage)
 	{
 		if (chatMessage.getType() != ChatMessageType.GAMEMESSAGE
@@ -2223,13 +2223,13 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onNpcSpawned(NpcSpawned npcSpawned)
 	{
 		actors.add(npcSpawned.getNpc());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onNpcDespawned(NpcDespawned npcDespawned)
 	{
 		NPC npc = npcDespawned.getNpc();
@@ -2242,13 +2242,13 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onPlayerSpawned(PlayerSpawned playerSpawned)
 	{
 		actors.add(playerSpawned.getPlayer());
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onPlayerDespawned(PlayerDespawned playerDespawned)
 	{
 		Player player = playerDespawned.getPlayer();
@@ -2261,7 +2261,7 @@ public class ChinManagerPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onItemSpawned(ItemSpawned itemSpawned)
 	{
 		Tile tile = itemSpawned.getTile();
@@ -2270,7 +2270,7 @@ public class ChinManagerPlugin extends Plugin
 		tileItems.put(item, tile);
 	}
 
-	@Subscribe
+	@Subscribe(priority = -98)
 	public void onItemDespawned(ItemDespawned itemDespawned)
 	{
 		TileItem item = itemDespawned.getItem();

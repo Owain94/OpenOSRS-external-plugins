@@ -257,7 +257,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGameTick(GameTick gameTick)
 	{
 		if (tikkie >= 10)
@@ -363,7 +363,7 @@ public class BankingTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (bankingState == BankingState.CLICK_BANK)

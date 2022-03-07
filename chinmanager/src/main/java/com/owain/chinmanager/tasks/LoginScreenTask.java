@@ -81,7 +81,7 @@ public class LoginScreenTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onGameTick(GameTick gameTick)
 	{
 		if (chinManager.getActiveSortedPlugins().isEmpty())
@@ -124,7 +124,7 @@ public class LoginScreenTask implements Task<Void>
 		}
 	}
 
-	@Subscribe
+	@Subscribe(priority = -99)
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
 		if (loginScreenState == LoginScreenState.PLAY)

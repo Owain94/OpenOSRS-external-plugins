@@ -21,7 +21,11 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -356,7 +360,7 @@ public class WebsocketManager extends WebSocketListener
 		chinManager.setAmountOfBreaks(0);
 	}
 
-	void takeScreenshot(String client)
+	private void takeScreenshot(String client)
 	{
 		if (!OpenOSRS.uuid.equals(client))
 		{
@@ -375,7 +379,7 @@ public class WebsocketManager extends WebSocketListener
 			payloadObject.add("data", dataObject);
 
 			dataObject.addProperty("client", OpenOSRS.uuid);
-			dataObject.addProperty("image", encodeToString(img, "JPG"));
+			dataObject.addProperty("image", encodeToString(img, .6f));
 
 			sendMessage(payloadObject);
 		};
@@ -383,14 +387,14 @@ public class WebsocketManager extends WebSocketListener
 		drawManager.requestNextFrameListener(imageCallback);
 	}
 
-	public static BufferedImage toBufferedImage(Image img)
+	private static BufferedImage toBufferedImage(Image img)
 	{
 		if (img instanceof BufferedImage)
 		{
 			return (BufferedImage) img;
 		}
 
-		BufferedImage bufferedImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
 
 		Graphics2D graphics = bufferedImage.createGraphics();
 		graphics.drawImage(img, 0, 0, null);
@@ -399,12 +403,20 @@ public class WebsocketManager extends WebSocketListener
 		return bufferedImage;
 	}
 
-	public static String encodeToString(Image image, String type)
+	private static String encodeToString(Image image, float quality)
 	{
 		try
 		{
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ImageIO.write(toBufferedImage(image), type, bos);
+			ImageOutputStream outputStream = ImageIO.createImageOutputStream(bos);
+
+			ImageWriter writer = ImageIO.getImageWritersByFormatName("jpeg").next();
+			ImageWriteParam param = writer.getDefaultWriteParam();
+			param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+			param.setCompressionQuality(quality);
+			writer.setOutput(outputStream);
+			writer.write(null, new IIOImage(toBufferedImage(image), null, null), param);
+
 			byte[] imageBytes = bos.toByteArray();
 			bos.close();
 

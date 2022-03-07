@@ -865,7 +865,7 @@ public class BankingTask implements Task<Void>
 				"Withdraw-1",
 				1,
 				MenuAction.CC_OP,
-				getFirstBankItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_HOODS.contains(savedItemId) ? getFirstBankItemsPos(ChinManagerPlugin.GRACEFUL_HOODS, client) : getFirstBankItemsPos(savedItemId, client),
 				bankContainer.getId()
 			);
 		}
@@ -891,7 +891,7 @@ public class BankingTask implements Task<Void>
 				"Withdraw-1",
 				1,
 				MenuAction.CC_OP,
-				getFirstBankItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_CAPES.contains(savedItemId) ? getFirstBankItemsPos(ChinManagerPlugin.GRACEFUL_CAPES, client) : getFirstBankItemsPos(savedItemId, client),
 				bankContainer.getId()
 			);
 		}
@@ -969,7 +969,7 @@ public class BankingTask implements Task<Void>
 				"Withdraw-1",
 				1,
 				MenuAction.CC_OP,
-				getFirstBankItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_TOPS.contains(savedItemId) ? getFirstBankItemsPos(ChinManagerPlugin.GRACEFUL_TOPS, client) : getFirstBankItemsPos(savedItemId, client),
 				bankContainer.getId()
 			);
 		}
@@ -1021,7 +1021,7 @@ public class BankingTask implements Task<Void>
 				"Withdraw-1",
 				1,
 				MenuAction.CC_OP,
-				getFirstBankItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_LEGS.contains(savedItemId) ? getFirstBankItemsPos(ChinManagerPlugin.GRACEFUL_LEGS, client) : getFirstBankItemsPos(savedItemId, client),
 				bankContainer.getId()
 			);
 		}
@@ -1047,7 +1047,7 @@ public class BankingTask implements Task<Void>
 				"Withdraw-1",
 				1,
 				MenuAction.CC_OP,
-				getFirstBankItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_GLOVES.contains(savedItemId) ? getFirstBankItemsPos(ChinManagerPlugin.GRACEFUL_GLOVES, client) : getFirstBankItemsPos(savedItemId, client),
 				bankContainer.getId()
 			);
 		}
@@ -1073,7 +1073,7 @@ public class BankingTask implements Task<Void>
 				"Withdraw-1",
 				1,
 				MenuAction.CC_OP,
-				getFirstBankItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_BOOTS.contains(savedItemId) ? getFirstBankItemsPos(ChinManagerPlugin.GRACEFUL_BOOTS, client) : getFirstBankItemsPos(savedItemId, client),
 				bankContainer.getId()
 			);
 		}
@@ -1151,7 +1151,7 @@ public class BankingTask implements Task<Void>
 				"<col=ff9040>" + savedItem.getName() + "</col>",
 				9,
 				MenuAction.CC_OP_LOW_PRIORITY,
-				getFirstBankInventoryItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_HOODS.contains(savedItemId) ? getFirstBankInventoryItemsPos(ChinManagerPlugin.GRACEFUL_HOODS, client) : getFirstBankInventoryItemsPos(savedItemId, client),
 				bankInventoryContainer.getId()
 			);
 		}
@@ -1177,7 +1177,7 @@ public class BankingTask implements Task<Void>
 				"<col=ff9040>" + savedItem.getName() + "</col>",
 				9,
 				MenuAction.CC_OP_LOW_PRIORITY,
-				getFirstBankInventoryItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_CAPES.contains(savedItemId) ? getFirstBankInventoryItemsPos(ChinManagerPlugin.GRACEFUL_CAPES, client) : getFirstBankInventoryItemsPos(savedItemId, client),
 				bankInventoryContainer.getId()
 			);
 		}
@@ -1255,7 +1255,7 @@ public class BankingTask implements Task<Void>
 				"<col=ff9040>" + savedItem.getName() + "</col>",
 				9,
 				MenuAction.CC_OP_LOW_PRIORITY,
-				getFirstBankInventoryItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_TOPS.contains(savedItemId) ? getFirstBankInventoryItemsPos(ChinManagerPlugin.GRACEFUL_TOPS, client) : getFirstBankInventoryItemsPos(savedItemId, client),
 				bankInventoryContainer.getId()
 			);
 		}
@@ -1307,7 +1307,7 @@ public class BankingTask implements Task<Void>
 				"<col=ff9040>" + savedItem.getName() + "</col>",
 				9,
 				MenuAction.CC_OP_LOW_PRIORITY,
-				getFirstBankInventoryItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_LEGS.contains(savedItemId) ? getFirstBankInventoryItemsPos(ChinManagerPlugin.GRACEFUL_LEGS, client) : getFirstBankInventoryItemsPos(savedItemId, client),
 				bankInventoryContainer.getId()
 			);
 		}
@@ -1333,7 +1333,7 @@ public class BankingTask implements Task<Void>
 				"<col=ff9040>" + savedItem.getName() + "</col>",
 				9,
 				MenuAction.CC_OP_LOW_PRIORITY,
-				getFirstBankInventoryItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_GLOVES.contains(savedItemId) ? getFirstBankInventoryItemsPos(ChinManagerPlugin.GRACEFUL_GLOVES, client) : getFirstBankInventoryItemsPos(savedItemId, client),
 				bankInventoryContainer.getId()
 			);
 		}
@@ -1359,7 +1359,7 @@ public class BankingTask implements Task<Void>
 				"<col=ff9040>" + savedItem.getName() + "</col>",
 				9,
 				MenuAction.CC_OP_LOW_PRIORITY,
-				getFirstBankInventoryItemsPos(savedItemId, client),
+				ChinManagerPlugin.GRACEFUL_BOOTS.contains(savedItemId) ? getFirstBankInventoryItemsPos(ChinManagerPlugin.GRACEFUL_BOOTS, client) : getFirstBankInventoryItemsPos(savedItemId, client),
 				bankInventoryContainer.getId()
 			);
 		}
@@ -1663,6 +1663,46 @@ public class BankingTask implements Task<Void>
 					{
 						grab = true;
 					}
+					else
+					{
+						List<Integer> itemList = new ArrayList<>();
+
+						switch (slot)
+						{
+							case HEAD:
+								itemList.addAll(ChinManagerPlugin.GRACEFUL_HOODS);
+								break;
+							case BODY:
+								itemList.addAll(ChinManagerPlugin.GRACEFUL_TOPS);
+								break;
+							case LEGS:
+								itemList.addAll(ChinManagerPlugin.GRACEFUL_LEGS);
+								break;
+							case CAPE:
+								itemList.addAll(ChinManagerPlugin.GRACEFUL_CAPES);
+								break;
+							case GLOVES:
+								itemList.addAll(ChinManagerPlugin.GRACEFUL_GLOVES);
+								break;
+							case BOOTS:
+								itemList.addAll(ChinManagerPlugin.GRACEFUL_BOOTS);
+								break;
+						}
+
+						if (equippedItem != null && itemList.contains(equippedItem.getId()) && itemList.contains(savedItem))
+						{
+							continue;
+						}
+						else if (hasAnyBankInventoryItem(itemList, client))
+						{
+							equip = true;
+						}
+						else if (hasAnyBankItem(itemList, client))
+						{
+							grab = true;
+						}
+					}
+
 
 					switch (i)
 					{

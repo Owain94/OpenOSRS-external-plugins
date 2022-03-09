@@ -11,6 +11,7 @@ import net.runelite.api.CollisionData;
 import net.runelite.api.GameObject;
 import net.runelite.api.Locatable;
 import net.runelite.api.ObjectComposition;
+import net.runelite.api.Perspective;
 import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
@@ -75,7 +76,7 @@ public class Reachable
 				return check(startFlag, 0x80);
 		}
 
-		return false;
+		throw new IllegalArgumentException();
 	}
 
 	public static boolean isWalled(Client client, WorldPoint source, WorldPoint destination)
@@ -132,7 +133,7 @@ public class Reachable
 
 		if (objectComposition == null)
 		{
-			return false;
+			return isWalled(direction, getCollisionFlag(client, source.getWorldLocation()));
 		}
 
 		List<String> actions = Arrays.asList(objectComposition.getActions());
@@ -152,10 +153,12 @@ public class Reachable
 
 		if (objectComposition == null)
 		{
-			return false;
+			return isWalled(source, destination);
 		}
 
-		return isWalled(source, destination) && Arrays.asList(objectComposition.getActions()).contains("Open");
+		List<String> actions = Arrays.asList(objectComposition.getActions());
+
+		return isWalled(source, destination) && actions.contains("Open");
 	}
 
 	public static boolean canWalk(Direction direction, int startFlag, int endFlag)
@@ -182,7 +185,7 @@ public class Reachable
 				return source.dx(-1);
 		}
 
-		return source;
+		throw new IllegalArgumentException();
 	}
 
 	public static List<WorldPoint> getNeighbours(Client client, WorldPoint current, Locatable targetObject)
@@ -201,27 +204,22 @@ public class Reachable
 				boolean containsPoint;
 				if (targetObject instanceof GameObject)
 				{
-					int width = ((GameObject) targetObject).sizeX();
-					int height = ((GameObject) targetObject).sizeY();
-
-					WorldPoint objectWorldPoint;
-					objectWorldPoint = targetObject.getWorldLocation();
-
-					if (width == 3 || height == 3)
+					WorldArea worldArea = getWorldArea(client, (GameObject) targetObject);
+					if (worldArea != null)
 					{
-						objectWorldPoint = new WorldPoint(width == 3 ? objectWorldPoint.getX() - 1 : objectWorldPoint.getX(), height == 3 ? objectWorldPoint.getY() - 1 : objectWorldPoint.getY(), objectWorldPoint.getPlane());
+						containsPoint = worldArea.contains(neighbour);
 					}
-
-					List<WorldPoint> area = new WorldArea(objectWorldPoint.getX() - 1, objectWorldPoint.getY() - 1, width + 2, height + 2, objectWorldPoint.getPlane()).toWorldPointList();
-					containsPoint = area.contains(neighbour);
+					else
+					{
+						containsPoint = false;
+					}
 				}
 				else
 				{
 					containsPoint = targetObject.getWorldLocation().equals(neighbour);
 				}
 
-				if (containsPoint
-					&& (!isWalled(dir, getCollisionFlag(client, current)) || targetObject instanceof WallObject))
+				if (containsPoint && (!isWalled(dir, getCollisionFlag(client, current)) || targetObject instanceof WallObject))
 				{
 					out.add(neighbour);
 					continue;
@@ -326,5 +324,33 @@ public class Reachable
 		}
 
 		return objectDefinition;
+	}
+
+
+	public static WorldArea getWorldArea(Client client, GameObject gameObject)
+	{
+		LocalPoint localLocation = gameObject.getLocalLocation();
+		int x = gameObject.sizeX();
+		int y = gameObject.sizeY();
+
+		if (!localLocation.isInScene())
+		{
+			return null;
+		}
+
+		LocalPoint minTile = new LocalPoint(
+			localLocation.getX() - x * Perspective.LOCAL_TILE_SIZE / 2,
+			localLocation.getY() - y * Perspective.LOCAL_TILE_SIZE / 2
+		);
+
+		LocalPoint maxTile = new LocalPoint(
+			localLocation.getX() + x * Perspective.LOCAL_TILE_SIZE / 2,
+			localLocation.getY() + y * Perspective.LOCAL_TILE_SIZE / 2
+		);
+
+		return new WorldArea(
+			WorldPoint.fromLocal(client, minTile),
+			WorldPoint.fromLocal(client, maxTile)
+		);
 	}
 }

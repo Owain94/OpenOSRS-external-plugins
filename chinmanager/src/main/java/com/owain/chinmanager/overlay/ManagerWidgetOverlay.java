@@ -2,8 +2,8 @@ package com.owain.chinmanager.overlay;
 
 import com.google.inject.Inject;
 import com.owain.chinmanager.ChinManager;
-import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
+import com.owain.chinmanager.utils.Overlays;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -50,17 +50,17 @@ public class ManagerWidgetOverlay extends Overlay
 			return null;
 		}
 
-		if (ChinManagerPlugin.getHighlightWidget() != null)
+		if (Overlays.getHighlightWidget() != null)
 		{
-			if (!ChinManagerPlugin.getHighlightWidget().isHidden() && !ChinManagerPlugin.getHighlightWidget().isSelfHidden())
+			if (!Overlays.getHighlightWidget().isHidden() && !Overlays.getHighlightWidget().isSelfHidden())
 			{
-				OverlayUtil.renderPolygon(graphics, rectangleToPolygon(ChinManagerPlugin.getHighlightWidget().getBounds()), new Color(255, 100, 100));
+				OverlayUtil.renderPolygon(graphics, rectangleToPolygon(Overlays.getHighlightWidget().getBounds()), new Color(255, 100, 100));
 			}
 		}
 
-		if (!ChinManagerPlugin.getHighlightWidgetItem().isEmpty())
+		if (!Overlays.getHighlightWidgetItem().isEmpty())
 		{
-			for (WidgetItem widgetItem : ChinManagerPlugin.getHighlightWidgetItem())
+			for (WidgetItem widgetItem : Overlays.getHighlightWidgetItem())
 			{
 				if (widgetItem == null || widgetItem.getWidget().isHidden() || widgetItem.getWidget().isSelfHidden())
 				{

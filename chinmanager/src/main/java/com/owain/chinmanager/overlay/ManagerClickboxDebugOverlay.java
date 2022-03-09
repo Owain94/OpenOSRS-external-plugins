@@ -2,8 +2,8 @@ package com.owain.chinmanager.overlay;
 
 import com.google.inject.Inject;
 import com.owain.chinmanager.ChinManager;
-import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
+import com.owain.chinmanager.utils.Overlays;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -58,9 +58,9 @@ public class ManagerClickboxDebugOverlay extends Overlay
 			return null;
 		}
 
-		Set<WorldPoint> reachableWorldAreas = ChinManagerPlugin.getDebugReachableWorldAreas();
-		Map<WorldPoint, Integer> reachableTiles = ChinManagerPlugin.getDebugReachableTiles();
-		Map<TileObject, Integer> tileObjectMap = ChinManagerPlugin.getDebugTileObjectMap();
+		Set<WorldPoint> reachableWorldAreas = Overlays.getDebugReachableWorldAreas();
+		Map<WorldPoint, Integer> reachableTiles = Overlays.getDebugReachableTiles();
+		Map<TileObject, Integer> tileObjectMap = Overlays.getDebugTileObjectMap();
 
 		if (!reachableWorldAreas.isEmpty())
 		{

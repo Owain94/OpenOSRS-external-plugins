@@ -26,8 +26,8 @@ package com.owain.chinmanager.overlay;
 
 import com.google.inject.Inject;
 import com.owain.chinmanager.ChinManager;
-import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
+import com.owain.chinmanager.utils.Overlays;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -69,10 +69,10 @@ public class ManagerTileIndicatorsOverlay extends Overlay
 			return null;
 		}
 
-		if (ChinManagerPlugin.getHighlightDaxPath() != null)
+		if (Overlays.getHighlightPath() != null)
 		{
 			WorldPoint previous = null;
-			for (WorldPoint point : ChinManagerPlugin.getHighlightDaxPath())
+			for (WorldPoint point : Overlays.getHighlightPath())
 			{
 				if (previous != null)
 				{

@@ -2,8 +2,8 @@ package com.owain.chinmanager.overlay;
 
 import com.google.inject.Inject;
 import com.owain.chinmanager.ChinManager;
-import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
+import com.owain.chinmanager.utils.Overlays;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -40,24 +40,24 @@ public class ManagerClickboxOverlay extends Overlay
 			return null;
 		}
 
-		if (ChinManagerPlugin.getHighlightActor() != null)
+		if (Overlays.getHighlightActor() != null)
 		{
-			if (ChinManagerPlugin.getHighlightActor() instanceof NPC)
+			if (Overlays.getHighlightActor() instanceof NPC)
 			{
-				modelOutliner.drawOutline((NPC) ChinManagerPlugin.getHighlightActor(), 4, new Color(255, 100, 100), 4);
+				modelOutliner.drawOutline((NPC) Overlays.getHighlightActor(), 4, new Color(255, 100, 100), 4);
 			}
-			else if (ChinManagerPlugin.getHighlightActor() instanceof Player)
+			else if (Overlays.getHighlightActor() instanceof Player)
 			{
-				modelOutliner.drawOutline((Player) ChinManagerPlugin.getHighlightActor(), 4, new Color(255, 100, 100), 4);
+				modelOutliner.drawOutline((Player) Overlays.getHighlightActor(), 4, new Color(255, 100, 100), 4);
 			}
 		}
-		else if (ChinManagerPlugin.getHighlightItemLayer() != null)
+		else if (Overlays.getHighlightItemLayer() != null)
 		{
-			modelOutliner.drawOutline(ChinManagerPlugin.getHighlightItemLayer(), 4, new Color(255, 100, 100), 4);
+			modelOutliner.drawOutline(Overlays.getHighlightItemLayer(), 4, new Color(255, 100, 100), 4);
 		}
-		else if (ChinManagerPlugin.getHighlightTileObject() != null)
+		else if (Overlays.getHighlightTileObject() != null)
 		{
-			modelOutliner.drawOutline(ChinManagerPlugin.getHighlightTileObject(), 4, new Color(255, 100, 100), 4);
+			modelOutliner.drawOutline(Overlays.getHighlightTileObject(), 4, new Color(255, 100, 100), 4);
 		}
 
 		return null;

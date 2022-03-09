@@ -17,10 +17,14 @@ import net.runelite.api.Client;
 import net.runelite.api.CollisionData;
 import net.runelite.api.CollisionDataFlag;
 import net.runelite.api.GameState;
+import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.client.eventbus.Subscribe;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,14 +40,56 @@ public class RegionManager
 	public static final String API_URL = "https://collisionmap.xyz";
 	public static final Gson GSON = new GsonBuilder().create();
 
-	@Inject
-	private Client client;
+	private int plane = -1;
+
+	private final Client client;
+	private final OkHttpClient okHttpClient;
+	private final ScheduledExecutorService executorService;
 
 	@Inject
-	private OkHttpClient okHttpClient;
+	public RegionManager(
+		Client client,
+		OkHttpClient okHttpClient,
+		ScheduledExecutorService executorService
+	)
+	{
+		this.client = client;
+		this.okHttpClient = okHttpClient;
+		this.executorService = executorService;
+	}
 
-	@Inject
-	private ScheduledExecutorService executorService;
+	@Subscribe(priority = -98)
+	public void onGameStateChanged(GameStateChanged gameStateChanged)
+	{
+		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
+		{
+			sendRegion();
+		}
+
+		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
+		{
+			plane = -1;
+		}
+	}
+
+	@Subscribe(priority = -98)
+	public void onGameTick(GameTick gameTick)
+	{
+		Player localPlayer = client.getLocalPlayer();
+
+		if (localPlayer != null)
+		{
+			if (plane == -1)
+			{
+				plane = localPlayer.getWorldLocation().getPlane();
+			}
+			else if (plane != localPlayer.getWorldLocation().getPlane())
+			{
+				plane = localPlayer.getWorldLocation().getPlane();
+				sendRegion();
+			}
+		}
+	}
 
 	public void sendRegion()
 	{

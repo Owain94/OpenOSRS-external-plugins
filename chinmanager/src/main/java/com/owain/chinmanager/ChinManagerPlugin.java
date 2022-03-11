@@ -3,7 +3,6 @@ package com.owain.chinmanager;
 import com.google.common.base.Strings;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
-import com.owain.automation.Banking;
 import static com.owain.chinmanager.ChinManagerState.stateMachine;
 import com.owain.chinmanager.api.NotificationsApi;
 import com.owain.chinmanager.cookies.PersistentCookieJar;
@@ -26,6 +25,7 @@ import com.owain.chinmanager.ui.plugins.options.OptionsConfig;
 import com.owain.chinmanager.ui.plugins.status.InfoPanel;
 import com.owain.chinmanager.ui.teleports.TeleportsConfig;
 import com.owain.chinmanager.utils.Api;
+import com.owain.chinmanager.utils.Banking;
 import com.owain.chinmanager.utils.Hopper;
 import com.owain.chinmanager.utils.IntRandomNumberGenerator;
 import static com.owain.chinmanager.utils.Integers.isNumeric;
@@ -406,7 +406,7 @@ public class ChinManagerPlugin extends Plugin
 
 		client.setHideDisconnect(true);
 
-		Banking.ITEMS = Set.of();
+		com.owain.automation.Banking.ITEMS = Set.of();
 
 		DISPOSABLES.addAll(
 			stateMachine.getStateObservable().subscribe((state) -> Overlays.resetHighlight()),
@@ -419,14 +419,14 @@ public class ChinManagerPlugin extends Plugin
 					if (chinManager.getActiveSortedPlugins().isEmpty())
 					{
 						shouldSetup = true;
-						Banking.ITEMS = Set.of();
+						com.owain.automation.Banking.ITEMS = Set.of();
 						delay = -1;
 						logout = false;
 						transition(ChinManagerStates.IDLE);
 					}
 					else
 					{
-						Banking.ITEMS = chinManager.getActiveSortedPlugins()
+						com.owain.automation.Banking.ITEMS = chinManager.getActiveSortedPlugins()
 							.stream()
 							.map((plugin) -> {
 								Set<Integer> items = new HashSet<>();
@@ -605,7 +605,7 @@ public class ChinManagerPlugin extends Plugin
 		);
 
 		clientToolbar.removeNavigation(navButton);
-		Banking.ITEMS = Set.of();
+		com.owain.automation.Banking.ITEMS = Set.of();
 	}
 
 	private void currentlyActive()

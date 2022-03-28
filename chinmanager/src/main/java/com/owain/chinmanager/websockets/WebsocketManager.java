@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
@@ -125,15 +126,25 @@ public class WebsocketManager extends WebSocketListener
 			jsonGeneralData.addProperty("active", chinManager.getCurrentlyActive().getName());
 		}
 
+		Map<Plugin, Map<String, String>> allData = chinManager.getExtraData();
+
 		for (Plugin plugin : chinManager.getActiveSortedPlugins())
 		{
-			if (chinManager.getExtraData().containsKey(plugin))
-			{
-				JsonObject pluginData = GSON.toJsonTree(chinManager.getExtraData().get(plugin)).getAsJsonObject();
-				pluginData.addProperty("plugin", plugin.getName());
+			Map<String, String> pluginExtraData = allData.get(plugin);
 
-				jsonArray.add(pluginData);
+			JsonObject pluginData;
+
+			if (pluginExtraData == null || pluginExtraData.isEmpty())
+			{
+				pluginData = new JsonObject();
 			}
+			else
+			{
+				pluginData = GSON.toJsonTree(chinManager.getExtraData().get(plugin)).getAsJsonObject();
+			}
+
+			pluginData.addProperty("plugin", plugin.getName());
+			jsonArray.add(pluginData);
 		}
 
 		JsonObject jsonDataData = new JsonObject();

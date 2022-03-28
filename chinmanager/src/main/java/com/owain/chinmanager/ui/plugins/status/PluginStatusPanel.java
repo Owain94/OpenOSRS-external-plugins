@@ -179,6 +179,7 @@ public class PluginStatusPanel extends JPanel
 		}
 
 		int index = 0;
+		boolean hasState = false;
 
 		Iterator<Map.Entry<String, String>> iterator = pluginData.entrySet().iterator();
 		//noinspection WhileLoopReplaceableByForEach
@@ -191,6 +192,7 @@ public class PluginStatusPanel extends JPanel
 
 			if (key.equals("State") || key.equals("state"))
 			{
+				hasState = true;
 				continue;
 			}
 
@@ -200,8 +202,14 @@ public class PluginStatusPanel extends JPanel
 			index++;
 
 			boolean bump = index % 2 == 0;
+			int total = index;
 
-			if (!bump && index == pluginData.size())
+			if (hasState)
+			{
+				total++;
+			}
+
+			if (!bump && total == pluginData.size())
 			{
 				c.gridwidth = 2;
 			}

@@ -92,6 +92,7 @@ public class TeleportTask implements Task<Void>
 		CLICK_POH_TELEPORT,
 		POH_WAIT_TELEPORT_MENU,
 		POH_TELEPORT_MENU,
+		MISC_WAIT
 	}
 
 	private static final Varbits[] AMOUNT_VARBITS =
@@ -344,7 +345,8 @@ public class TeleportTask implements Task<Void>
 
 			if (option == null)
 			{
-				teleportState = TeleportState.NONE;
+				tikkie = 7;
+				teleportState = TeleportState.MISC_WAIT;
 				return;
 			}
 
@@ -1140,6 +1142,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1162,6 +1166,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1184,6 +1190,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1206,6 +1214,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1228,6 +1238,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1250,6 +1262,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1272,6 +1286,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1294,6 +1310,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
@@ -1321,6 +1339,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Break",
@@ -1343,6 +1363,8 @@ public class TeleportTask implements Task<Void>
 				}
 
 				tikkie = 0;
+				teleportState = TeleportState.TELEPORT_WAIT;
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Cast",
@@ -1367,6 +1389,8 @@ public class TeleportTask implements Task<Void>
 					}
 
 					tikkie = 0;
+					teleportState = TeleportState.TELEPORT_WAIT;
+
 					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Teleport",
@@ -1389,6 +1413,8 @@ public class TeleportTask implements Task<Void>
 					}
 
 					tikkie = 0;
+					teleportState = TeleportState.TELEPORT_WAIT;
+
 					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Tele to POH",

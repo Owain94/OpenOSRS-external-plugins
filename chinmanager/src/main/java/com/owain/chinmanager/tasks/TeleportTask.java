@@ -279,15 +279,15 @@ public class TeleportTask implements Task<Void>
 				switch (chinManager.getTeleportingLocation())
 				{
 					case NMZ:
-						id = 10;
+						id = 11;
 						break;
 
 					case TITHE_FARM:
-						id = 19;
+						id = 20;
 						break;
 
 					case LMS:
-						id = 9;
+						id = 10;
 						break;
 
 					case PEST_CONTROL:
@@ -295,7 +295,7 @@ public class TeleportTask implements Task<Void>
 						break;
 
 					case SOUL_WARS:
-						id = 16;
+						id = 17;
 						break;
 
 					default:
@@ -1667,15 +1667,15 @@ public class TeleportTask implements Task<Void>
 			switch (chinManager.getTeleportingLocation())
 			{
 				case NMZ:
-					id = 10;
+					id = 11;
 					break;
 
 				case TITHE_FARM:
-					id = 19;
+					id = 20;
 					break;
 
 				case LMS:
-					id = 9;
+					id = 10;
 					break;
 
 				case PEST_CONTROL:

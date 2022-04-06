@@ -137,8 +137,6 @@ public class RegionManager
 			{
 				String json = GSON.toJson(xteaRequest);
 
-				log.info("keys: {}", json);
-
 				RequestBody body = RequestBody.create(json, JSON_MEDIATYPE);
 				Request request = new Request.Builder()
 					.post(body)
@@ -149,7 +147,7 @@ public class RegionManager
 				int code = response.code();
 				response.close();
 
-				if (code != 200)
+				if (code != 200 && code != 201)
 				{
 					log.error("Request was unsuccessful: {}", code);
 				}

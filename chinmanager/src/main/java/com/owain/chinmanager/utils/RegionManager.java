@@ -2,12 +2,15 @@ package com.owain.chinmanager.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.owain.chinmanager.api.BaseApi;
 import com.owain.chinmanager.models.TileFlag;
 import com.owain.chinmanager.models.Transport;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -25,6 +28,8 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.http.api.xtea.XteaKey;
+import net.runelite.http.api.xtea.XteaRequest;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -40,6 +45,7 @@ public class RegionManager
 	public static final String API_URL = "https://collisionmap.xyz";
 	public static final Gson GSON = new GsonBuilder().create();
 
+	private final Set<Integer> sentRegions = new HashSet<>();
 	private int plane = -1;
 
 	private final Client client;
@@ -64,6 +70,7 @@ public class RegionManager
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
 		{
 			sendRegion();
+			sendXtea();
 		}
 
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
@@ -89,6 +96,70 @@ public class RegionManager
 				sendRegion();
 			}
 		}
+	}
+
+	public void sendXtea()
+	{
+		int revision = client.getRevision();
+		int[] regions = client.getMapRegions();
+		int[][] xteaKeys = client.getXteaKeys();
+
+		XteaRequest xteaRequest = new XteaRequest();
+		xteaRequest.setRevision(revision);
+
+		for (int idx = 0; idx < regions.length; ++idx)
+		{
+			int region = regions[idx];
+			int[] keys = xteaKeys[idx];
+
+			if (sentRegions.contains(region))
+			{
+				continue;
+			}
+
+			sentRegions.add(region);
+
+			log.debug("Region {} keys {}, {}, {}, {}", region, keys[0], keys[1], keys[2], keys[3]);
+
+			XteaKey xteaKey = new XteaKey();
+			xteaKey.setRegion(region);
+			xteaKey.setKeys(keys);
+			xteaRequest.addKey(xteaKey);
+		}
+
+		if (xteaRequest.getKeys().isEmpty())
+		{
+			return;
+		}
+
+		executorService.schedule(() -> {
+			try
+			{
+				String json = GSON.toJson(xteaRequest);
+
+				log.info("keys: {}", json);
+
+				RequestBody body = RequestBody.create(json, JSON_MEDIATYPE);
+				Request request = new Request.Builder()
+					.post(body)
+					.url(BaseApi.baseUrl().addPathSegment("xtea").build())
+					.build();
+				Response response = okHttpClient.newCall(request)
+					.execute();
+				int code = response.code();
+				response.close();
+
+				if (code != 200)
+				{
+					log.error("Request was unsuccessful: {}", code);
+				}
+			}
+			catch (Exception e)
+			{
+				log.error("Failed to POST: {}", e.getMessage());
+				e.printStackTrace();
+			}
+		}, 5, TimeUnit.SECONDS);
 	}
 
 	public void sendRegion()

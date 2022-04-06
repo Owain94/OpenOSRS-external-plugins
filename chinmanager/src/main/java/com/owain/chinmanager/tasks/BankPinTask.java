@@ -8,7 +8,6 @@ import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -72,10 +71,10 @@ public class BankPinTask implements Task<Void>
 			chinManager.addWarning("Manager: Bank pin", "Bank pin is not set / profile data not unlocked");
 			chinManagerPlugin.transition(ChinManagerStates.IDLE);
 
-			chinManagerPlugin.getNotificationsApi().sendNotification(
-				"bankpin",
-				Map.of()
-			);
+//			chinManagerPlugin.getNotificationsApi().sendNotification(
+//				"bankpin",
+//				Map.of()
+//			);
 
 			return;
 		}

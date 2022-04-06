@@ -534,6 +534,8 @@ public class Api
 
 	public static TileObject getBankObject(Client client)
 	{
+		Locatable locatable = client.getLocalPlayer();
+
 		return Set.copyOf(
 				getObjects()
 			)
@@ -566,24 +568,52 @@ public class Api
 					imposterActions.contains("Bank") || (imposterActions.contains("Collect") && !objectComposition.getImpostor().getName().contains("Grand"));
 			})
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
-			.min(Comparator.comparing(npc -> {
-					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
-					if (path == null)
-					{
-						return Integer.MAX_VALUE;
-					}
-					else
-					{
-						return path.size();
-					}
+			.filter(tileObject -> Reachable.isInteractable(client, tileObject))
+			.map(tileObject -> {
+				Tile startTile = tile(client, locatable.getWorldLocation());
+				Tile endTile = tile(client, tileObject.getWorldLocation());
+
+				if (startTile == null || endTile == null)
+				{
+					return Pair.of(tileObject, Integer.MAX_VALUE);
 				}
-			))
+
+				if (locatable.getWorldLocation().dx(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dx(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+
+				List<Tile> path = startTile.pathTo(endTile);
+
+				return Pair.of(tileObject, path.size());
+			})
+			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
+			.peek(pair -> Overlays.getDebugTileObjectMap().put(pair.getKey(), pair.getValue()))
+			.min(
+				Comparator.comparing(
+						(Pair<TileObject, Integer> pair) ->
+							pair.getKey().getWorldLocation().distanceTo(locatable.getWorldLocation())
+					)
+					.thenComparing(Pair::getValue))
+			.map(Pair::getKey)
 			.orElse(
-				getBankObjectAlt(client)
+				getBankObjectAlt(client, locatable)
 			);
 	}
 
-	public static TileObject getBankObjectAlt(Client client)
+	public static TileObject getBankObjectAlt(Client client, Locatable locatable)
 	{
 		return getAllObjects(client)
 			.stream()
@@ -615,23 +645,52 @@ public class Api
 					imposterActions.contains("Bank") || imposterActions.contains("Collect");
 			})
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
-			.min(Comparator.comparing(npc -> {
-					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
-					if (path == null)
-					{
-						return Integer.MAX_VALUE;
-					}
-					else
-					{
-						return path.size();
-					}
+			.map(tileObject -> {
+				Tile startTile = tile(client, locatable.getWorldLocation());
+				Tile endTile = tile(client, tileObject.getWorldLocation());
+
+				if (startTile == null || endTile == null)
+				{
+					return Pair.of(tileObject, Integer.MAX_VALUE);
 				}
-			))
+
+				if (locatable.getWorldLocation().dx(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dx(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+
+				List<Tile> path = startTile.pathTo(endTile);
+
+				return Pair.of(tileObject, path.size());
+			})
+			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
+			.peek(pair -> Overlays.getDebugTileObjectMap().put(pair.getKey(), pair.getValue()))
+			.min(
+				Comparator.comparing(
+						(Pair<TileObject, Integer> pair) ->
+							pair.getKey().getWorldLocation().distanceTo(locatable.getWorldLocation())
+					)
+					.thenComparing(Pair::getValue))
+			.map(Pair::getKey)
 			.orElse(null);
 	}
 
 	public static NPC getBankNpc(Client client)
 	{
+		Locatable locatable = client.getLocalPlayer();
+
 		return Set.copyOf(
 				getActors()
 			)
@@ -650,24 +709,50 @@ public class Api
 				return actions.contains("Bank");
 			})
 			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
-			.min(Comparator.comparing(npc -> {
-					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
-					if (path == null)
-					{
-						return Integer.MAX_VALUE;
-					}
-					else
-					{
-						return path.size();
-					}
+			.map(tileObject -> {
+				Tile startTile = tile(client, locatable.getWorldLocation());
+				Tile endTile = tile(client, tileObject.getWorldLocation());
+
+				if (startTile == null || endTile == null)
+				{
+					return Pair.of(tileObject, Integer.MAX_VALUE);
 				}
-			))
+
+				if (locatable.getWorldLocation().dx(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dx(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+
+				List<Tile> path = startTile.pathTo(endTile);
+
+				return Pair.of(tileObject, path.size());
+			})
+			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
+			.min(
+				Comparator.comparing(
+						(Pair<NPC, Integer> pair) ->
+							pair.getKey().getWorldLocation().distanceTo(locatable.getWorldLocation())
+					)
+					.thenComparing(Pair::getValue))
+			.map(Pair::getKey)
 			.orElse(
-				getBankNpcAlt(client)
+				getBankNpcAlt(client, locatable)
 			);
 	}
 
-	public static NPC getBankNpcAlt(Client client)
+	public static NPC getBankNpcAlt(Client client, Locatable locatable)
 	{
 		return client.getNpcs()
 			.stream()
@@ -683,18 +768,44 @@ public class Api
 				return actions.contains("Bank");
 			})
 			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
-			.min(Comparator.comparing(npc -> {
-					List<Tile> path = tile(client, client.getLocalPlayer().getWorldLocation()).pathTo(tile(client, npc.getWorldLocation()));
-					if (path == null)
-					{
-						return Integer.MAX_VALUE;
-					}
-					else
-					{
-						return path.size();
-					}
+			.map(tileObject -> {
+				Tile startTile = tile(client, locatable.getWorldLocation());
+				Tile endTile = tile(client, tileObject.getWorldLocation());
+
+				if (startTile == null || endTile == null)
+				{
+					return Pair.of(tileObject, Integer.MAX_VALUE);
 				}
-			))
+
+				if (locatable.getWorldLocation().dx(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dx(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+
+				List<Tile> path = startTile.pathTo(endTile);
+
+				return Pair.of(tileObject, path.size());
+			})
+			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
+			.min(
+				Comparator.comparing(
+						(Pair<NPC, Integer> pair) ->
+							pair.getKey().getWorldLocation().distanceTo(locatable.getWorldLocation())
+					)
+					.thenComparing(Pair::getValue))
+			.map(Pair::getKey)
 			.orElse(null);
 	}
 
@@ -744,7 +855,6 @@ public class Api
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(1787, 3599, 0)) != 0)
 			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(new WorldPoint(3255, 3463, 0)) != 0)
 			.filter(tileObject -> Reachable.isInteractable(client, tileObject))
-			.parallel()
 			.map(tileObject -> {
 				Tile startTile = tile(client, locatable.getWorldLocation());
 				Tile endTile = tile(client, tileObject.getWorldLocation());
@@ -752,6 +862,23 @@ public class Api
 				if (startTile == null || endTile == null)
 				{
 					return Pair.of(tileObject, Integer.MAX_VALUE);
+				}
+
+				if (locatable.getWorldLocation().dx(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dx(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
+				}
+				else if (locatable.getWorldLocation().dy(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				{
+					return Pair.of(tileObject, -1);
 				}
 
 				List<Tile> path = startTile.pathTo(endTile);

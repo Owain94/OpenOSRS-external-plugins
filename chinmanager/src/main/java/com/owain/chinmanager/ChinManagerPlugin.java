@@ -62,7 +62,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
@@ -366,6 +365,9 @@ public class ChinManagerPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		Api.getObjects().clear();
+		Api.getTileItems().clear();
+
 		eventBus.register(api);
 		eventBus.register(banking);
 		eventBus.register(hopper);
@@ -566,6 +568,9 @@ public class ChinManagerPlugin extends Plugin
 		eventBus.unregister(notifications);
 		eventBus.unregister("AccountPanel");
 		eventBus.unregister("PluginPanel");
+
+		Api.getObjects().clear();
+		Api.getTileItems().clear();
 
 		try
 		{
@@ -945,14 +950,14 @@ public class ChinManagerPlugin extends Plugin
 		return menuOptionClicked;
 	}
 
-	public static Set<Actor> getActors()
-	{
-		return Api.getActors();
-	}
+//	public static Set<Actor> getActors()
+//	{
+//		return Api.actors;
+//	}
 
 	public static Set<TileObject> getObjects()
 	{
-		return Api.getObjects();
+		return Api.objects;
 	}
 
 	public NPC getNPC(int id)

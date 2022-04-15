@@ -286,7 +286,7 @@ public class BankingTask implements Task<Void>
 			bankingState = BankingState.QUANTITY;
 			disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());
 		}
-		else if (client.getVar(Varbits.CURRENT_BANK_TAB) != 0)
+		else if (client.getVarbitValue(Varbits.CURRENT_BANK_TAB) != 0)
 		{
 			bankingState = BankingState.BANK_TAB;
 			disposables.add(chinManagerPlugin.getTaskExecutor().prepareTask(new ClickTask(chinManagerPlugin)).ignoreElements().subscribe());

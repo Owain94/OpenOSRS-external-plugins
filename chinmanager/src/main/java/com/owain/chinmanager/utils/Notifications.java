@@ -90,7 +90,7 @@ public class Notifications
 			);
 		}
 
-		if (message.startsWith(COLLECTION_LOG_TEXT) && client.getVar(Varbits.COLLECTION_LOG_NOTIFICATION) == 1)
+		if (message.startsWith(COLLECTION_LOG_TEXT) && client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) == 1)
 		{
 			String entry = Text.removeTags(message).substring(COLLECTION_LOG_TEXT.length());
 

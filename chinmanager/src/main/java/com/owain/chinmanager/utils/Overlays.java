@@ -116,6 +116,7 @@ public class Overlays
 			{
 				LocalPoint localPoint = LocalPoint.fromScene(menuOptionClicked.getParam0(), menuOptionClicked.getParam1());
 
+				Api.refreshTileObjects(client);
 				Map.copyOf(Api.getTileItems())
 					.values()
 					.stream()

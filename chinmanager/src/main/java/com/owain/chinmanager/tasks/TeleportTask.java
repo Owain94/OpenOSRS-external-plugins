@@ -95,11 +95,11 @@ public class TeleportTask implements Task<Void>
 		MISC_WAIT
 	}
 
-	private static final Varbits[] AMOUNT_VARBITS =
+	private static final int[] AMOUNT_VARBITS =
 		{
 			Varbits.RUNE_POUCH_AMOUNT1, Varbits.RUNE_POUCH_AMOUNT2, Varbits.RUNE_POUCH_AMOUNT3
 		};
-	private static final Varbits[] RUNE_VARBITS =
+	private static final int[] RUNE_VARBITS =
 		{
 			Varbits.RUNE_POUCH_RUNE1, Varbits.RUNE_POUCH_RUNE2, Varbits.RUNE_POUCH_RUNE3
 		};
@@ -2379,16 +2379,16 @@ public class TeleportTask implements Task<Void>
 
 		for (int i = 0; i < AMOUNT_VARBITS.length; i++)
 		{
-			Varbits amountVarbit = AMOUNT_VARBITS[i];
+			int amountVarbit = AMOUNT_VARBITS[i];
 
-			int amount = client.getVar(amountVarbit);
+			int amount = client.getVarbitValue(amountVarbit);
 			if (amount <= 0)
 			{
 				continue;
 			}
 
-			Varbits runeVarbit = RUNE_VARBITS[i];
-			int runeId = client.getVar(runeVarbit);
+			int runeVarbit = RUNE_VARBITS[i];
+			int runeId = client.getVarbitValue(runeVarbit);
 			Runes rune = Runes.getRune(runeId);
 			if (rune == null)
 			{

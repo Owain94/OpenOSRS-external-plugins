@@ -64,6 +64,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemID;
 import static net.runelite.api.ItemID.*;
 import net.runelite.api.Locatable;
@@ -361,6 +362,8 @@ public class ChinManagerPlugin extends Plugin
 	{
 		return configManager.getConfig(OptionsConfig.class);
 	}
+
+	private final Map<Integer, ItemComposition> itemCompositionMap = new HashMap<>();
 
 	@Override
 	protected void startUp()
@@ -936,6 +939,8 @@ public class ChinManagerPlugin extends Plugin
 
 	public MenuOptionClicked menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int actionParam, int widgetId)
 	{
+		log.debug("Before -- MenuOption={} MenuTarget={} Id={} Opcode={} Param0={} Param1={} isItemOp={} ItemOp={} ItemId={} Widget={}", menuOptionClicked.getMenuOption(), menuOptionClicked.getMenuTarget(), menuOptionClicked.getId(), menuOptionClicked.getMenuAction(), menuOptionClicked.getParam0(), menuOptionClicked.getParam1(), menuOptionClicked.isItemOp(), menuOptionClicked.getItemOp(), menuOptionClicked.getItemId(), menuOptionClicked.getWidget());
+
 		menuOptionClicked.setMenuOption(option);
 		menuOptionClicked.setMenuTarget(target);
 		menuOptionClicked.setId(identifier);
@@ -943,7 +948,7 @@ public class ChinManagerPlugin extends Plugin
 		menuOptionClicked.setParam0(actionParam);
 		menuOptionClicked.setParam1(widgetId);
 
-		log.debug("Chin manager menu action: {}", menuOptionClicked);
+		log.debug("After -- MenuOption={} MenuTarget={} Id={} Opcode={} Param0={} Param1={} isItemOp={} ItemOp={} ItemId={} Widget={}", menuOptionClicked.getMenuOption(), menuOptionClicked.getMenuTarget(), menuOptionClicked.getId(), menuOptionClicked.getMenuAction(), menuOptionClicked.getParam0(), menuOptionClicked.getParam1(), menuOptionClicked.isItemOp(), menuOptionClicked.getItemOp(), menuOptionClicked.getItemId(), menuOptionClicked.getWidget());
 
 		highlight(client, menuOptionClicked);
 
@@ -1110,5 +1115,62 @@ public class ChinManagerPlugin extends Plugin
 	public static void setHighlightDaxPath(List<WorldPoint> worldPoints)
 	{
 		Overlays.setHighlightPath(worldPoints);
+	}
+
+	public int itemOptionToId(int itemId, String match)
+	{
+		return itemOptionToId(itemId, List.of(match));
+	}
+
+	public ItemComposition getItemDefinition(int id)
+	{
+		if (itemCompositionMap.containsKey(id))
+		{
+			return itemCompositionMap.get(id);
+		}
+		else
+		{
+			ItemComposition def = client.getItemDefinition(id);
+			itemCompositionMap.put(id, def);
+
+			return def;
+		}
+	}
+
+	public int itemOptionToId(int itemId, List<String> match)
+	{
+		ItemComposition itemDefinition = getItemDefinition(itemId);
+
+		int index = 0;
+		for (String action : itemDefinition.getInventoryActions())
+		{
+			if (action != null && match.stream().anyMatch(action::equalsIgnoreCase))
+			{
+				if (index <= 2)
+				{
+					return index + 2;
+				}
+				else
+				{
+					return index + 3;
+				}
+			}
+
+			index++;
+		}
+
+		return -1;
+	}
+
+	public MenuAction idToMenuAction(int id)
+	{
+		if (id <= 5)
+		{
+			return MenuAction.CC_OP;
+		}
+		else
+		{
+			return MenuAction.CC_OP_LOW_PRIORITY;
+		}
 	}
 }

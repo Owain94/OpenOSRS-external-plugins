@@ -32,7 +32,7 @@ public class ContainerUtils
 			return 0;
 		}
 
-		Collection<WidgetItem> inventoryItems = getInventoryItems(client);
+		Widget[] inventoryItems = getInventoryItems(client);
 
 		if (inventoryItems == null)
 		{
@@ -41,11 +41,11 @@ public class ContainerUtils
 
 		int count = 0;
 
-		for (WidgetItem inventoryItem : inventoryItems)
+		for (Widget inventoryItem : inventoryItems)
 		{
-			if (itemIds.contains(inventoryItem.getId()))
+			if (itemIds.contains(inventoryItem.getItemId()))
 			{
-				count += inventoryItem.getQuantity();
+				count += inventoryItem.getItemQuantity();
 			}
 		}
 
@@ -98,21 +98,21 @@ public class ContainerUtils
 		return hasAnyItem(List.of(itemId), client);
 	}
 
-	public static WidgetItem getInventoryWidgetItemForItemsPos(final int itemPos, Client client)
+	public static Widget getInventoryWidgetItemForItemsPos(final int itemPos, Client client)
 	{
 		if (itemPos == -1)
 		{
 			return null;
 		}
 
-		Collection<WidgetItem> inventoryItems = getInventoryItems(client);
+		Widget[] inventoryItems = getInventoryItems(client);
 
 		if (inventoryItems == null)
 		{
 			return null;
 		}
 
-		return new ArrayList<>(inventoryItems).get(itemPos);
+		return inventoryItems[itemPos];
 	}
 
 	public static int getFirstInventoryItemsPos(final Integer itemId, Client client)
@@ -180,7 +180,7 @@ public class ContainerUtils
 			return null;
 		}
 
-		Collection<WidgetItem> inventoryItems = getInventoryItems(client);
+		Widget[] inventoryItems = getInventoryItems(client);
 
 		if (inventoryItems == null)
 		{
@@ -189,11 +189,12 @@ public class ContainerUtils
 
 		Map<Integer, Integer> items = new HashMap<>();
 
-		for (WidgetItem inventoryItem : inventoryItems)
+		for (Widget inventoryItem : inventoryItems)
 		{
-			if (itemIds.contains(inventoryItem.getId()))
+
+			if (itemIds.contains(inventoryItem.getItemId()))
 			{
-				items.put(inventoryItem.getId(), inventoryItem.getIndex());
+				items.put(inventoryItem.getItemId(), inventoryItem.getIndex());
 			}
 		}
 
@@ -205,7 +206,7 @@ public class ContainerUtils
 		return items;
 	}
 
-	public static Collection<WidgetItem> getInventoryItems(Client client)
+	public static Widget[] getInventoryItems(Client client)
 	{
 		if (client.getVar(VarClientInt.INVENTORY_TAB) != 3)
 		{
@@ -219,7 +220,7 @@ public class ContainerUtils
 			return null;
 		}
 
-		return new ArrayList<>(inventory.getWidgetItems());
+		return inventory.getDynamicChildren();
 	}
 
 	public static int getBankInventoryQuantity(final Integer itemId, Client client)

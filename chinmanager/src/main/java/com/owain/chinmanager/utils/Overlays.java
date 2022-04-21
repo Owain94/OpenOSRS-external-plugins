@@ -85,7 +85,7 @@ public class Overlays
 			case GAME_OBJECT_FOURTH_OPTION:
 			case GAME_OBJECT_FIFTH_OPTION:
 			case ITEM_USE_ON_GAME_OBJECT:
-			case SPELL_CAST_ON_GAME_OBJECT:
+			case WIDGET_TARGET_ON_GAME_OBJECT:
 			{
 				TileObject tileObject = getObject(client, menuOptionClicked.getId(), menuOptionClicked.getParam0(), menuOptionClicked.getParam1());
 
@@ -102,7 +102,7 @@ public class Overlays
 			case NPC_FOURTH_OPTION:
 			case NPC_FIFTH_OPTION:
 			case ITEM_USE_ON_NPC:
-			case SPELL_CAST_ON_NPC:
+			case WIDGET_TARGET_ON_NPC:
 			{
 				client.getNpcs().stream().filter((npc) -> npc.getIndex() == menuOptionClicked.getId()).findFirst().ifPresent(value -> highlightActor = value);
 
@@ -158,7 +158,7 @@ public class Overlays
 				}
 				else if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
+					highlightWidget = getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client);
 				}
 				else if (bankInventory != null && bankInventory.getId() == menuOptionClicked.getParam1())
 				{
@@ -167,13 +167,13 @@ public class Overlays
 
 				break;
 			}
-			case ITEM_USE_ON_WIDGET_ITEM:
+			case ITEM_USE_ON_ITEM:
 			{
 				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
 				if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidgetItem.add(getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
+					highlightWidget = getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client);
 				}
 			}
 		}

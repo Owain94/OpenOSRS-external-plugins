@@ -133,7 +133,7 @@ public class BankPinConfirmTask implements Task<Void>
 				"Continue",
 				"",
 				0,
-				MenuAction.WIDGET_TYPE_6,
+				MenuAction.WIDGET_CONTINUE,
 				-1,
 				bankPinConfirmWidget.getId()
 			);

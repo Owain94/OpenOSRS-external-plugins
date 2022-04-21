@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.9.0"
+version = "4.10.0"
 
 project.extra["PluginName"] = "Chin manager"
 project.extra["PluginDescription"] = "Configure and manage chin plugins"
@@ -35,7 +35,8 @@ dependencies {
     annotationProcessor(group = "org.pf4j", name = "pf4j", version = "3.6.0")
 
     api(project(":chinstatemanager"))
-    api(project(":chinautomation"))
+
+    implementation(project(":chinautomation"))
 
     compileOnly(group = "com.google.code.gson", name = "gson", version = "2.8.5")
     compileOnly(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1")

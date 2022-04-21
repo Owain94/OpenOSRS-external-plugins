@@ -1144,12 +1144,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(item, "Rub");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Ring of dueling",
-					item,
-					MenuAction.ITEM_FOURTH_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(RINGS_OF_DUELING, client),
 					inventory.getId()
 				);
@@ -1168,12 +1170,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(item, "Rub");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Games of necklace",
-					item,
-					MenuAction.ITEM_FOURTH_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(GAMES_NECKLACES, client),
 					inventory.getId()
 				);
@@ -1192,12 +1196,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(item, "Rub");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Combat bracelet",
-					item,
-					MenuAction.ITEM_FOURTH_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(COMBAT_BRACELETS, client),
 					inventory.getId()
 				);
@@ -1216,12 +1222,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(item, "Rub");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Skills necklace",
-					item,
-					MenuAction.ITEM_FOURTH_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(SKILLS_NECKLACES, client),
 					inventory.getId()
 				);
@@ -1240,12 +1248,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(item, "Rub");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Ring of wealth",
-					item,
-					MenuAction.ITEM_FOURTH_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(RINGS_OF_WEALTH, client),
 					inventory.getId()
 				);
@@ -1264,12 +1274,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(item, "Rub");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Amulet of glory",
-					item,
-					MenuAction.ITEM_FOURTH_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(AMULETS_OF_GLORY, client),
 					inventory.getId()
 				);
@@ -1288,12 +1300,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(item, "Rub");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Digsite pendant",
-					item,
-					MenuAction.ITEM_FOURTH_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(DIGSIDE_PENDANTS, client),
 					inventory.getId()
 				);
@@ -1312,12 +1326,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(item, "Rub");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Rub",
 					"<col=ff9040>Keric's talisman",
-					item,
-					MenuAction.ITEM_THIRD_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(XERICS_TALISMAN, client),
 					inventory.getId()
 				);
@@ -1329,9 +1345,10 @@ public class TeleportTask implements Task<Void>
 		{
 			if (teleportsConfig.pohTeleport() == Poh.TELEPORT_TABLET)
 			{
+				int item = getInventoryItemsMap(List.of(ItemID.TELEPORT_TO_HOUSE), client).keySet().stream().findFirst().orElse(-1);
 				Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
-				if (inventory == null)
+				if (item == -1 || inventory == null)
 				{
 					menuOptionClicked.consume();
 					teleportState = TeleportState.NONE;
@@ -1341,12 +1358,14 @@ public class TeleportTask implements Task<Void>
 				tikkie = 0;
 				teleportState = TeleportState.TELEPORT_WAIT;
 
+				int id = chinManagerPlugin.itemOptionToId(ItemID.TELEPORT_TO_HOUSE, "Break");
+
 				menuOptionClicked = chinManagerPlugin.menuAction(
 					menuOptionClicked,
 					"Break",
 					"Break",
-					ItemID.TELEPORT_TO_HOUSE,
-					MenuAction.ITEM_FIRST_OPTION,
+					id,
+					chinManagerPlugin.idToMenuAction(id),
 					getFirstInventoryItemsPos(ItemID.TELEPORT_TO_HOUSE, client),
 					inventory.getId()
 				);
@@ -1379,9 +1398,10 @@ public class TeleportTask implements Task<Void>
 			{
 				if (client.getVar(VarClientInt.INVENTORY_TAB) == 3)
 				{
+					int item = getInventoryItemsMap(CONSTRUCT_CAPE, client).keySet().stream().findFirst().orElse(-1);
 					Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
 
-					if (inventory == null)
+					if (item == -1 || inventory == null)
 					{
 						menuOptionClicked.consume();
 						teleportState = TeleportState.NONE;
@@ -1391,12 +1411,14 @@ public class TeleportTask implements Task<Void>
 					tikkie = 0;
 					teleportState = TeleportState.TELEPORT_WAIT;
 
+					int id = chinManagerPlugin.itemOptionToId(item, "Teleport");
+
 					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
 						"Teleport",
 						"<col=ff9040>Construct. cape",
-						chinManagerPlugin.getLowestItemMatch(CONSTRUCT_CAPE),
-						MenuAction.ITEM_FOURTH_OPTION,
+						id,
+						chinManagerPlugin.idToMenuAction(id),
 						getFirstInventoryItemsPos(CONSTRUCT_CAPE, client),
 						inventory.getId()
 					);
@@ -1417,7 +1439,7 @@ public class TeleportTask implements Task<Void>
 
 					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
-						"Tele to POH",
+						"Teleport",
 						"<col=ff9040>Construct. cape",
 						4,
 						MenuAction.CC_OP,

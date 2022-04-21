@@ -1411,11 +1411,11 @@ public class TeleportTask implements Task<Void>
 					tikkie = 0;
 					teleportState = TeleportState.TELEPORT_WAIT;
 
-					int id = chinManagerPlugin.itemOptionToId(item, "Teleport");
+					int id = chinManagerPlugin.itemOptionToId(item, "Tele to POH");
 
 					menuOptionClicked = chinManagerPlugin.menuAction(
 						menuOptionClicked,
-						"Teleport",
+						"Tele to POH",
 						"<col=ff9040>Construct. cape",
 						id,
 						chinManagerPlugin.idToMenuAction(id),

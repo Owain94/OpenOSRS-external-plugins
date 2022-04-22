@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.1.0"
+version = "0.1.1"
 
 project.extra["PluginName"] = "Chin object hider"
 project.extra["PluginDescription"] = "Object goes poof"

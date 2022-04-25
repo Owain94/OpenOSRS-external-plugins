@@ -35,6 +35,17 @@ import net.runelite.client.config.ConfigSection;
 @ConfigGroup(CONFIG_GROUP)
 public interface ChinObjectHiderConfig extends Config
 {
+	@ConfigItem(
+		keyName = "hideChanged",
+		name = "Hide changed objects",
+		description = "Warning: This may cause decrease in performance",
+		position = -1
+	)
+	default boolean hideChanged()
+	{
+		return false;
+	}
+
 	@ConfigSection(
 		name = "Hide by ID",
 		description = "Hide objects by ID",

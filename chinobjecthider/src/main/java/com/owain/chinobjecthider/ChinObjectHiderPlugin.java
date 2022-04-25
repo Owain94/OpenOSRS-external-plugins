@@ -15,7 +15,19 @@ import net.runelite.api.GroundObject;
 import net.runelite.api.Scene;
 import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
+import net.runelite.api.events.DecorativeObjectChanged;
+import net.runelite.api.events.DecorativeObjectDespawned;
+import net.runelite.api.events.DecorativeObjectSpawned;
+import net.runelite.api.events.GameObjectChanged;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GroundObjectChanged;
+import net.runelite.api.events.GroundObjectDespawned;
+import net.runelite.api.events.GroundObjectSpawned;
+import net.runelite.api.events.WallObjectChanged;
+import net.runelite.api.events.WallObjectDespawned;
+import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -156,6 +168,116 @@ public class ChinObjectHiderPlugin extends Plugin
 				client.setGameState(GameState.LOADING);
 			}
 		});
+	}
+
+	@Subscribe
+	public void onGameObjectSpawned(GameObjectSpawned gameObjectSpawned)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned gameObjectDespawned)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onGameObjectChanged(GameObjectChanged gameObjectChanged)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+
+	@Subscribe
+	public void onDecorativeObjectSpawned(DecorativeObjectSpawned decorativeObjectSpawned)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onDecorativeObjectDespawned(DecorativeObjectDespawned decorativeObjectDespawned)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onDecorativeObjectChanged(DecorativeObjectChanged decorativeObjectChanged)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onWallObjectSpawned(WallObjectSpawned wallObjectSpawned)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onWallObjectDespawned(WallObjectDespawned wallObjectDespawned)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onWallObjectChanged(WallObjectChanged wallObjectChanged)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+
+	@Subscribe
+	public void onGroundObjectSpawned(GroundObjectSpawned groundObjectSpawned)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onGroundObjectDespawned(GroundObjectDespawned groundObjectDespawned)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
+	}
+
+	@Subscribe
+	public void onGroundObjectChanged(GroundObjectChanged groundObjectChanged)
+	{
+		if (client.getGameState() == GameState.LOGGED_IN && chinObjectHiderConfig.hideChanged())
+		{
+			clientThread.invokeLater(this::hide);
+		}
 	}
 
 	private void hide()

@@ -2,17 +2,16 @@ package com.owain.chinmanager.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.owain.chinmanager.api.BaseApi;
+import com.owain.chinmanager.api.RegionApi;
 import com.owain.chinmanager.models.TileFlag;
 import com.owain.chinmanager.models.Transport;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +31,6 @@ import net.runelite.http.api.xtea.XteaKey;
 import net.runelite.http.api.xtea.XteaRequest;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @Singleton
 @Slf4j
@@ -50,18 +46,18 @@ public class RegionManager
 
 	private final Client client;
 	private final OkHttpClient okHttpClient;
-	private final ScheduledExecutorService executorService;
+	private final RegionApi regionApi;
 
 	@Inject
 	public RegionManager(
 		Client client,
 		OkHttpClient okHttpClient,
-		ScheduledExecutorService executorService
+		RegionApi regionApi
 	)
 	{
 		this.client = client;
 		this.okHttpClient = okHttpClient;
-		this.executorService = executorService;
+		this.regionApi = regionApi;
 	}
 
 	@Subscribe(priority = -98)
@@ -132,32 +128,10 @@ public class RegionManager
 			return;
 		}
 
-		executorService.schedule(() -> {
-			try
-			{
-				String json = GSON.toJson(xteaRequest);
-
-				RequestBody body = RequestBody.create(json, JSON_MEDIATYPE);
-				Request request = new Request.Builder()
-					.post(body)
-					.url(BaseApi.baseUrl().addPathSegment("xtea").build())
-					.build();
-				Response response = okHttpClient.newCall(request)
-					.execute();
-				int code = response.code();
-				response.close();
-
-				if (code != 200 && code != 201)
-				{
-					log.error("Request was unsuccessful: {}", code);
-				}
-			}
-			catch (Exception e)
-			{
-				log.error("Failed to POST: {}", e.getMessage());
-				e.printStackTrace();
-			}
-		}, 5, TimeUnit.SECONDS);
+		regionApi.sendXtea(GSON.toJson(xteaRequest))
+			.subscribeOn(Schedulers.io())
+			.take(1)
+			.subscribe();
 	}
 
 	public void sendRegion()
@@ -276,32 +250,10 @@ public class RegionManager
 			}
 		}
 
-		executorService.schedule(() -> {
-			try
-			{
-				String json = GSON.toJson(tileFlags);
-
-				RequestBody body = RequestBody.create(json, JSON_MEDIATYPE);
-				Request request = new Request.Builder()
-					.post(body)
-					.url(API_URL + "/regions/" + VERSION)
-					.build();
-				Response response = okHttpClient.newCall(request)
-					.execute();
-				int code = response.code();
-				response.close();
-
-				if (code != 200)
-				{
-					log.error("Request was unsuccessful: {}", code);
-				}
-			}
-			catch (Exception e)
-			{
-				log.error("Failed to POST: {}", e.getMessage());
-				e.printStackTrace();
-			}
-		}, 5, TimeUnit.SECONDS);
+		regionApi.sendCollisionMap(GSON.toJson(tileFlags))
+			.subscribeOn(Schedulers.io())
+			.take(1)
+			.subscribe();
 	}
 
 	public static Map<WorldPoint, List<Transport>> buildTransportLinks()

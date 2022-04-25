@@ -75,6 +75,7 @@ public final class MagicNumberWidget
 	public static final int LEPRECHAUN_STORE = 125;
 	public static final int LEPRECHAUN_STORE_MAIN = 1;
 	public static final int LEPRECHAUN_STORE_WITHDRAW_ONE = 4;
+	public static final int LEPRECHAUN_STORE_RAKE = 8;
 	public static final int LEPRECHAUN_STORE_PLANT_CURE = 14;
 	public static final int LEPRECHAUN_STORE_BOTTOMLESS_BUCKET = 15;
 	public static final int LEPRECHAUN_STORE_BUCKETS = 16;
@@ -83,6 +84,7 @@ public final class MagicNumberWidget
 	public static final int LEPRECHAUN_STORE_ULTRA_COMPOST = 19;
 
 	public static final int LEPRECHAUN_STORE_INV = 126;
+	public static final int LEPRECHAUN_STORE_INV_RAKE = 1;
 	public static final int LEPRECHAUN_STORE_INV_PLANT_CURE = 7;
 	public static final int LEPRECHAUN_STORE_INV_BOTTOMLESS_BUCKET = 8;
 	public static final int LEPRECHAUN_STORE_INV_BUCKETS = 9;

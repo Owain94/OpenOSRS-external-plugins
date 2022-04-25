@@ -80,4 +80,16 @@ public class BaseApi
 			.addPathSegment(segment)
 			.build();
 	}
+
+	public static HttpUrl.Builder xteaBase()
+	{
+		return baseUrl()
+			.addPathSegment("xtea");
+	}
+
+	public static HttpUrl xtea()
+	{
+		return xteaBase()
+			.build();
+	}
 }

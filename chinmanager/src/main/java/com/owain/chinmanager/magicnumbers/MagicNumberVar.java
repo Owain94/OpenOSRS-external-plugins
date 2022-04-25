@@ -9,5 +9,8 @@ public final class MagicNumberVar
 	public static final int BANK_OPTIONS = 10079;
 	public static final int SINGLES_PLUS = 10530;
 	public static final int GROUPING_TAB = 13071;
+	public static final int FALADOR_ELITE = 4506;
+	public static final int NOTING = 3958;
+	public static final int WITHDRAWX = 3960;
 }
 

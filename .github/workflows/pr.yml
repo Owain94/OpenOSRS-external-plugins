@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: PR title lint
         if: github.event_name == 'pull_request'
-        uses: MorrisonCole/pr-lint-action@v1.4.1
+        uses: MorrisonCole/pr-lint-action@v1.6.1
         with:
           title-regex: '^([\w-/]+): \w+'
           on-failed-regex-fail-action: false
@@ -25,8 +25,8 @@ jobs:
     name: Validate gradle wrapper
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: gradle/wrapper-validation-action@v1.0.3
+      - uses: actions/checkout@v2.4.2
+      - uses: gradle/wrapper-validation-action@v1.0.4
 
   build:
     name: Build
@@ -34,29 +34,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11'
-          check-latest: true
-
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.4.2
         with:
           path: Owain94-external-plugins
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.4.2
         with:
           repository: open-osrs/runelite
           ref: master
           path: OpenOSRS
 
-      - uses: actions/cache@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3.1.1
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          distribution: 'adopt'
+          java-version: '11'
+          cache: 'gradle'
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
@@ -93,29 +86,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11'
-          check-latest: true
-
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.4.2
         with:
           path: Owain94-external-plugins
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.4.2
         with:
           repository: open-osrs/runelite
           ref: master
           path: OpenOSRS
 
-      - uses: actions/cache@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3.1.1
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          distribution: 'adopt'
+          java-version: '11'
+          cache: 'gradle'
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
@@ -151,29 +137,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11'
-          check-latest: true
-
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.4.2
         with:
           path: Owain94-external-plugins
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.4.2
         with:
           repository: open-osrs/runelite
           ref: master
           path: OpenOSRS
 
-      - uses: actions/cache@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3.1.1
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          distribution: 'adopt'
+          java-version: '11'
+          cache: 'gradle'
 
       - name: Make gradlew executable (client)
         run: chmod +x ./gradlew
@@ -225,16 +204,16 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - uses: actions/checkout@v2.4.2
+        with:
+          path: Owain94-external-plugins
+
       - name: Set up JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3.1.1
         with:
           distribution: 'adopt'
           java-version: '11'
-          check-latest: true
-
-      - uses: actions/checkout@v2
-        with:
-          path: Owain94-external-plugins
+          cache: 'gradle'
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -281,6 +260,6 @@ jobs:
     steps:
       - name: Approve pull request
         if: github.event_name == 'pull_request' && github.actor == 'OpenOSRS'
-        uses: hmarr/auto-approve-action@v2.0.0
+        uses: hmarr/auto-approve-action@v2.2.1
         with:
           github-token: ${{ secrets.Owain }}

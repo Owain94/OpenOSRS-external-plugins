@@ -9,6 +9,9 @@ public enum MagicNumberVars
 	BANK_OPTIONS(MagicNumberVar.BANK_OPTIONS),
 	SINGLES_PLUS(MagicNumberVar.SINGLES_PLUS),
 	GROUPING_TAB(MagicNumberVar.GROUPING_TAB),
+	FALADOR_ELITE(MagicNumberVar.FALADOR_ELITE),
+	NOTING(MagicNumberVar.NOTING),
+	WITHDRAWX(MagicNumberVar.WITHDRAWX),
 
 	;
 

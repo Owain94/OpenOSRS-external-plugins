@@ -363,8 +363,6 @@ public class ChinManagerPlugin extends Plugin
 		return configManager.getConfig(OptionsConfig.class);
 	}
 
-	private final Map<Integer, ItemComposition> itemCompositionMap = new HashMap<>();
-
 	@Override
 	protected void startUp()
 	{
@@ -1122,24 +1120,9 @@ public class ChinManagerPlugin extends Plugin
 		return itemOptionToId(itemId, List.of(match));
 	}
 
-	public ItemComposition getItemDefinition(int id)
-	{
-		if (itemCompositionMap.containsKey(id))
-		{
-			return itemCompositionMap.get(id);
-		}
-		else
-		{
-			ItemComposition def = client.getItemDefinition(id);
-			itemCompositionMap.put(id, def);
-
-			return def;
-		}
-	}
-
 	public int itemOptionToId(int itemId, List<String> match)
 	{
-		ItemComposition itemDefinition = getItemDefinition(itemId);
+		ItemComposition itemDefinition = client.getItemDefinition(itemId);
 
 		int index = 0;
 		for (String action : itemDefinition.getInventoryActions())

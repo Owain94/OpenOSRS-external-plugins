@@ -2,9 +2,11 @@ package com.owain.chinmanager.utils;
 
 import static com.owain.automation.ContainerUtils.getBankInventoryWidgetItemForItemsPos;
 import static com.owain.automation.ContainerUtils.getBankWidgetItemForItemsPos;
+import static com.owain.automation.ContainerUtils.getFirstInventoryItemsPos;
 import static com.owain.automation.ContainerUtils.getInventoryWidgetItemForItemsPos;
 import static com.owain.chinmanager.ChinManagerPlugin.highlightWidgetItem;
 import static com.owain.chinmanager.utils.Api.getObject;
+import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +19,9 @@ import lombok.Setter;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.ItemLayer;
+import static net.runelite.api.MenuAction.WIDGET_TARGET_ON_GAME_OBJECT;
+import static net.runelite.api.MenuAction.WIDGET_TARGET_ON_NPC;
+import net.runelite.api.Point;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -94,6 +99,25 @@ public class Overlays
 					highlightTileObject = tileObject;
 				}
 
+				if (menuOptionClicked.getMenuAction() == WIDGET_TARGET_ON_GAME_OBJECT && client.getSelectedSpellWidget() == WidgetInfo.INVENTORY.getPackedId())
+				{
+					int itemPos = getFirstInventoryItemsPos(client.getSelectedSpellItemId(), client);
+
+					if (itemPos == -1)
+					{
+						break;
+					}
+
+					Widget widget = getInventoryWidgetItemForItemsPos(itemPos, client);
+
+					if (widget == null)
+					{
+						break;
+					}
+
+					highlightWidgetItem.add(widgetToWidgetItem(widget, itemPos));
+				}
+
 				break;
 			}
 			case NPC_FIRST_OPTION:
@@ -105,6 +129,25 @@ public class Overlays
 			case WIDGET_TARGET_ON_NPC:
 			{
 				client.getNpcs().stream().filter((npc) -> npc.getIndex() == menuOptionClicked.getId()).findFirst().ifPresent(value -> highlightActor = value);
+
+				if (menuOptionClicked.getMenuAction() == WIDGET_TARGET_ON_NPC && client.getSelectedSpellWidget() == WidgetInfo.INVENTORY.getPackedId())
+				{
+					int itemPos = getFirstInventoryItemsPos(client.getSelectedSpellItemId(), client);
+
+					if (itemPos == -1)
+					{
+						break;
+					}
+
+					Widget widget = getInventoryWidgetItemForItemsPos(itemPos, client);
+
+					if (widget == null)
+					{
+						break;
+					}
+
+					highlightWidgetItem.add(widgetToWidgetItem(widget, itemPos));
+				}
 
 				break;
 			}
@@ -154,15 +197,36 @@ public class Overlays
 
 				if (bankContainer != null && bankContainer.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidgetItem.add(getBankWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
+					WidgetItem widgetItem = getBankWidgetItemForItemsPos(menuOptionClicked.getParam0(), client);
+
+					if (widgetItem == null)
+					{
+						break;
+					}
+
+					highlightWidgetItem.add(widgetItem);
 				}
 				else if (inventory != null && inventory.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidget = getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client);
+					Widget widget = getInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client);
+
+					if (widget == null)
+					{
+						break;
+					}
+
+					highlightWidgetItem.add(widgetToWidgetItem(widget, menuOptionClicked.getParam0()));
 				}
 				else if (bankInventory != null && bankInventory.getId() == menuOptionClicked.getParam1())
 				{
-					highlightWidgetItem.add(getBankInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client));
+					WidgetItem widgetItem = getBankInventoryWidgetItemForItemsPos(menuOptionClicked.getParam0(), client);
+
+					if (widgetItem == null)
+					{
+						break;
+					}
+
+					highlightWidgetItem.add(widgetItem);
 				}
 
 				break;
@@ -184,5 +248,27 @@ public class Overlays
 	public static List<WidgetItem> getHighlightWidgetItem()
 	{
 		return highlightWidgetItem;
+	}
+
+	public static WidgetItem widgetToWidgetItem(Widget child, int i)
+	{
+		boolean isDragged = child.isWidgetItemDragged(child.getItemId());
+		int dragOffsetX = 0;
+		int dragOffsetY = 0;
+
+		if (isDragged)
+		{
+			Point p = child.getWidgetItemDragOffsets();
+			dragOffsetX = p.getX();
+			dragOffsetY = p.getY();
+		}
+
+		Rectangle bounds = child.getBounds();
+		bounds.setBounds(bounds.x, bounds.y, 32, 32);
+
+		Rectangle dragBounds = child.getBounds();
+		dragBounds.setBounds(bounds.x + dragOffsetX, bounds.y + dragOffsetY, 32, 32);
+
+		return new WidgetItem(child.getItemId(), child.getItemQuantity(), i, bounds, child, dragBounds);
 	}
 }

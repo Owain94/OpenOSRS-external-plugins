@@ -1,6 +1,7 @@
 package com.owain.chinmanager.tasks;
 
-import com.owain.automation.Automation;
+import static com.owain.automation.Automation.randomDelay;
+import static com.owain.automation.Automation.sendKey;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
@@ -38,20 +39,20 @@ public class KeyTask implements Task<Void>
 			{
 				if (input.equals(" "))
 				{
-					Automation.randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
-					Automation.sendKey(KeyEvent.VK_SPACE, client, false);
+					randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
+					sendKey(KeyEvent.VK_SPACE, client, false);
 				}
 				else if (input.equals("\n"))
 				{
-					Automation.randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
-					Automation.sendKey(KeyEvent.VK_ENTER, client, false);
+					randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
+					sendKey(KeyEvent.VK_ENTER, client, false);
 				}
 				else
 				{
 					for (char ch : input.toCharArray())
 					{
-						Automation.randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
-						Automation.sendKey(ch, client);
+						randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
+						sendKey(ch, client);
 					}
 				}
 			}

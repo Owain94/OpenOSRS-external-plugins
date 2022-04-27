@@ -1,6 +1,7 @@
 package com.owain.chinmanager.tasks;
 
-import com.owain.automation.Automation;
+import static com.owain.automation.Automation.click;
+import static com.owain.automation.Automation.randomDelay;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.owain.chintasks.Task;
 import io.reactivex.rxjava3.core.ObservableEmitter;
@@ -42,8 +43,8 @@ public class ClickTask implements Task<Void>
 			{
 				Point point = new Point(0, 0);
 
-				Automation.randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
-				Automation.click(point, client);
+				randomDelay(false, 120, 240, 180, 10, chinManagerPlugin.getRandom());
+				click(point, client);
 			}
 			catch (InterruptedException e)
 			{

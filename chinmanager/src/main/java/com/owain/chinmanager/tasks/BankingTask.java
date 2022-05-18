@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.InventoryID;
@@ -65,6 +66,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 
+@Slf4j
 public class BankingTask implements Task<Void>
 {
 	enum BankingState
@@ -1663,7 +1665,7 @@ public class BankingTask implements Task<Void>
 					{
 						grab = true;
 					}
-					else
+					else if (client.getItemComposition(savedItem).getName().toLowerCase().contains("graceful"))
 					{
 						List<Integer> itemList = new ArrayList<>();
 
@@ -1702,7 +1704,6 @@ public class BankingTask implements Task<Void>
 							grab = true;
 						}
 					}
-
 
 					switch (i)
 					{

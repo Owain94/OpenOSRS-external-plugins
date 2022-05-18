@@ -296,6 +296,7 @@ public class Api
 			)
 			.stream()
 			.filter(Objects::nonNull)
+			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
 			.filter(tileObject -> {
 				List<String> actions = Arrays.asList(
 					client.getObjectDefinition(
@@ -322,7 +323,6 @@ public class Api
 				return actions.contains("Bank") || (actions.contains("Collect") && !objectComposition.getName().contains("Grand")) ||
 					imposterActions.contains("Bank") || (imposterActions.contains("Collect") && !objectComposition.getImpostor().getName().contains("Grand"));
 			})
-			.filter(tileObject -> tileObject.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
 			.filter(tileObject -> Reachable.isInteractable(client, tileObject))
 			.map(tileObject -> {
 				Tile startTile = tile(client, locatable.getWorldLocation());
@@ -375,7 +375,7 @@ public class Api
 		return client.getNpcs()
 			.stream()
 			.filter(Objects::nonNull)
-			.map(npc -> (NPC) npc)
+			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
 			.filter(npc -> {
 				List<String> actions = Arrays.asList(
 					client.getNpcDefinition(
@@ -386,36 +386,35 @@ public class Api
 
 				return actions.contains("Bank");
 			})
-			.filter(npc -> npc.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation()) < 16)
-			.map(tileObject -> {
+			.map(npc -> {
 				Tile startTile = tile(client, locatable.getWorldLocation());
-				Tile endTile = tile(client, tileObject.getWorldLocation());
+				Tile endTile = tile(client, npc.getWorldLocation());
 
 				if (startTile == null || endTile == null)
 				{
-					return Pair.of(tileObject, Integer.MAX_VALUE);
+					return Pair.of(npc, Integer.MAX_VALUE);
 				}
 
-				if (locatable.getWorldLocation().dx(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				if (locatable.getWorldLocation().dx(1).distanceTo(npc.getWorldLocation()) == 0)
 				{
-					return Pair.of(tileObject, -1);
+					return Pair.of(npc, -1);
 				}
-				else if (locatable.getWorldLocation().dy(1).distanceTo(tileObject.getWorldLocation()) == 0)
+				else if (locatable.getWorldLocation().dy(1).distanceTo(npc.getWorldLocation()) == 0)
 				{
-					return Pair.of(tileObject, -1);
+					return Pair.of(npc, -1);
 				}
-				else if (locatable.getWorldLocation().dx(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				else if (locatable.getWorldLocation().dx(-1).distanceTo(npc.getWorldLocation()) == 0)
 				{
-					return Pair.of(tileObject, -1);
+					return Pair.of(npc, -1);
 				}
-				else if (locatable.getWorldLocation().dy(-1).distanceTo(tileObject.getWorldLocation()) == 0)
+				else if (locatable.getWorldLocation().dy(-1).distanceTo(npc.getWorldLocation()) == 0)
 				{
-					return Pair.of(tileObject, -1);
+					return Pair.of(npc, -1);
 				}
 
 				List<Tile> path = startTile.pathTo(endTile);
 
-				return Pair.of(tileObject, path.size());
+				return Pair.of(npc, path.size());
 			})
 			.filter(pair -> pair.getValue() < Integer.MAX_VALUE)
 			.min(

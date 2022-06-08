@@ -159,7 +159,7 @@ public class StatusPanel extends JPanel
 
 	private JPanel warningPanel(String titleText, String descriptionText, boolean border)
 	{
-		return warningPanel(titleText.replace("[WARN]", ""), descriptionText, border, !titleText.contains("[WARN]"));
+		return warningPanel(titleText, descriptionText, border, !titleText.contains("[WARN]"));
 	}
 
 	private JPanel warningPanel(String titleText, String descriptionText, boolean border, boolean red)
@@ -178,7 +178,7 @@ public class StatusPanel extends JPanel
 		));
 
 		JLabel title = new JLabel();
-		title.setText(titleText);
+		title.setText(titleText.replace("[WARN]", ""));
 		title.setFont(NORMAL_FONT);
 		title.setPreferredSize(new Dimension(0, 24));
 		title.setForeground(Color.WHITE);
